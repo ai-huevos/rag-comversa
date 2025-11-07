@@ -1,0 +1,468 @@
+{
+  "title": "Phase 1 KPI Dictionary - 12 Month Outlook",
+  "version": "1.0.0",
+  "generated": "2025-10-23",
+  "scope": "Los Tajibos, Comversa, Bolivian Foods",
+
+  "kpi_categories": {
+    "maintenance": {
+      "domain": "Operations - Maintenance",
+      "applicable_companies": ["Los Tajibos", "Bolivian Foods"],
+      "kpis": [
+        {
+          "id": "MNT-001",
+          "name": "PM Completion Rate",
+          "definition": "Percentage of preventive maintenance tasks completed on schedule",
+          "formula": "(Completed PM Tasks / Scheduled PM Tasks) * 100",
+          "owner": "Gerente/Jefe de Ingeniería (LTH), Jefe Nacional de Mantenimiento (BF)",
+          "data_source": "MaintainX (LTH), Specialized software (BF)",
+          "baseline": "Not measured - currently reactive",
+          "month_3_target": "60%",
+          "month_6_target": "75%",
+          "month_12_target": "85%",
+          "cadence": "Weekly reporting, Monthly review",
+          "threshold_critical": "< 50%",
+          "threshold_warning": "50-70%",
+          "related_processes": ["Preventive Maintenance Scheduling", "Asset Management"]
+        },
+        {
+          "id": "MNT-002",
+          "name": "Mean Time To Repair (MTTR)",
+          "definition": "Average time from incident report to work order closure",
+          "formula": "SUM(Closure Time - Report Time) / Total Incidents",
+          "owner": "Jefe de Ingeniería (LTH), Gerente Nacional de Operaciones (BF)",
+          "data_source": "MaintainX, ServiceDesk Plus",
+          "baseline": "Not measured - estimate 2-3 days",
+          "month_3_target": "< 24 hours for critical",
+          "month_6_target": "< 12 hours for critical, < 48h for non-critical",
+          "month_12_target": "< 8 hours for critical, < 24h for non-critical",
+          "cadence": "Daily monitoring, Weekly trends",
+          "threshold_critical": "> 48 hours for critical issues",
+          "threshold_warning": "> 24 hours for critical issues",
+          "related_processes": ["Incident Management", "Maintenance Execution"]
+        },
+        {
+          "id": "MNT-003",
+          "name": "Preventive vs Reactive Maintenance Ratio",
+          "definition": "Ratio of planned preventive work to unplanned reactive work",
+          "formula": "(PM Hours / Total Maintenance Hours) * 100",
+          "owner": "Gerente de Ingeniería",
+          "data_source": "MaintainX time tracking",
+          "baseline": "~30% preventive, 70% reactive (estimated)",
+          "month_3_target": "40% preventive",
+          "month_6_target": "55% preventive",
+          "month_12_target": "70% preventive",
+          "cadence": "Monthly",
+          "threshold_critical": "< 30% preventive",
+          "threshold_warning": "< 50% preventive",
+          "related_processes": ["Maintenance Planning", "Resource Allocation"]
+        },
+        {
+          "id": "MNT-004",
+          "name": "Critical Spare Stockout Rate",
+          "definition": "Percentage of PM delays due to parts unavailability",
+          "formula": "(PM Delayed by Stockouts / Total PM) * 100",
+          "owner": "Jefe de Ingeniería (LTH), Subgerente de Logística (BF)",
+          "data_source": "MaintainX + SAP/CMNET inventory",
+          "baseline": "Not measured - frequent delays reported",
+          "month_3_target": "< 20%",
+          "month_6_target": "< 10%",
+          "month_12_target": "< 5%",
+          "cadence": "Weekly",
+          "threshold_critical": "> 20%",
+          "threshold_warning": "> 10%",
+          "related_processes": ["Inventory Management", "Procurement"]
+        }
+      ]
+    },
+
+    "culinary": {
+      "domain": "Operations - Food & Beverage",
+      "applicable_companies": ["Los Tajibos"],
+      "kpis": [
+        {
+          "id": "CUL-001",
+          "name": "Food Cost Percentage",
+          "definition": "Cost of food sold as percentage of F&B revenue",
+          "formula": "(Food Cost / F&B Revenue) * 100",
+          "owner": "Chef Ejecutivo, Gerente de Costos CC",
+          "data_source": "SAP (purchases) + Opera/Simphony (sales)",
+          "baseline": "Not consistently measured - volatile prices",
+          "month_3_target": "Establish baseline per outlet",
+          "month_6_target": "± 3% variance from baseline",
+          "month_12_target": "28-32% target range by outlet",
+          "cadence": "Daily tracking, Weekly analysis, Monthly review",
+          "threshold_critical": "> 35%",
+          "threshold_warning": "> 33%",
+          "related_processes": ["Recipe Costing", "Menu Engineering", "Purchasing"]
+        },
+        {
+          "id": "CUL-002",
+          "name": "Recipe Costing Turnaround Time",
+          "definition": "Time from recipe submission to approved costed menu item",
+          "formula": "Approval Date - Submission Date",
+          "owner": "Chef Ejecutivo, Gerente de Costos CC",
+          "data_source": "Recipe workflow system (to be implemented)",
+          "baseline": "3-5 days (manual Word/Excel process)",
+          "month_3_target": "< 48 hours",
+          "month_6_target": "< 24 hours",
+          "month_12_target": "< 4 hours (automated)",
+          "cadence": "Per recipe, Monthly summary",
+          "threshold_critical": "> 5 days",
+          "threshold_warning": "> 3 days",
+          "related_processes": ["Recipe Development", "Menu Updates"]
+        },
+        {
+          "id": "CUL-003",
+          "name": "Buffet Forecast Accuracy",
+          "definition": "Variance between forecasted and actual buffet consumption",
+          "formula": "| (Actual - Forecast) / Forecast | * 100",
+          "owner": "Chef Ejecutivo",
+          "data_source": "Production records + consumption tracking",
+          "baseline": "Not measured - frequent over/under production",
+          "month_3_target": "Establish baseline",
+          "month_6_target": "± 15% variance",
+          "month_12_target": "± 10% variance",
+          "cadence": "Daily per service, Weekly trends",
+          "threshold_critical": "> 25% variance",
+          "threshold_warning": "> 15% variance",
+          "related_processes": ["Production Planning", "Demand Forecasting"]
+        },
+        {
+          "id": "CUL-004",
+          "name": "Food Waste Percentage",
+          "definition": "Weight of discarded food as percentage of total food purchased",
+          "formula": "(Waste Weight / Total Food Weight) * 100",
+          "owner": "Chef Ejecutivo, Gerente de Costos CC",
+          "data_source": "Waste logs + purchase records",
+          "baseline": "Not systematically measured",
+          "month_3_target": "Establish baseline",
+          "month_6_target": "< 8%",
+          "month_12_target": "< 5%",
+          "cadence": "Daily logs, Weekly analysis",
+          "threshold_critical": "> 10%",
+          "threshold_warning": "> 7%",
+          "related_processes": ["Waste Management", "Production Planning", "Quality Control"]
+        }
+      ]
+    },
+
+    "finance": {
+      "domain": "Finance & Accounting",
+      "applicable_companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+      "kpis": [
+        {
+          "id": "FIN-001",
+          "name": "Reconciliation Exception Rate",
+          "definition": "Number of POS-to-ERP mismatches per day",
+          "formula": "Daily Exceptions / Total Transactions",
+          "owner": "Gerente de Contabilidad (LTH), Contador Senior (BF)",
+          "data_source": "Opera/Simphony vs Satcom, CMNET vs Sales systems",
+          "baseline": "Manual review catches ~5-10 exceptions/day",
+          "month_3_target": "< 5 exceptions/day, auto-flagged",
+          "month_6_target": "< 3 exceptions/day",
+          "month_12_target": "< 1 exception/day",
+          "cadence": "Daily",
+          "threshold_critical": "> 10 exceptions",
+          "threshold_warning": "> 5 exceptions",
+          "related_processes": ["Daily Accounting Close", "Revenue Recognition"]
+        },
+        {
+          "id": "FIN-002",
+          "name": "Monthly Close Cycle Time",
+          "definition": "Days from month-end to finalized financial statements",
+          "formula": "Statement Finalization Date - Month End Date",
+          "owner": "Gerente de Control de Gestión (LTH), Gerente Nacional de Admin y Finanzas (BF), Gerente de Finanzas (Comversa)",
+          "data_source": "Financial reporting system",
+          "baseline": "LTH: Day 23 → Day 6 (improved), BF: Day 6, Comversa: Variable",
+          "month_3_target": "Day 5",
+          "month_6_target": "Day 4",
+          "month_12_target": "Day 3",
+          "cadence": "Monthly",
+          "threshold_critical": "> Day 10",
+          "threshold_warning": "> Day 7",
+          "related_processes": ["Monthly Financial Close", "Management Reporting"]
+        },
+        {
+          "id": "FIN-003",
+          "name": "KPI Data Accuracy Rate",
+          "definition": "Percentage of KPIs requiring correction/reclassification",
+          "formula": "(KPIs Correct First Time / Total KPIs) * 100",
+          "owner": "Jefe de Finanzas y Proyectos (Comversa), Coordinadora Nacional de Control de Gestión (BF)",
+          "data_source": "KPI validation logs",
+          "baseline": "Manual corrections needed ~30% of time",
+          "month_3_target": "85% accuracy",
+          "month_6_target": "92% accuracy",
+          "month_12_target": "97% accuracy",
+          "cadence": "Monthly",
+          "threshold_critical": "< 70%",
+          "threshold_warning": "< 85%",
+          "related_processes": ["KPI Reporting", "Data Validation"]
+        },
+        {
+          "id": "FIN-004",
+          "name": "Payment Approval Cycle Time",
+          "definition": "Days from invoice receipt to payment authorization",
+          "formula": "Approval Date - Invoice Date",
+          "owner": "Sub Gerente Tesorería (Comversa), Gerente de Finanzas",
+          "data_source": "SAP + payment workflow system",
+          "baseline": "5-10 days depending on approvers",
+          "month_3_target": "< 5 days standard, < 2 days urgent",
+          "month_6_target": "< 3 days standard, < 1 day urgent",
+          "month_12_target": "< 2 days standard, same-day urgent",
+          "cadence": "Weekly summary",
+          "threshold_critical": "> 10 days",
+          "threshold_warning": "> 5 days",
+          "related_processes": ["Accounts Payable", "Approval Workflows"]
+        }
+      ]
+    },
+
+    "commercial": {
+      "domain": "Sales & Marketing",
+      "applicable_companies": ["Los Tajibos", "Comversa"],
+      "kpis": [
+        {
+          "id": "COM-001",
+          "name": "Lead-to-Visit Conversion Rate",
+          "definition": "Percentage of leads resulting in property visits",
+          "formula": "(Visits Conducted / Leads Generated) * 100",
+          "owner": "Directora Comercial SC (Comversa), Gerente de Ventas B2B (LTH)",
+          "data_source": "CRM (to be implemented) / Excel tracking",
+          "baseline": "Not measured - manual tracking only",
+          "month_3_target": "Establish baseline tracking",
+          "month_6_target": "35% conversion",
+          "month_12_target": "45% conversion",
+          "cadence": "Weekly",
+          "threshold_warning": "< 25%",
+          "related_processes": ["Lead Management", "Sales Funnel"]
+        },
+        {
+          "id": "COM-002",
+          "name": "Contract Signature Cycle Time",
+          "definition": "Days from sales agreement to signed contract",
+          "formula": "Contract Signed Date - Agreement Date",
+          "owner": "Directora Legal (Comversa), Directora Comercial",
+          "data_source": "Contract management system",
+          "baseline": "15-30 days (major bottleneck reported)",
+          "month_3_target": "< 15 days",
+          "month_6_target": "< 10 days",
+          "month_12_target": "< 7 days",
+          "cadence": "Per contract, Weekly summary",
+          "threshold_critical": "> 30 days",
+          "threshold_warning": "> 15 days",
+          "related_processes": ["Contract Review", "Legal Approval"]
+        },
+        {
+          "id": "COM-003",
+          "name": "Guest Satisfaction Score (GSS/ITR)",
+          "definition": "Marriott brand standards satisfaction metrics",
+          "formula": "Per Marriott methodology",
+          "owner": "Jefe de Recepción, Directora de Operaciones (LTH)",
+          "data_source": "Medallia, GXP, Control Panel",
+          "baseline": "ITR target > 75, GSS >80% sustained 3 months",
+          "month_3_target": "ITR > 75",
+          "month_6_target": "ITR > 78, GSS > 80%",
+          "month_12_target": "ITR > 80, GSS > 85%",
+          "cadence": "Daily monitoring, Weekly review",
+          "threshold_critical": "ITR < 70, GSS < 75%",
+          "threshold_warning": "ITR < 75, GSS < 80%",
+          "related_processes": ["Guest Experience", "Service Quality"]
+        },
+        {
+          "id": "COM-004",
+          "name": "Revenue Metrics (RevPAR, ADR, Occupancy)",
+          "definition": "Core hospitality performance indicators",
+          "formula": "RevPAR = ADR * Occupancy; ADR = Room Revenue / Rooms Sold",
+          "owner": "Directora de Marketing y Ventas (LTH)",
+          "data_source": "Opera PMS, STR reports",
+          "baseline": "Current performance (specific numbers confidential)",
+          "month_3_target": "Maintain + 2% YoY",
+          "month_6_target": "+ 5% YoY",
+          "month_12_target": "+ 8% YoY",
+          "cadence": "Daily flash, Weekly detailed",
+          "threshold_warning": "Below budget by > 5%",
+          "related_processes": ["Revenue Management", "Pricing Strategy"]
+        }
+      ]
+    },
+
+    "logistics": {
+      "domain": "Supply Chain & Logistics",
+      "applicable_companies": ["Comversa", "Bolivian Foods"],
+      "kpis": [
+        {
+          "id": "LOG-001",
+          "name": "On-Time In-Full (OTIF) Delivery Rate",
+          "definition": "Percentage of orders delivered on time with complete quantities",
+          "formula": "(Orders On-Time AND In-Full / Total Orders) * 100",
+          "owner": "Subgerente de Logística y Compras (BF), Supervisora Nacional (BF)",
+          "data_source": "CMNET + shipment tracking",
+          "baseline": "Not measured - variability reported",
+          "month_3_target": "Establish baseline",
+          "month_6_target": "75% OTIF",
+          "month_12_target": "85% OTIF",
+          "cadence": "Weekly",
+          "threshold_critical": "< 60%",
+          "threshold_warning": "< 75%",
+          "related_processes": ["Procurement", "Supplier Management", "Receiving"]
+        },
+        {
+          "id": "LOG-002",
+          "name": "Transit Time Variance",
+          "definition": "Actual vs expected delivery time variance",
+          "formula": "| (Actual Delivery - Expected Delivery) | / Expected Delivery",
+          "owner": "Supervisora Nacional de Logística (BF)",
+          "data_source": "Shipment tracking (DHL, ASPB, MAERSK, DELPA)",
+          "baseline": "Manual email tracking - high variance",
+          "month_3_target": "Automated tracking implemented",
+          "month_6_target": "< 20% variance",
+          "month_12_target": "< 10% variance",
+          "cadence": "Per shipment, Weekly trends",
+          "threshold_critical": "> 40% variance",
+          "threshold_warning": "> 25% variance",
+          "related_processes": ["International Procurement", "Import Logistics"]
+        },
+        {
+          "id": "LOG-003",
+          "name": "Approval Cycle Time Reduction",
+          "definition": "Time from purchase request to PO approval",
+          "formula": "PO Approval Date - Request Date",
+          "owner": "Subgerente de Logística (BF), Gerente de Construcciones (Comversa)",
+          "data_source": "CMNET, SAP, email workflows",
+          "baseline": "3-7 days (bureaucratic delays reported)",
+          "month_3_target": "< 3 days",
+          "month_6_target": "< 2 days",
+          "month_12_target": "< 1 day (automated routing)",
+          "cadence": "Weekly",
+          "threshold_critical": "> 7 days",
+          "threshold_warning": "> 3 days",
+          "related_processes": ["Purchase Approval", "Budget Control"]
+        }
+      ]
+    },
+
+    "it_operations": {
+      "domain": "IT & Systems",
+      "applicable_companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+      "kpis": [
+        {
+          "id": "IT-001",
+          "name": "System Uptime / Availability",
+          "definition": "Percentage of time critical systems are operational",
+          "formula": "(Total Time - Downtime) / Total Time * 100",
+          "owner": "Gerente de IT (LTH), Subgerente TI (Comversa), Jefe Nacional de Sistemas (BF)",
+          "data_source": "Zabbix, ServiceDesk Plus, monitoring tools",
+          "baseline": "Not formally measured - stability focus",
+          "month_3_target": "98% uptime for critical systems",
+          "month_6_target": "99% uptime",
+          "month_12_target": "99.5% uptime",
+          "cadence": "Real-time monitoring, Daily reports",
+          "threshold_critical": "< 95%",
+          "threshold_warning": "< 98%",
+          "related_processes": ["Infrastructure Management", "Incident Response"]
+        },
+        {
+          "id": "IT-002",
+          "name": "Incident Resolution SLA Compliance",
+          "definition": "Percentage of incidents resolved within SLA",
+          "formula": "(Incidents Resolved Within SLA / Total Incidents) * 100",
+          "owner": "Analista TI (LTH), Jefe Nacional de Sistemas (BF)",
+          "data_source": "ServiceDesk Plus, Jira",
+          "baseline": "Manual tracking - variable compliance",
+          "month_3_target": "80% SLA compliance",
+          "month_6_target": "90% SLA compliance",
+          "month_12_target": "95% SLA compliance",
+          "cadence": "Daily monitoring, Weekly review",
+          "threshold_critical": "< 70%",
+          "threshold_warning": "< 85%",
+          "related_processes": ["IT Service Management", "Help Desk Operations"]
+        },
+        {
+          "id": "IT-003",
+          "name": "Project Delivery On-Time Rate",
+          "definition": "Percentage of IT projects delivered on schedule",
+          "formula": "(Projects On-Time / Total Projects) * 100",
+          "owner": "Subgerente TI (Comversa), Jefe Nacional de Sistemas (BF)",
+          "data_source": "Project tracking (Planner, Jira)",
+          "baseline": "Not formally tracked - cross-area dependencies cause delays",
+          "month_3_target": "60% on-time",
+          "month_6_target": "75% on-time",
+          "month_12_target": "85% on-time",
+          "cadence": "Per project, Quarterly summary",
+          "threshold_warning": "< 65%",
+          "related_processes": ["Project Management", "Resource Planning"]
+        }
+      ]
+    },
+
+    "audit_quality": {
+      "domain": "Audit & Compliance",
+      "applicable_companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+      "kpis": [
+        {
+          "id": "AUD-001",
+          "name": "Audit Findings Implementation Rate",
+          "definition": "Percentage of audit recommendations implemented on time",
+          "formula": "(Recommendations Implemented / Total Recommendations) * 100",
+          "owner": "Gerente de Auditoría (Comversa), Auditor Interno (BF)",
+          "data_source": "Audit tracking system",
+          "baseline": "Not systematically tracked",
+          "month_3_target": "Establish baseline tracking",
+          "month_6_target": "70% implementation",
+          "month_12_target": "85% implementation",
+          "cadence": "Quarterly",
+          "threshold_critical": "< 50%",
+          "threshold_warning": "< 70%",
+          "related_processes": ["Audit Follow-up", "Process Improvement"]
+        },
+        {
+          "id": "AUD-002",
+          "name": "BSA/Brand Audit Score",
+          "definition": "Marriott Brand Standards Audit score",
+          "owner": "Directora de Operaciones (LTH)",
+          "data_source": "Marriott BSA reports",
+          "baseline": "Target > 90%",
+          "month_3_target": "> 90%",
+          "month_6_target": "> 92%",
+          "month_12_target": "> 95%",
+          "cadence": "Per audit (periodic)",
+          "threshold_critical": "< 85%",
+          "threshold_warning": "< 90%",
+          "related_processes": ["Quality Assurance", "Standards Compliance"]
+        }
+      ]
+    }
+  },
+
+  "kpi_dashboard_structure": {
+    "executive_view": {
+      "frequency": "Daily flash, Weekly detailed, Monthly summary",
+      "kpis": ["Revenue Metrics", "Guest Satisfaction", "Financial Close Time", "System Uptime", "PM Completion Rate"]
+    },
+    "operational_view": {
+      "frequency": "Real-time monitoring, Daily updates",
+      "kpis": ["MTTR", "Reconciliation Exceptions", "OTIF", "Incident Resolution SLA", "Food Cost %"]
+    },
+    "strategic_view": {
+      "frequency": "Monthly trends, Quarterly reviews",
+      "kpis": ["Preventive vs Reactive Ratio", "Contract Cycle Time", "Audit Implementation Rate", "Project On-Time Rate"]
+    }
+  },
+
+  "data_quality_requirements": {
+    "accuracy": "KPIs must be validated before reporting (target 97% accuracy by Month 12)",
+    "timeliness": "Data freshness SLAs defined per KPI cadence",
+    "completeness": "Missing data flagged and escalated",
+    "consistency": "Source of truth declared per domain",
+    "audit_trail": "All KPI calculations logged for audit"
+  },
+
+  "implementation_roadmap": {
+    "month_1": "Baseline measurement + data source validation",
+    "month_2": "Automated data collection for Tier 1 KPIs",
+    "month_3": "First KPI targets set + dashboard v1",
+    "month_4_6": "Automation expansion + target refinement",
+    "month_7_12": "Optimization + predictive analytics"
+  }
+}

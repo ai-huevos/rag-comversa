@@ -1,0 +1,87 @@
+{
+  "metadata": {
+    "source": "RECALIBRACIÓN FASE 1",
+    "date": "2024-Q4",
+    "description": "CEO-prioritized macroprocesos from initial assessment"
+  },
+  "quick_wins": [
+    {
+      "id": 2,
+      "name": "Generación de cartas y contratos básicos",
+      "description": "Automatizar generación de documentos estándar",
+      "expected_effort": "Low",
+      "expected_impact": "High",
+      "priority_quadrant": "Quick Win"
+    },
+    {
+      "id": 5,
+      "name": "Automatización consultas frecuentes WhatsApp",
+      "description": "Bot para responder preguntas comunes por WhatsApp",
+      "expected_effort": "Low",
+      "expected_impact": "High",
+      "priority_quadrant": "Quick Win"
+    },
+    {
+      "id": 13,
+      "name": "Coordinación corporativa (Kanban simple)",
+      "description": "Sistema simple de gestión de tareas corporativas",
+      "expected_effort": "Low",
+      "expected_impact": "Medium",
+      "priority_quadrant": "Quick Win"
+    },
+    {
+      "id": 9,
+      "name": "Inteligencia competitiva automatizada",
+      "description": "Monitoreo automático de competencia",
+      "expected_effort": "Low",
+      "expected_impact": "Medium",
+      "priority_quadrant": "Quick Win"
+    }
+  ],
+  "strategic": [
+    {
+      "id": 1,
+      "name": "Reportes y KPIs Inteligentes",
+      "description": "Dashboard automático con KPIs en tiempo real",
+      "expected_effort": "High",
+      "expected_impact": "High",
+      "priority_quadrant": "Strategic"
+    },
+    {
+      "id": 4,
+      "name": "Gestión de Inventarios y Compras",
+      "description": "Sistema integrado de inventarios con alertas automáticas",
+      "expected_effort": "High",
+      "expected_impact": "High",
+      "priority_quadrant": "Strategic"
+    },
+    {
+      "id": 12,
+      "name": "Optimización Cash Flow/Presupuestación",
+      "description": "Herramientas de proyección financiera y optimización",
+      "expected_effort": "High",
+      "expected_impact": "High",
+      "priority_quadrant": "Strategic"
+    }
+  ],
+  "incremental": [
+    {
+      "id": 7,
+      "name": "Gestión de mantenimiento preventivo",
+      "description": "Calendario y alertas de mantenimiento",
+      "expected_effort": "Low",
+      "expected_impact": "Low",
+      "priority_quadrant": "Incremental"
+    }
+  ],
+  "keywords_mapping": {
+    "Reportes y KPIs Inteligentes": ["reporte", "kpi", "dashboard", "métrica", "indicador"],
+    "Generación de cartas y contratos básicos": ["carta", "contrato", "documento", "plantilla"],
+    "Gestión de Inventarios y Compras": ["inventario", "compra", "stock", "almacén", "proveedor"],
+    "Automatización consultas frecuentes WhatsApp": ["whatsapp", "consulta", "pregunta", "bot", "respuesta automática"],
+    "Optimización Cash Flow/Presupuestación": ["cash flow", "presupuesto", "flujo de caja", "proyección financiera"],
+    "Coordinación corporativa (Kanban simple)": ["coordinación", "kanban", "tarea", "proyecto", "seguimiento"],
+    "Gestión de mantenimiento preventivo": ["mantenimiento", "preventivo", "reparación", "equipo"],
+    "Inteligencia competitiva automatizada": ["competencia", "mercado", "competidor", "análisis"]
+  }
+}

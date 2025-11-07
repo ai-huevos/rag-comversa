@@ -1,0 +1,116 @@
+{
+  "total_interviews": 44,
+  "companies": {
+    "SOCIEDAD HOTELERA _LOS TAJIBOS_ S.A.": {
+      "interview_count": 18,
+      "roles": [
+        "Gerente De Ingenieria",
+        "Gerente De Contabilidad",
+        "Analista Ti",
+        "Chef Ejecutivo",
+        "Jefe De Ingenieria",
+        "Sub Gerente General",
+        "Director Centro De Convenciones",
+        "Jefe De Housekeeping",
+        "Gerente De Control De Gestion",
+        "Directora De Operaciones",
+        "Asist.Subgerencia",
+        "Jefe De Recepcion",
+        "Gerente De Costos Cc",
+        "Jefe De Cajas",
+        "Gerente De Informatica Y Tecnologia",
+        "Gerente De Ventas B2B",
+        "Directora De Marketing Y Ventas",
+        "Gerente De Bar Y Centro De Proudccion"
+      ]
+    },
+    "COMPAÑIA DE INVERSIONES COMVERSA S.A.": {
+      "interview_count": 13,
+      "roles": [
+        "Presidente Ejecutivo",
+        "Directora Legal",
+        "Directora Comercial Sc",
+        "Jefe De Finanzas Y Proyectos",
+        "Gerente Construcciones",
+        "Analista Financiero",
+        "Gerente Green Tower Sc",
+        "Director Comercial Lp",
+        "Gerente De Auditoria",
+        "Sub Gerente Ti",
+        "Jefe De Marketing Y Comunicacion",
+        "Sub Gerente Tesoreria",
+        "Gerente De Finanzas"
+      ]
+    },
+    "BOLIVIAN FOODS S.A.": {
+      "interview_count": 13,
+      "roles": [
+        "Gerente Nacional De Operaciones Y Mantenimiento",
+        "Supervisor Nacional De Tesoreria",
+        "Subgerente De Logistica Y Compras",
+        "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+        "Analista Costos",
+        "Auditor Interno",
+        "Gerente General",
+        "Coordinadora Nacional De Control De Gestion",
+        "Jefe Nacional De Sistemas",
+        "Gerente Nacional De Administracion Y Finanzas",
+        "Jefe Nacional De Mantenimiento Y Desarrollo",
+        "Supervisor Nacional De Contabilidad",
+        "Supervisor Regional De Entrenamiento Lp"
+      ]
+    }
+  },
+  "top_systems": [
+    [
+      "Opera",
+      88
+    ],
+    [
+      "Excel",
+      38
+    ],
+    [
+      "SAP",
+      27
+    ],
+    [
+      "Micros",
+      14
+    ],
+    [
+      "WhatsApp",
+      10
+    ],
+    [
+      "MaintainX",
+      8
+    ],
+    [
+      "Outlook",
+      8
+    ],
+    [
+      "Satcom",
+      8
+    ],
+    [
+      "Simphony",
+      7
+    ],
+    [
+      "Teams",
+      7
+    ],
+    [
+      "CMNET",
+      5
+    ],
+    [
+      "Power BI",
+      4
+    ]
+  ],
+  "pain_point_count": 84,
+  "unique_roles": 44
+}

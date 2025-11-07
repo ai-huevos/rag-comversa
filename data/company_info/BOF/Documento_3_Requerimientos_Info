@@ -1,0 +1,364 @@
+# DOCUMENTO 3: REQUERIMIENTO DE INFORMACIÓN PARA STAKEHOLDERS
+
+## MATRIZ DE REQUERIMIENTOS DE INFORMACIÓN POR ÁREA Y STAKEHOLDER
+
+**Objetivo:** Este documento detalla qué información se requiere de cada área y stakeholder para completar el mapeo integral de Bolivian Foods S.A. en el contexto de la transformación digital.
+
+**Fecha de Solicitud:** Noviembre 2025
+**Responsable de Coordinación:** Equipo de Transformación Digital
+**Plazo de Entrega:** 15 días hábiles
+
+---
+
+## 1. REQUERIMIENTOS POR ÁREA FUNCIONAL
+
+### 1.1 ÁREA: ADMINISTRACIÓN Y FINANZAS
+
+**Responsable Principal:** Fabian Doria Medina (Gerente Nacional)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.1.1 | Estados Financieros últimos 12 meses (EEFF) | Excel/PDF | Sissy Fernández | 5 días | Balance, P&L, Flujo de Caja |
+| 1.1.2 | Estructura de centros de costo por restaurante | Excel | Carla Ibáñez | 5 días | Códigos de CxC, presupuestos |
+| 1.1.3 | Políticas de costos de ventas (CoS%) por marca | Word/PDF | Carla Ibáñez | 5 días | Rangos normales BK vs Subway |
+| 1.1.4 | Procesos de cierre contable (documentado) | Word/PDF | Sissy Fernández | 7 días | Paso a paso, responsables, SLAs |
+| 1.1.5 | Matriz de aprobaciones de gastos/pagos | Excel | Fabian Doria / Moises | 5 días | Montos, niveles, autoridades |
+| 1.1.6 | Lista de cuentas bancarias y relaciones | Excel | Moises Mamani | 5 días | Bancos, tipos de cuenta, monedas |
+| 1.1.7 | Políticas de tesorería (pagos, plazos, etc.) | Word/PDF | Moises Mamani | 7 días | Ciclo de pago estándar |
+| 1.1.8 | Reportes de conciliación bancaria (últimos 3 meses) | Excel | Sissy Fernández | 5 días | Movimientos, diferencias |
+| 1.1.9 | Estructura de impuestos (IVA, IT, otros) | Excel | Carla Ibáñez | 5 días | Tasas, tratamientos por tipo |
+| 1.1.10 | Cronograma de declaraciones y pagos tributarios | Excel | Carla Ibáñez | 5 días | Fechas, montos estimados |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es el tiempo real promedio para cerrar el mes? ¿Qué actividadesimpiden llegar a la meta de 6 días?
+2. ¿Existen diferencias recurrentes en la conciliación POS-SATCOM? ¿Cuáles son las causas más comunes?
+3. ¿Qué porcentaje de transacciones requieren revisión manual vs. automática?
+4. ¿Hay una política formal para tratamiento de diferencias en tesorería?
+5. ¿Cómo está estructurada la consolidación de datos de 24 restaurantes en Excel?
+
+---
+
+### 1.2 ÁREA: OPERACIONES Y MANTENIMIENTO
+
+**Responsables Principales:** Carlos Camacho (Gerente) / Luis La Fuente (Jefe Mantenimiento)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.2.1 | Dashboard de KPIs por restaurante (últimos 3 meses) | Excel/Power BI | Carlos Camacho | 5 días | Ventas, labor cost, food cost, waste |
+| 1.2.2 | Matriz de estándares operativos por marca (BK/Subway) | Word/PDF | Carlos Camacho | 7 días | Procedimientos de calidad |
+| 1.2.3 | Procedimientos de mantenimiento preventivo/reactivo | Word/PDF | Luis La Fuente | 7 días | Cronogramas, responsables, equipos |
+| 1.2.4 | Inventario de equipos críticos por restaurante | Excel | Luis La Fuente | 5 días | Nombre, modelo, año instalación |
+| 1.2.5 | Histórico de tickets de mantenimiento (últimos 6 meses) | Excel/Service Desk | Luis La Fuente | 5 días | Descripción, tiempo resolución |
+| 1.2.6 | Presupuesto de mantenimiento por restaurante | Excel | Luis La Fuente | 5 días | Preventivo vs. reactivo |
+| 1.2.7 | Matriz de proveedores de mantenimiento | Excel | Luis La Fuente | 5 días | Contactos, servicios, costos |
+| 1.2.8 | Plan de capacitación en operaciones | Word/PDF | Danny Pinaya | 7 días | Temas, frecuencia, responsables |
+| 1.2.9 | Índices de rotación de personal | Excel | Danny Pinaya / RRHH | 5 días | Por restaurante, por área |
+| 1.2.10 | Reportes de auditorías operativas (REVREC) últimos 6 meses | PDF | Danny Pinaya | 5 días | Hallazgos, tendencias |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es la ratio actual de mantenimiento preventivo vs. reactivo? ¿Cuál es la meta?
+2. ¿Cuáles son los equipos que generan mayor cantidad de tickets?
+3. ¿Cómo se reportan los problemas en restaurantes? ¿Hay un sistema formal o es informal?
+4. ¿Qué capacitación sería más efectiva para reducir la rotación?
+5. ¿Hay una política de cierre de restaurante por mantenimiento?
+
+---
+
+### 1.3 ÁREA: LOGÍSTICA Y COMPRAS
+
+**Responsables Principales:** Antonio Álvarez (Subgerente) / Alejandra Flores (Supervisora)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.3.1 | Matriz de proveedores locales | Excel | Alejandra Flores | 5 días | Contactos, productos, condiciones pago |
+| 1.3.2 | Matriz de proveedores internacionales | Excel | Alejandra Flores | 5 días | Origen, tiempo entrega, términos |
+| 1.3.3 | Histórico de órdenes de compra (últimos 6 meses) | Excel/CMNET | Alejandra Flores | 5 días | Montos, plazos, variaciones |
+| 1.3.4 | Políticas de compra (autorizaciones, umbrales) | Word/PDF | Antonio Álvarez | 7 días | Quién aprueba qué montos |
+| 1.3.5 | Proceso de importación documentado (paso a paso) | Word/PDF | Alejandra Flores | 7 días | Documentación, timings, costos |
+| 1.3.6 | Matriz de costos logísticos por origen | Excel | Antonio Álvarez | 5 días | Fletes, aranceles, seguros |
+| 1.3.6 | Inventario de productos por restaurante (snapshot) | Excel | Rafael Tejada / Griselda Aguilera | 5 días | Cantidad, costo, stock mínimo |
+| 1.3.7 | Histórico de quiebres de stock | Excel | Antonio Álvarez | 7 días | Cuándo, qué productos, impacto |
+| 1.3.8 | Plan de demanda para próximos 3 meses | Excel | Antonio Álvarez | 5 días | Por restaurante, por producto |
+| 1.3.9 | Procedimiento de recepción y QA | Word/PDF | Rafael Tejada / Griselda Aguilera | 7 días | Validaciones, criterios de rechazo |
+| 1.3.10 | Indicadores logísticos (OTIF, lead time, etc.) | Excel | Antonio Álvarez | 5 días | Últimos 6 meses |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es el tiempo promedio de nacionalización de una importación?
+2. ¿Qué proveedores son críticos? ¿Hay riesgo de dependencia?
+3. ¿Cómo se maneja la variabilidad de demanda en picos (p. ej., campañas)?
+4. ¿Cuál es el impacto financiero de los quiebres de stock?
+5. ¿Hay procedimientos formales para selección y calificación de proveedores?
+
+---
+
+### 1.4 ÁREA: SISTEMAS E INFORMÁTICA
+
+**Responsable Principal:** Álvaro Coila (Jefe Nacional)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.4.1 | Diagrama de infraestructura tecnológica actual | Visio/PDF | Álvaro Coila | 7 días | Servidores, redes, POS, VPNs |
+| 1.4.2 | Licencias de software actual (lista completa) | Excel | Álvaro Coila | 5 días | Nombre, cantidad, costo anual |
+| 1.4.3 | Plan de implementación de SAP (detail schedule) | MS Project/Excel | Álvaro Coila + Mauricio | 10 días | Fases, hitos, responsables |
+| 1.4.4 | Especificaciones técnicas de Oracle Simphony | Word/PDF | Álvaro Coila | 5 días | Versión, módulos, integraciones |
+| 1.4.5 | Matriz de permisos de usuarios (por rol) | Excel | Álvaro Coila | 5 días | Accesos a sistemas, nivel de lectura/escritura |
+| 1.4.6 | Políticas de seguridad de información | Word/PDF | Álvaro Coila | 7 días | Backups, encriptación, control de acceso |
+| 1.4.7 | SLAs de disponibilidad de sistemas | Word/PDF | Álvaro Coila | 5 días | Metas por sistema, métricas |
+| 1.4.8 | Reportes de disponibilidad últimos 6 meses | Excel | Álvaro Coila | 5 días | % uptime, incidentes por sistema |
+| 1.4.9 | Presupuesto TI para próximos 12 meses | Excel | Álvaro Coila | 5 días | Operación vs. proyectos |
+| 1.4.10 | Plan de capacitación en herramientas | Word/PDF | Álvaro Coila | 7 días | SAP, Power BI, Power Automate |
+| 1.4.11 | Matriz de riesgos tecnológicos | Excel | Álvaro Coila | 7 días | Riesgos, impacto, mitigación |
+| 1.4.12 | Datos del Data Warehouse (si existe) | Word/PDF | Álvaro Coila | 5 días | Estructura, datos disponibles, update frequency |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es el estado actual de la implementación de SAP? ¿Cuáles han sido los desafíos?
+2. ¿Existe integración entre POS y ERP actualmente? ¿Cuál es el gap?
+3. ¿Quién tiene acceso directo a qué sistemas? ¿Hay restricciones que podrían levantarse?
+4. ¿Cuál es la capacidad actual del Data Warehouse?
+5. ¿Cuál es el plan para automatización con Power Automate?
+
+---
+
+### 1.5 ÁREA: AUDITORÍA INTERNA
+
+**Responsable Principal:** Mauricio Clavijo (Auditor Interno)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.5.1 | Plan de auditoría anual | Word/PDF | Mauricio Clavijo | 5 días | Áreas, riesgos, cronograma |
+| 1.5.2 | Informes de auditoría últimos 12 meses | PDF | Mauricio Clavijo | 7 días | Hallazgos, recomendaciones, status |
+| 1.5.3 | Matriz de riesgos corporativos | Excel | Mauricio Clavijo | 5 días | Riesgo, impacto, probabilidad |
+| 1.5.4 | Procedimientos de control interno | Word/PDF | Mauricio Clavijo | 7 días | Documentados vs. no documentados |
+| 1.5.5 | Políticas corporativas (todas) | Word/PDF | Mauricio Clavijo | 10 días | Compilación de documentos |
+| 1.5.6 | Tracker de acciones correctivas | Excel | Mauricio Clavijo | 5 días | Hallazgos, acciones, responsables, status |
+| 1.5.7 | Cumplimiento normativo (estado actual) | Word/PDF | Mauricio Clavijo | 7 días | Tributaria, laboral, aduanal, otros |
+| 1.5.8 | Plan de auditoría SAP (governance) | Word/PDF | Mauricio Clavijo + Álvaro | 10 días | Controles a implementar |
+| 1.5.9 | Matriz de segregación de funciones | Excel | Mauricio Clavijo | 5 días | Quién puede hacer qué |
+| 1.5.10 | Reporte de cumplimiento de SLAs | Excel | Mauricio Clavijo | 5 días | Auditorías, investigaciones |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuáles son los hallazgos recurrentes? ¿Por qué no se cierran?
+2. ¿Qué áreas tienen mayor riesgo?
+3. ¿Cuál es el estado de implementación de controles SAP?
+4. ¿Hay brecha entre procedimientos documentados y prácticas reales?
+5. ¿Cuál es el impacto de la alta rotación en control interno?
+
+---
+
+### 1.6 ÁREA: CONTROL DE GESTIÓN
+
+**Responsable Principal:** Micaela Gonzales (Coordinadora Nacional)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.6.1 | Presupuesto anual 2025 (operativo/financiero) | Excel | Micaela Gonzales | 5 días | Por restaurante, por área |
+| 1.6.2 | Análisis de desviaciones (últimos 6 meses) | Excel | Micaela Gonzales | 5 días | Vs. presupuesto, vs. meta |
+| 1.6.3 | KPIs corporativos documentados | Word/PDF | Micaela Gonzales | 7 días | Definiciones, fórmulas, SLAs |
+| 1.6.4 | Reportes de rentabilidad por restaurante | Excel | Micaela Gonzales | 5 días | Últimos 3 meses |
+| 1.6.5 | Análisis de escenarios (sensibilidad) | Excel | Micaela Gonzales | 7 días | Crecimiento de ventas, cambios de costo |
+| 1.6.6 | Mapa estratégico (BSC/Cuadro Mando) | Word/PDF/Visio | Micaela Gonzales | 7 días | Objetivos estratégicos, cascada |
+| 1.6.7 | Plan de pricing | Word/PDF | Micaela Gonzales | 5 días | Estrategia, cambios, impacto |
+| 1.6.8 | Benchmarks de industria (si existen) | Word/PDF | Micaela Gonzales | 7 días | Comparación con competencia |
+| 1.6.9 | Estructura de costos por componente | Excel | Micaela Gonzales | 5 días | COGS, labor, occupancy, otros |
+| 1.6.10 | Proyecciones de cash flow 2026 | Excel | Micaela Gonzales | 7 días | Trimestral, por línea de negocio |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuáles son los principales drivers de rentabilidad?
+2. ¿Qué restaurantes tienen performance por debajo de media?
+3. ¿Cuál es la elasticidad de demanda ante cambios de precio?
+4. ¿Cuál es el impacto de SAP en los KPIs proyectados?
+5. ¿Hay oportunidades de optimización operativa identificadas?
+
+---
+
+### 1.7 ÁREA: ENTRENAMIENTO Y DESARROLLO
+
+**Responsables Principales:** Danny Pinaya (LP) / Beatriz Quispe (SC)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.7.1 | Matriz de competencias por rol | Excel | Danny Pinaya / Beatriz Quispe | 7 días | Habilidades requeridas vs. actuales |
+| 1.7.2 | Plan de entrenamiento anual | Word/PDF | Danny Pinaya | 7 días | Temas, horarios, responsables |
+| 1.7.3 | Histórico de capacitación (últimos 12 meses) | Excel | Danny Pinaya / Beatriz Quispe | 5 días | Participantes, temas, evaluación |
+| 1.7.4 | Indicadores de desempeño post-capacitación | Excel | Danny Pinaya / Beatriz Quispe | 7 días | Cambios en productividad, errores |
+| 1.7.5 | Manuales de operación documentados | PDF | Danny Pinaya / Luis La Fuente | 7 días | Procedimientos paso a paso |
+| 1.7.6 | Resultados de auditorías operativas (REVREC) | PDF | Danny Pinaya / Beatriz Quispe | 5 días | Hallazgos por línea de capacitación |
+| 1.7.7 | Programa de inducción para nuevos empleados | Word/PDF | Danny Pinaya / RRHH | 7 días | Contenido, duración, responsables |
+| 1.7.8 | Acceso a plataformas BK University / Qualtrics | Screen/PDF | Danny Pinaya | 5 días | Cursos disponibles, uso actual |
+| 1.7.9 | Índice de retención de personal | Excel | Danny Pinaya / RRHH | 5 días | Por mes, por restaurante |
+| 1.7.10 | Propuesta de digitalización de capacitación | Word/PDF | Danny Pinaya | 7 días | Chatbot, videos, plataforma |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es el impacto de la rotación de personal en la calidad de entrenamiento?
+2. ¿Hay una evaluación de efectividad del entrenamiento?
+3. ¿Qué temas generan mayor demanda de repetición?
+4. ¿Cómo podría digitalizarse la capacitación?
+5. ¿Cuál es el presupuesto actual para entrenamiento?
+
+---
+
+### 1.8 ÁREA: GESTIÓN HUMANA
+
+**Responsable Principal:** María Laura Parada (Directora)
+
+#### Información Requerida:
+
+| # | Información | Formato | Responsable | Plazo | Notas |
+|---|---|---|---|---|---|
+| 1.8.1 | Organigrama completo (todas las empresas del Grupo) | Visio/PDF | María Laura Parada | 5 días | Roles, reportes, centros de costo |
+| 1.8.2 | Matriz salarial por rol | Excel | Subgerente Remuneraciones (Iván Otterburg) | 5 días | Salario base, bonificación, beneficios |
+| 1.8.3 | Políticas de RRHH | Word/PDF | María Laura Parada | 7 días | Vacaciones, licencias, despidos |
+| 1.8.4 | Indicadores de RRHH | Excel | María Laura Parada | 5 días | Rotación, ausentismo, accidentes |
+| 1.8.5 | Nómina consolidada (últimos 3 meses) | Excel | María Laura Parada / Finanzas | 5 días | Por centro de costo, por mes |
+| 1.8.6 | Análisis de rotación por categoría | Excel | María Laura Parada | 7 días | Gerentes, supervisores, operarios |
+| 1.8.7 | Plan de sucesión de líderes | Word/PDF | María Laura Parada | 7 días | Identificación de futuros líderes |
+| 1.8.8 | Cultura organizacional (diagnóstico si existe) | Word/PDF | María Laura Parada | 10 días | Clima laboral, engagement |
+| 1.8.9 | Políticas de selección y contratación | Word/PDF | María Laura Parada | 7 días | Procesos, criterios, responsables |
+| 1.8.10 | Presupuesto RRHH 2025 | Excel | María Laura Parada | 5 días | Nómina, capacitación, desarrollo |
+
+#### Preguntas de Profundización:
+
+1. ¿Cuál es la causa principal de rotación en restaurantes?
+2. ¿Cuál es el costo promedio de un despido/contratación?
+3. ¿Hay un plan de retención?
+4. ¿Cuál es la brecha de competencias críticas?
+5. ¿Cómo se evaluará el impacto de SAP en RRHH?
+
+---
+
+## 2. REQUERIMIENTOS TRANSVERSALES
+
+### 2.1 Información Integrada Requerida
+
+| # | Información | Responsable Principal | Responsables Secundarios | Plazo | Notas |
+|---|---|---|---|---|---|
+| 2.1.1 | Mapa de flujos de datos (entre sistemas y áreas) | Álvaro Coila | Mauricio, Fabian | 10 días | Quién envía qué dato a quién |
+| 2.1.2 | Matriz RACI detallada (por proceso, por rol) | Mauricio Clavijo | Gerentes de Área | 7 días | Responsabilidad por cada actividad |
+| 2.1.3 | Diccionario de datos (definición de términos) | Álvaro Coila | Finanzas, Operaciones | 10 días | Definición común de "venta", "costo", etc. |
+| 2.1.4 | Matriz de SLAs (por área, por servicio) | Álvaro Coila | Gerentes de Área | 7 días | Tiempos de respuesta, entrega |
+| 2.1.5 | Directorio de puntos de contacto | Patricia Urdininea | Todos | 3 días | Teléfono, email, disponibilidad |
+| 2.1.6 | Calendario de ciclos operativos | Fabian Doria | Gerentes | 5 días | Cierre, presupuesto, auditorías |
+| 2.1.7 | Plan comunicación transformación digital | Patricia Urdininea | Álvaro Coila | 7 días | Cómo se comunicará cambios |
+
+---
+
+## 3. FORMATO Y ENTREGA
+
+### 3.1 Instrucciones de Formato
+
+**Archivos Excel:**
+- Una hoja por tabla/matriz
+- Nombres de hoja descriptivos
+- Headers claros
+- Datos en rango específico (no disperso)
+- Sin fórmulas complejas innecesarias
+
+**Archivos Word/PDF:**
+- Encabezados claros
+- Tablas formateadas
+- Definiciones completas
+- Referencias cruzadas cuando aplique
+
+**Archivos Visio/Diagramas:**
+- Leyenda clara
+- Colores significativos
+- Exportar en PNG/PDF también
+
+### 3.2 Entrega
+
+**Canal:** Email a Coordinador del Proyecto
+**Formato Nombre Archivo:** [AREA]_[INFO]_[AAAA-MM-DD].xlsx/.pdf
+
+**Ejemplo:** FINANZAS_EEFF_2025-11-15.xlsx
+
+### 3.3 Consolidación
+
+Toda la información será consolidada en:
+- Data Repository (SharePoint/OneDrive)
+- Base de datos de consulta (Power BI)
+- Reportes ejecutivos
+
+---
+
+## 4. CRONOGRAMA CONSOLIDADO
+
+### Hito 1: Semana 1-2 (Recolección Inicial)
+
+| Área | Responsable | Prioridad | Deadline |
+|---|---|---|---|
+| Administración y Finanzas | Fabian Doria | **CRÍTICA** | 15 Nov |
+| Operaciones | Carlos Camacho | **CRÍTICA** | 15 Nov |
+| Logística | Antonio Álvarez | **CRÍTICA** | 15 Nov |
+| Sistemas | Álvaro Coila | **CRÍTICA** | 18 Nov |
+| Auditoría | Mauricio Clavijo | Alta | 18 Nov |
+| Control de Gestión | Micaela Gonzales | Alta | 18 Nov |
+| Entrenamiento | Danny Pinaya | Media | 20 Nov |
+| RRHH | María Laura Parada | Media | 20 Nov |
+
+### Hito 2: Semana 3-4 (Validación)
+
+- Reuniones de validación con cada área (30 min c/u)
+- Aclaraciones de datos
+- Entregas pendientes
+
+### Hito 3: Semana 4-5 (Consolidación)
+
+- Integración de información en repositorio
+- Análisis preliminar
+- Identificación de gaps
+- Segunda ronda de preguntas si aplica
+
+---
+
+## 5. CONTACTO Y SOPORTE
+
+**Coordinador del Proyecto:** [Nombre del Coordinador]
+**Email:** [Email]
+**Teléfono:** [Teléfono]
+
+**En caso de dudas o aclaraciones:**
+1. Consultar con su gerente directo
+2. Contactar al Coordinador del Proyecto
+3. Agendar reunión de alineamiento
+
+---
+
+## 6. NOTAS IMPORTANTES
+
+1. **Confidencialidad:** Toda la información es confidencial y será usada solo para propósitos de transformación digital.
+
+2. **Completitud:** Es crítico que la información sea lo más completa y precisa posible. La transformación digital depende de buena información.
+
+3. **Documentación Actual:** Si la información no existe documentada, favor indicar en notas. Pueden requirirse nuevas documentaciones como parte del proyecto.
+
+4. **Propietarios de Datos:** Cada área es responsable de la exactitud de sus datos. Cualquier discrepancia será consultada al área.
+
+5. **Follow-up:** Habrá seguimiento a entrega de información. Delays afectarán el cronograma del proyecto.
+
+---
+
+**Versión:** 1.0 - Delivery 1
+**Fecha de Emisión:** Noviembre 2025
+**Responsable:** Equipo de Transformación Digital
+**Aprobado por:** Patricia Urdininea (Gerente General)

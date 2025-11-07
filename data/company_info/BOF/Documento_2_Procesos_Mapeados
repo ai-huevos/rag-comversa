@@ -1,0 +1,964 @@
+# DOCUMENTO 2: PROCESOS PRINCIPALES IDENTIFICADOS Y MAPEADOS
+
+## RESUMEN EJECUTIVO
+
+Se han identificado procesos core (operaciones en restaurantes, logística/compras, contabilidad multi-unidad) y de soporte (TI, auditoría, control de gestión), mapeados en flujos AS-IS con 92 pain points clasificados en datos (28), sistemas (21), procesos (26) y cultura (17). 
+
+Estos procesos revelan ineficiencias manuales (doble registro CMNET-Excel, aprobaciones burocráticas) que impactan la rentabilidad, pero ofrecen oportunidades prioritarias como integración SAP-POS y automatización con Power Automate para la transformación digital.
+
+Este mapeo inicial prioriza deep dives en logística, contabilidad y TI para Delivery 1, alineado con metas de estabilidad operativa, precisión financiera y SLA tecnológica de 99.5%.
+
+---
+
+## 1. CLASIFICACIÓN DE PROCESOS
+
+### 1.1 Procesos Core (Misión Principal)
+Procesos directamente relacionados con la operación y generación de valor para el negocio:
+
+1. **Gestión de Operaciones en Restaurantes:** Ventas, costos, estándares de calidad, atención al cliente
+2. **Gestión de la Cadena de Suministro:** Planificación, compras, importación, distribución
+3. **Mantenimiento de Equipos e Infraestructura:** Preventivo y reactivo
+4. **Entrenamiento de Personal y Cumplimiento de Estándares:** Capacitación continua, auditorías operativas
+5. **Desarrollo y Apertura de Nuevos Restaurantes:** Proyectos de expansión
+
+### 1.2 Procesos de Soporte (Habilitadores)
+Procesos que habilitan la ejecución de los core:
+
+1. **Gestión Financiera y Tesorería:** Flujo de caja, relaciones bancarias, pagos
+2. **Contabilidad y Costos:** Registro, EEFF, impuestos, análisis de costos
+3. **Control de Gestión:** KPIs, presupuestos, análisis de rentabilidad
+4. **Gestión de Tecnología e Infraestructura TI:** Disponibilidad, proyectos, seguridad
+5. **Auditoría Interna y Cumplimiento:** Control interno, auditorías, riesgos
+6. **Gestión de Proyectos:** SAP, automatización, IA
+
+---
+
+## 2. MAPEO DETALLADO DE PROCESOS CORE
+
+### 2.1 PROCESO 1: OPERACIONES DE RESTAURANTE (Customer Journey)
+
+#### 2.1.1 Descripción General
+Proceso que inicia cuando el cliente entra al restaurante y termina con su consumo, incluyendo los procesos backstage de registro, conciliación y reporte de ventas.
+
+#### 2.1.2 Diagrama de Flujo AS-IS (Markdown)
+
+```
+FRONTSTAGE (Cliente visible):
+│
+├─ 1. CLIENTE INGRESA AL RESTAURANTE
+│  ├─ Observación: Ambiente, limpieza, disponibilidad de productos
+│  └─ Interacción: Recepción por personal
+│
+├─ 2. CLIENTE REALIZA PEDIDO
+│  ├─ Opción A: Caja Tradicional (persona)
+│  ├─ Opción B: Kiosco de Autoservicio (Oracle Simphony)
+│  ├─ Pain Point: Kioscos con incidencias frecuentes
+│  └─ Pain Point: Falta de integración sistema-personal
+│
+├─ 3. PAGO (Múltiples formas)
+│  ├─ Efectivo
+│  ├─ Tarjeta de Crédito/Débito
+│  ├─ QR / Billetera Digital
+│  ├─ Delivery (Pedidos Ya, Uber Eats, etc.)
+│  └─ Sistema: Oracle Simphony registra transacción
+│
+├─ 4. PREPARACIÓN EN COCINA
+│  ├─ Recepción de orden en impresora/pantalla
+│  ├─ Elaboración de productos
+│  ├─ Control de calidad
+│  └─ Pain Point: Tiempos de atención en hora pico
+│
+└─ 5. ENTREGA Y CONSUMO
+   ├─ Empaque del producto
+   ├─ Entrega al cliente
+   ├─ Cliente consume en local o lleva
+   └─ Fin de transacción frontstage
+
+BACKSTAGE (Administrativo):
+│
+├─ 6. CIERRE DE CAJA DIARIO
+│  ├─ Responsable: Gerente/Contador de Restaurante
+│  ├─ Actividades:
+│  │  ├─ Contar dinero en efectivo
+│  │  ├─ Revisar transacciones en Oracle Simphony
+│  │  ├─ Conciliar formas de pago (efectivo vs. tarjeta vs. delivery)
+│  │  ├─ Validar que Simphony = Efectivo + Tarjeta + Delivery
+│  │  └─ Pain Point: Diferencias frecuentes sin explicación clara
+│  ├─ Herramientas: Oracle Simphony, Calculadora, Efectivo
+│  └─ Tiempo: 30-60 minutos
+│
+├─ 7. REGISTRO EN SISTEMA CONTABLE
+│  ├─ Responsable: Contador Senior / Supervisor Contabilidad (Oficina Central)
+│  ├─ Actividades:
+│  │  ├─ Recibir reporte de cierre del restaurante (papel/email/PDF)
+│  │  ├─ Registrar ventas totales en CMNET/SAP
+│  │  ├─ Desagregar por producto (Burger King vs. Subway si aplica)
+│  │  ├─ Registrar formas de pago
+│  │  └─ Pain Point: Doble registro si hay discrepancias
+│  ├─ Herramientas: CMNET/SAP, Email, Excel (en casos de ajustes)
+│  └─ Tiempo: 5-10 minutos por restaurante
+│
+├─ 8. CONCILIACIÓN DE FORMAS DE PAGO
+│  ├─ Responsable: Supervisor Contabilidad (Sissy)
+│  ├─ Actividades (si hay diferencias):
+│  │  ├─ Obtener extractos de plataformas de delivery
+│  │  ├─ Revisar transacciones de tarjeta con banco
+│  │  ├─ Comparar con registro de Simphony "voucher por voucher"
+│  │  ├─ Identificar causa de diferencia
+│  │  ├─ Registrar asiento de ajuste si corresponde
+│  │  └─ Pain Point: Proceso manual, lento, propenso a errores
+│  ├─ Herramientas: Excel, Extractos PDF, Simphony reports
+│  ├─ Tiempo: 30-120 minutos (dependiendo de complejidad)
+│  └─ Frecuencia: Diaria (si hay diferencias)
+│
+├─ 9. REPORTE DE VENTAS
+│  ├─ Responsable: Coordinadora Control de Gestión (Micaela)
+│  ├─ Actividades:
+│  │  ├─ Consolidar ventas de 24 restaurantes desde CMNET
+│  │  ├─ Calcular indicadores (venta promedio, ticket promedio)
+│  │  ├─ Comparar con presupuesto
+│  │  ├─ Analizar desviaciones
+│  │  ├─ Preparar reporte ejecutivo
+│  │  └─ Pain Point: Extracción y consolidación manual en Excel
+│  ├─ Herramientas: CMNET, Excel (tablas dinámicas), Power BI
+│  ├─ Tiempo: 2-4 horas
+│  └─ Frecuencia: Diaria / Semanal / Mensual
+│
+└─ 10. CONSOLIDACIÓN EN CONTROL DE GESTIÓN
+   ├─ Responsable: Gerencia (Patricia), Finanzas (Fabian)
+   ├─ Actividades: Revisión ejecutiva de resultados
+   └─ Acción: Decisiones operativas basadas en desviaciones
+```
+
+#### 2.1.3 Pain Points Identificados en Proceso de Operaciones
+
+| # | Pain Point | Frecuencia | Impacto | Rol Afectado | Causa Raíz |
+|---|---|---|---|---|---|
+| 1 | Kioscos de autoservicio con incidencias frecuentes | Media | Medio | Carlos (Ops) | Falta de mantenimiento preventivo |
+| 2 | Diferencias en cierre de caja sin explicación clara | Alta | Medio | Sissy (Contabilidad) | Falta integración POS-sistemas pago |
+| 3 | Revisión voucher por voucher de diferencias | Alta | Medio-Alto | Sissy (Contabilidad) | Proceso manual sin automatización |
+| 4 | Demoras en disponibilidad de datos de ventas | Media | Medio | Micaela (Control) | Extracción manual de CMNET |
+| 5 | Tiempos de atención prolongados en hora pico | Media | Medio | Carlos (Ops) | Falta optimización de procesos cocina |
+| 6 | Falta de integración POS-ERP | Alta | Alto | Carlos/Sissy | Sistemas desconectados |
+| 7 | Datos de facturación con información incorrecta desde origen | Media | Medio-Alto | Carla (Costos) | Errores operacionales sin validación |
+| 8 | Retraso en reporte de cierre por dependencias | Media | Medio | Sissy/Micaela | Comunicación interdepartamental |
+
+---
+
+### 2.2 PROCESO 2: LOGÍSTICA Y COMPRAS (Local e Importaciones)
+
+#### 2.2.1 Descripción General
+Proceso que inicia con identificación de necesidad y termina con distribución de productos a restaurantes. Incluye compras locales e importaciones internacionales.
+
+#### 2.2.2 Diagrama de Flujo AS-IS (Markdown)
+
+```
+FASE 1: PLANIFICACIÓN Y SOLICITUD
+
+│
+├─ 1. IDENTIFICACIÓN DE NECESIDAD
+│  ├─ Responsable: Gerentes/Supervisores de Restaurantes
+│  ├─ Origen: Uso operacional, estacionalidad, proyecciones
+│  ├─ Comunicación: Email/WhatsApp/Llamada
+│  └─ Pain Point: Comunicación informal, sin sistematización
+│
+└─ 2. SOLICITUD DE COMPRA
+   ├─ Responsable: Restaurante o Logística por iniciativa
+   ├─ Actividades:
+   │  ├─ Restaurante detecta falta de producto
+   │  └─ Solicita a Logística (Alejandra o supervisor)
+   ├─ Herramientas: Email, WhatsApp, teléfono
+   └─ Tiempo: Variable (reactividad)
+
+FASE 2: COMPRAS LOCALES
+
+│
+├─ 3. COORDINACIÓN CON PROVEEDORES LOCALES
+│  ├─ Responsable: Supervisora Comercio Exterior (Alejandra)
+│  ├─ Actividades:
+│  │  ├─ Contactar proveedores
+│  │  ├─ Solicitar presupuesto/proforma
+│  │  ├─ Negociar precio y plazos
+│  │  ├─ Seleccionar proveedor
+│  │  └─ Pain Point: Falta criterios formales de selección
+│  ├─ Herramientas: Email, Excel (histórico de proveedores)
+│  └─ Tiempo: 1-3 días
+│
+├─ 4. EMISIÓN DE ORDEN DE COMPRA (OC)
+│  ├─ Responsable: Alejandra (Logística)
+│  ├─ Sistema: CMNET
+│  ├─ Actividades:
+│  │  ├─ Crear OC con datos: proveedor, productos, cantidad, precio
+│  │  ├─ Asignar centro de costo
+│  │  └─ Enviar a sistema
+│  ├─ Herramientas: CMNET
+│  └─ Tiempo: 15 minutos
+│
+└─ 5. APROBACIÓN DE COMPRA (MANUAL - CUELLO DE BOTELLA)
+   ├─ Responsable: Antonio (Subgerente) y/o Fabian (Finanzas)
+   ├─ Actividades:
+   │  ├─ Revisar OC en CMNET
+   │  ├─ Validar presupuesto disponible
+   │  ├─ Verificar autorización de gasto
+   │  ├─ Aprobar manualmente
+   │  └─ Pain Point 1: Proceso manual sin automatización
+   │  └─ Pain Point 2: Aprobaciones lentas (días de espera)
+   │  └─ Pain Point 3: Falta gobernanza clara (quién aprueba qué)
+   ├─ Herramientas: CMNET (sin flujo de aprobación integrado), Email
+   ├─ Tiempo: 1-5 días (CUELLO DE BOTELLA)
+   └─ Estado: OC Aprobada
+
+FASE 3: COMPRAS INTERNACIONALES (Importaciones)
+
+│
+├─ 6. COORDINACIÓN CON PROVEEDORES INTERNACIONALES
+│  ├─ Responsable: Alejandra (Comercio Exterior)
+│  ├─ Actividades:
+│  │  ├─ Contactar proveedores (generalmente predefinidos)
+│  │  ├─ Solicitar cotización con especificaciones
+│  │  ├─ Negociar términos internacionales (Incoterms, T/C, plazo)
+│  │  ├─ Seleccionar transporte
+│  │  └─ Pain Point: Información de proveedores en Excel, no sistematizado
+│  ├─ Herramientas: Email, Excel
+│  └─ Tiempo: 3-5 días
+│
+├─ 7. GESTIÓN DE DOCUMENTACIÓN ADUANAL
+│  ├─ Responsable: Alejandra o Agente de Aduanas (tercerizado)
+│  ├─ Actividades:
+│  │  ├─ Preparar documentación: Factura, Packing List, Bill of Lading
+│  │  ├─ Crear Declaración de Importación (DIM) o similar
+│  │  ├─ Coordinar con aduanas (Aduana Boliviana)
+│  │  ├─ Gestionar pagos de aranceles/impuestos
+│  │  └─ Pain Point: Proceso complejo, dependiente de terceros, lentos
+│  ├─ Herramientas: Documentos PDF/Email, Portal de Aduanas
+│  ├─ Tiempo: 5-15 días (muy variable según aduanas)
+   └─ Riesgo: Demoras aduanales impactan timeline
+│
+├─ 8. SEGUIMIENTO DE EMBARQUE
+│  ├─ Responsable: Alejandra
+│  ├─ Actividades:
+│  │  ├─ Recibir información de transporte (tracking de barco/avión)
+│  │  ├─ Proyectar fecha de llegada a puerto
+│  │  ├─ Coordinar con agencia de aduanas
+│  │  ├─ Confirmar nacionalización
+│  │  └─ Pain Point: Seguimiento manual vía correos/llamadas
+│  ├─ Herramientas: Email (de proveedores/transportista), WhatsApp, teléfono
+│  ├─ Tiempo: 7-30 días (variable por origen)
+   └─ Comunicación: Frecuente, pero informal
+│
+└─ 9. NACIONALIZACIÓN Y DESPACHO
+   ├─ Responsable: Alejandra / Agencia de Aduanas
+   ├─ Actividades:
+   │  ├─ Pagar aranceles e impuestos
+   │  ├─ Obtener documento de nacionalización
+   │  └─ Autorización para despacho del puerto/aeropuerto
+   ├─ Tiempo: 2-5 días después de nacionalización
+
+FASE 4: RECEPCIÓN Y DISTRIBUCIÓN
+
+│
+├─ 10. RECEPCIÓN EN ALMACÉN
+│   ├─ Responsable: Supervisor de Existencias (Rafael/Griselda por región)
+│   ├─ Actividades:
+│   │  ├─ Verificación de cantidad: Recuento de pallets/cajas
+│   │  ├─ Verificación de calidad: Revisión de condiciones
+│   │  ├─ Comparación con OC/Proforma
+│   │  ├─ Registro en sistema de almacén
+│   │  └─ Pain Point: Control de calidad inconsistente
+│   ├─ Herramientas: CMNET, Check list físico
+│   └─ Tiempo: 2-4 horas
+│
+├─ 11. ALMACENAMIENTO
+│   ├─ Responsable: Encargado de Almacén
+│   ├─ Actividades:
+│   │  ├─ Ubicación en almacén (por tipo de producto)
+│   │  ├─ Etiquetaje (si aplica)
+│   │  └─ Actualización de inventario
+│   ├─ Herramientas: CMNET
+│   └─ Frecuencia: Continua
+│
+├─ 12. DISTRIBUCIÓN A RESTAURANTES
+│   ├─ Responsable: Supervisor de Existencias
+│   ├─ Actividades:
+│   │  ├─ Recibir solicitud de despacho de restaurantes
+│   │  ├─ Preparar pedido (picking y packing)
+│   │  ├─ Registrar en CMNET (salida de almacén)
+│   │  ├─ Entregar a transportista o personal del restaurante
+│   │  ├─ Obtener comprobante de entrega
+│   │  └─ Pain Point: Control de entregas informal
+│   ├─ Herramientas: CMNET, Guías de remisión
+│   └─ Frecuencia: Diaria
+│
+└─ 13. RECEPCIÓN EN RESTAURANTE
+    ├─ Responsable: Gerente o Supervisor de Restaurante
+    ├─ Actividades:
+    │  ├─ Verificación de cantidad y estado
+    │  ├─ Firma de comprobante de entrega
+    │  └─ Registro en inventario local
+    ├─ Herramientas: Guía de remisión, Excel (control local de stock)
+    └─ Pain Point: Uso de Excel para stock en restaurantes en lugar de CMNET
+```
+
+#### 2.2.3 Pain Points Identificados en Logística y Compras
+
+| # | Pain Point | Frecuencia | Impacto | Rol Afectado | Causa Raíz |
+|---|---|---|---|---|---|
+| 1 | Aprobaciones de compra lentas | Alta | Alto | Alejandra | Proceso manual sin automatización |
+| 2 | Doble registro: CMNET + Excel | Alta | Medio-Alto | Alejandra | Sistemas desconectados |
+| 3 | Seguimiento manual de embarques | Alta | Medio | Alejandra | Sin integración con transportistas |
+| 4 | Falta control de stock en sistema | Alta | Medio-Alto | Carla/Rafael/Griselda | Restaurantes usan Excel |
+| 5 | Variabilidad en tiempos de entrega (importaciones) | Media | Alto | Alejandra/Antonio | Dependencia de procesos aduanales |
+| 6 | Información de proveedores desorganizada | Media | Bajo-Medio | Alejandra | Información en Excel, no sistematizado |
+| 7 | Control de calidad inconsistente | Media | Medio | Rafael/Griselda | Falta procedimientos formales |
+| 8 | Quiebres de stock frecuentes | Media | Medio-Alto | Carlos/Antonio | Falta integración entre demanda y oferta |
+
+---
+
+### 2.3 PROCESO 3: CONTABILIDAD MULTI-UNIDAD (24 Restaurantes)
+
+#### 2.3.1 Descripción General
+Proceso que inicia con recopilación de información de ventas diarias de 24 restaurantes y termina con emisión de estados financieros (EEFF).
+
+#### 2.3.2 Diagrama de Flujo AS-IS (Markdown)
+
+```
+FASE 1: RECOPILACIÓN DIARIA
+
+│
+└─ 1. VENTAS DE 24 RESTAURANTES (Diarias)
+   ├─ Origen: Oracle Simphony (POS de cada restaurante)
+   ├─ Incluye:
+   │  ├─ Burger King: 13 restaurantes (transacciones automáticas en Simphony)
+   │  └─ Subway: 11 restaurantes (registro MANUAL, no integrado)
+   ├─ Responsable: Cada gerente de restaurante
+   ├─ Herramientas: Oracle Simphony, Email/Portal
+   ├─ Frecuencia: Diaria
+   └─ Pain Point: Ventas Subway son manuales, no están integradas
+
+FASE 2: REVISIÓN Y CONCILIACIÓN
+
+│
+├─ 2. EXTRACCIÓN DE DATOS DE VENTAS
+│  ├─ Responsable: Contador Senior (Carla) / Supervisor Contabilidad (Sissy)
+│  ├─ Actividades:
+│  │  ├─ Obtener reportes de ventas desde Oracle Simphony
+│  │  ├─ Obtener reportes de facturación desde SATCOM
+│  │  ├─ Descargar en Excel para análisis
+│  │  └─ Pain Point: Extracción manual, no automatizada
+│  ├─ Herramientas: Oracle Simphony, SATCOM, Excel
+│  ├─ Tiempo: 30-60 minutos
+│  └─ Frecuencia: Diaria
+│
+├─ 3. REVISIÓN DE DIFERENCIAS ENTRE POS Y FACTURACIÓN
+│  ├─ Responsable: Carla (Contador Senior)
+│  ├─ Actividades:
+│  │  ├─ Comparar: Simphony (ventas) vs. SATCOM (facturación)
+│  │  ├─ Identificar restaurantes con diferencias
+│  │  ├─ Investigar causa: cambios de turno, formas de pago, delivery
+│  │  └─ Pain Point: Comparación manual, propenso a errores
+│  ├─ Herramientas: Excel (tablas dinámicas), Simphony, SATCOM
+│  ├─ Tiempo: 45-120 minutos
+│  └─ Frecuencia: Diaria
+│
+├─ 4. REVISIÓN VOUCHER POR VOUCHER (Si hay diferencias)
+│  ├─ Responsable: Sissy (Supervisor Contabilidad)
+│  ├─ Actividades (proceso intensivo):
+│  │  ├─ Obtener detalle de transacciones de Simphony
+│  │  ├─ Obtener detalle de facturación de SATCOM
+│  │  ├─ Compara línea por línea ("voucher por voucher")
+│  │  ├─ Identificar transacciones sin facturar o viceversa
+│  │  ├─ Contactar restaurante para explicación
+│  │  └─ Pain Point 1: Proceso manual, muy lento
+│  │  └─ Pain Point 2: No escala para 24 restaurantes
+│  │  └─ Pain Point 3: Propenso a errores de trascripción
+│  ├─ Herramientas: Excel, Simphony reports, Correo/WhatsApp
+│  ├─ Tiempo: 2-8 horas (si hay diferencias significativas)
+│  └─ Frecuencia: Diaria (solo si hay diferencias)
+│
+└─ 5. REGISTRO DE AJUSTES SI APLICA
+   ├─ Responsable: Carla/Sissy
+   ├─ Actividades:
+   │  ├─ Crear asiento de ajuste para diferencias
+   │  ├─ Registrar en CMNET/SAP
+   │  └─ Documentar causa
+   ├─ Herramientas: CMNET/SAP
+   └─ Tiempo: 15-30 minutos
+
+FASE 3: CÁLCULO DE COSTOS Y PROVISIONES
+
+│
+├─ 6. RECOPILACIÓN DE INFORMACIÓN DE COSTOS
+│  ├─ Responsable: Carla (Contador Senior)
+│  ├─ Información requerida:
+│  │  ├─ Kardex (movimiento de inventario) por restaurante
+│  │  ├─ Mermas (desperdicios) reportadas
+│  │  ├─ Descuentos y devoluciones
+│  │  ├─ Cambios de precio
+│  │  └─ Pain Point: Información incompleta o tardía de restaurantes
+│  ├─ Origen: Restaurantes (muchos en Excel), Bodega (CMNET), Compras (Excel)
+│  ├─ Herramientas: Email, WhatsApp, Excel
+│  └─ Tiempo: 1-2 horas
+│
+├─ 7. CÁLCULO DE COSTO DE VENTAS (CoS)
+│  ├─ Responsable: Carla
+│  ├─ Actividades:
+│  │  ├─ Aplicar fórmula: CoS = Inventario Inicial + Compras - Inventario Final - Mermas + Devoluciones
+│  │  ├─ Desagregar por restaurante (13 BK + 11 Subway)
+│  │  ├─ Validar que CoS% esté dentro de rangos normales (Burger King ~28-32%, Subway ~20-25%)
+│  │  ├─ Identificar desviaciones anormales
+│  │  └─ Pain Point 1: Cálculo manual en Excel, sin validaciones en origen
+│  │  └─ Pain Point 2: Requiere múltiples fuentes de información
+│  │  └─ Pain Point 3: Alta probabilidad de error
+│  ├─ Herramientas: Excel (fórmulas complejas, archivos "pesados")
+│  ├─ Tiempo: 2-3 horas
+│  └─ Frecuencia: Diaria (consolidado) + Mensual (análisis profundo)
+│
+├─ 8. VALIDACIÓN DE KARDEX Y MERMAS
+│  ├─ Responsable: Carla + Gerentes de Restaurante
+│  ├─ Actividades:
+│  │  ├─ Revisar movimientos de inventario (kardex) vs. uso esperado
+│  │  ├─ Validar mermas reportadas (se esperan ~2-3% pero algunos restaurantes reportan hasta 8%)
+│  │  ├─ Investigar anomalías
+│  │  ├─ Solicitar ajustes si son errores
+│  │  └─ Pain Point: Información de restaurantes imprecisa o incompleta
+│  ├─ Herramientas: Excel, Email, Simphony (histórico)
+│  ├─ Tiempo: 1-2 horas
+│  └─ Frecuencia: Diaria
+│
+└─ 9. VALIDACIÓN DE DOCUMENTACIÓN RRHH
+   ├─ Responsable: Carla/Sissy + RRHH
+   ├─ Actividades:
+   │  ├─ Revisar nómina de restaurantes
+   │  ├─ Validar cambios: altas, bajas, licencias
+   │  ├─ Confirmar asignaciones a centros de costo
+   │  └─ Pain Point: Información tardía del departamento de RRHH
+   ├─ Herramientas: CMNET, Excel (nómina)
+   ├─ Tiempo: 1-2 horas
+   └─ Frecuencia: Mensual
+
+FASE 4: CIERRE CONTABLE MENSUAL
+
+│
+├─ 10. CONCILIACIONES BANCARIAS
+│   ├─ Responsable: Sissy / Moises (Tesorería)
+│   ├─ Actividades:
+│   │  ├─ Obtener extractos de cuentas bancarias
+│   │  ├─ Comparar con registros en CMNET (cuentas por cobrar/pagar)
+│   │  ├─ Identificar diferencias: cheques no cobrados, transferencias no procesadas
+│   │  ├─ Crear asientos de conciliación
+│   │  └─ Pain Point: Proceso manual en Excel
+│   ├─ Herramientas: Extractos PDF de banco, Excel
+│   ├─ Tiempo: 1-2 horas
+│   └─ Frecuencia: Mensual
+│
+├─ 11. CIERRE MENSUAL CONTABLE (CORE PROCESS)
+│   ├─ Responsable: Sissy (Supervisor Contabilidad), bajo supervisión de Fabian
+│   ├─ Actividades:
+│   │  ├─ Paso 1: Registro de todas las transacciones en CMNET
+│   │  ├─ Paso 2: Cierre de cuentas temporales (ingresos, gastos)
+│   │  ├─ Paso 3: Asientos de ajuste (depreciación, provisiones, impuestos)
+│   │  ├─ Paso 4: Generación de EEFF preliminar
+│   │  ├─ Paso 5: Revisión y validación
+│   │  ├─ Paso 6: Presentación a Auditoría
+│   │  └─ Pain Point: Altamente manual, dependencia de Sissy
+│   ├─ Herramientas: CMNET/SAP
+│   ├─ Tiempo: 20-40 horas (distribuidas en días)
+│   ├─ Timeline: Desde fin de mes hasta día 6 (META: 6 días hábiles)
+│   └─ Métrica de éxito: Sissy redujo de 23 días a 6 días (mejora significativa)
+│
+├─ 12. PREPARACIÓN DE ESTADOS FINANCIEROS
+│   ├─ Responsable: Sissy/Carla
+│   ├─ Documento: EEFF
+│   ├─ Incluye:
+│   │  ├─ Balance General (Activo, Pasivo, Patrimonio)
+│   │  ├─ Estado de Resultados (Ingresos, Costos, Gastos, Utilidad)
+│   │  ├─ Flujo de Caja
+│   │  └─ Notas a los EEFF
+│   ├─ Herramientas: CMNET, Excel (para presentación)
+│   ├─ Tiempo: 10-15 horas
+│   └─ Frecuencia: Mensual
+│
+└─ 13. VALIDACIÓN FINAL Y PRESENTACIÓN
+    ├─ Responsable: Fabian (Gerente Admin/Finanzas)
+    ├─ Actividades:
+    │  ├─ Revisión integral de EEFF
+    │  ├─ Validación de razonabilidad (ratios, tendencias)
+    │  ├─ Aprobación
+    │  └─ Distribución a stakeholders (Gerencia General, Auditoría, Grupo Doria)
+    ├─ Tiempo: 2-4 horas
+    └─ Frecuencia: Mensual (día 6 del mes siguiente)
+```
+
+#### 2.3.3 Pain Points Identificados en Contabilidad
+
+| # | Pain Point | Frecuencia | Impacto | Rol Afectado | Causa Raíz |
+|---|---|---|---|---|---|
+| 1 | Registro manual de ventas Subway | Alta | Medio-Alto | Sissy/Carla | No integrado en Simphony |
+| 2 | Revisión voucher por voucher de diferencias | Alta | Medio-Alto | Sissy | Falta integración POS-ERP |
+| 3 | Cálculo de costo de ventas manual | Alta | Medio-Alto | Carla | Sin control de stock en sistema |
+| 4 | Archivos Excel "pesados" e inmanejables | Alta | Medio | Carla | Múltiples fuentes de datos |
+| 5 | Información tardía de otras áreas | Alta | Alto | Sissy/Carla | Falta de gobernanza de fechas |
+| 6 | Validación de kardex y mermas manual | Alta | Medio | Carla | Datos imprecisos de restaurantes |
+| 7 | Aprobaciones manuales de documentos | Media | Medio | Sissy | Proceso burocrático |
+| 8 | Procesos burocráticos en acceso a sistemas | Media | Medio | Carla | Dependencia de IT para cambios |
+
+---
+
+### 2.4 PROCESO 4: GESTIÓN DE TI Y DISPONIBILIDAD
+
+#### 2.4.1 Descripción General
+Proceso de monitoreo continuo de sistemas, atención de incidentes y ejecución de proyectos de transformación digital.
+
+#### 2.4.2 Diagrama de Flujo AS-IS (Markdown)
+
+```
+MONITOREO 24/7 Y OPERACIÓN
+
+│
+├─ 1. MONITOREO DE SISTEMAS
+│  ├─ Responsable: Equipo de TI / Jefe de Sistemas (Álvaro)
+│  ├─ Actividades:
+│  │  ├─ Revisar estado de infraestructura (servidores, redes, internet)
+│  │  ├─ Monitorear POS en restaurantes (acceso remoto)
+│  │  ├─ Revisar Service Desk Plus para tickets nuevos
+│  │  └─ Auditorías de seguridad/backups
+│  ├─ Herramientas: Service Desk Plus, herramientas de monitoreo (Zabbix, Nagios, etc.)
+│  ├─ Tiempo: Continuo
+│  └─ SLA Objetivo: 99.5% disponibilidad
+│
+├─ 2. INCIDENTE CRÍTICO REPORTADO
+│  ├─ Origen:
+│  │  ├─ Alert automático de monitoreo
+│  │  ├─ Usuario reporta en Service Desk
+│  │  ├─ Llamada directa a Álvaro
+│  │  └─ Pain Point: Múltiples canales de reporte (no sistematizado)
+│  ├─ Ejemplo: "POS no funciona en restaurante X"
+│  └─ Impacto: Restaurante no puede vender (crítico)
+│
+├─ 3. TRIAJE Y CLASIFICACIÓN
+│  ├─ Responsable: TI (primer nivel)
+│  ├─ Actividades:
+│  │  ├─ Recibir incidente
+│  │  ├─ Clasificar por severidad:
+│  │  │  ├─ Crítica (afecta múltiples restaurantes o POS)
+│  │  │  ├─ Alta (afecta un restaurante)
+│  │  │  └─ Media/Baja (funcionalidad reducida)
+│  │  ├─ Asignar a técnico
+│  │  └─ Registrar en Service Desk Plus
+│  ├─ Herramientas: Service Desk Plus
+│  └─ SLA: Respuesta en 15 minutos (crítica), 1 hora (alta)
+│
+├─ 4. DIAGNÓSTICO Y RESOLUCIÓN
+│  ├─ Responsable: Técnico de TI asignado
+│  ├─ Actividades:
+│  │  ├─ Acceso remoto a restaurante/servidor
+│  │  ├─ Diagnóstico del problema:
+│  │  │  ├─ Conectividad (internet, VPN)
+│  │  │  ├─ Software (POS, CMNET, etc.)
+│  │  │  ├─ Hardware (servidor, impresoras)
+│  │  │  └─ Datos (corrupción, sincronización)
+│  │  ├─ Aplicar solución:
+│  │  │  ├─ Reinicio de sistema
+│  │  │  ├─ Actualización de software
+│  │  │  ├─ Cambio de configuración
+│  │  │  └─ Escalamiento a proveedor externo
+│  │  └─ Pain Point: Alta carga durante auditorías (tickets acumulados)
+│  ├─ Herramientas: Acceso remoto (TeamViewer, VPN), logs, bases de datos
+│  ├─ Tiempo: 30 minutos a 3 horas (dependiendo de complejidad)
+│  └─ SLA Objetivo: Resolución en 4 horas (crítica), 8 horas (alta)
+│
+├─ 5. VALIDACIÓN Y CIERRE
+│  ├─ Responsable: Técnico + Usuario del restaurante
+│  ├─ Actividades:
+│  │  ├─ Confirmar que sistema funciona
+│  │  ├─ Validar que no hay datos corrompidos
+│  │  ├─ Documentar solución en Service Desk
+│  │  ├─ Registrar causa y tiempo de resolución
+│  │  └─ Cerrar ticket
+│  ├─ Herramientas: Service Desk Plus
+│  ├─ Tiempo: 15-30 minutos
+│  └─ Documentación: Crítica para análisis de tendencias
+
+PROYECTOS DE TRANSFORMACIÓN DIGITAL
+
+│
+├─ 6. PROYECTOS EN PROGRESO
+│  ├─ Proyecto 1: Migración CMNET → SAP (CRÍTICO)
+│  │  ├─ Responsable: Álvaro + Mauricio (Auditoría)
+│  │  ├─ Status: En implementación
+│  │  ├─ Fases:
+│  │  │  ├─ Fase 1: Análisis de procesos (COMPLETADO)
+│  │  │  ├─ Fase 2: Configuración SAP (EN PROGRESO)
+│  │  │  ├─ Fase 3: Data migration (PLANIFICADO)
+│  │  │  ├─ Fase 4: Testing (PLANIFICADO)
+│  │  │  └─ Fase 5: Go-Live (PLANIFICADO)
+│  │  ├─ Timeline: +18 meses
+│  │  ├─ Impacto: Transformacional (resuelve la mayoría de ineficiencias)
+│  │  └─ Pain Point: Tiempo de implementación largo, resistencia al cambio
+│  │
+│  ├─ Proyecto 2: Automatización con Power Automate
+│  │  ├─ Responsable: Álvaro
+│  │  ├─ Status: Propuesto
+│  │  ├─ Procesos a Automatizar:
+│  │  │  ├─ Aprobación de viáticos
+│  │  │  ├─ Fondos a rendir
+│  │  │  ├─ Alta/Baja/Modificación de usuarios
+│  │  │  ├─ Solicitud de compras
+│  │  │  └─ Aprobaciones de gastos
+│  │  ├─ Timeline: 3-6 meses
+│  │  ├─ Impacto: Alto (reduce burocracia, mejora agilidad)
+│  │  └─ Status de Ejecución: PROPUESTA NO FINANCIADA
+│  │
+│  └─ Proyecto 3: Inteligencia Artificial y Analytics
+│     ├─ Responsable: Álvaro
+│     ├─ Iniciativas:
+│     │  ├─ Dashboards en Power BI (conectar a DWH)
+│     │  ├─ Automatización inteligente (RPA)
+│     │  ├─ Predicción de demanda
+│     │  └─ Análisis de anomalías en transacciones
+│     ├─ Timeline: +12 meses
+│     ├─ Impacto: Muy Alto (crea capacidad analítica)
+│     └─ Status: EXPLORATORIO
+│
+└─ 7. CARGA DE TRABAJO DE TI
+   ├─ Desafío Principal: Balance entre "apagar incendios" y "proyectos transformacionales"
+   ├─ Distribución Actual:
+   │  ├─ Operación (tickets, soporte): 60-70% del tiempo
+   │  ├─ Proyectos SAP: 20-25% del tiempo
+   │  └─ Otros (seguridad, capacitación): 10% del tiempo
+   ├─ Pain Point: Falta de recursos (personal, presupuesto)
+   │  ├─ No hay especialista en BI/Analytics
+   │  ├─ No hay especialista en RPA
+   │  └─ Equipo pequeño (estimado 2-3 personas)
+   └─ Recomendación: Contratar personal especializado
+```
+
+#### 2.4.3 Pain Points Identificados en TI
+
+| # | Pain Point | Frecuencia | Impacto | Rol Afectado | Causa Raíz |
+|---|---|---|---|---|---|
+| 1 | Alta carga de tickets durante auditorías | Alta | Medio | Álvaro/Equipo TI | Acumulación de reportes puntuales |
+| 2 | Rotación de personal en restaurantes impacta capacitación | Alta | Medio | Álvaro | Alta rotación de usuarios finales |
+| 3 | Coordinación de múltiples proyectos simultáneamente | Alta | Medio | Álvaro | Falta de resources dedicados |
+| 4 | Acceso lento a información para análisis | Media | Medio | Carla/Micaela | No hay acceso directo a bases de datos |
+| 5 | Resistencia al cambio ante nuevas tecnologías | Media | Medio | Usuarios finales | Capacitación insuficiente |
+| 6 | Falta de especialistas en BI/Analytics | Media | Medio-Alto | Álvaro | Budget limitado para RRHH |
+| 7 | Procesos manuales que podrían automatizarse | Alta | Medio-Alto | Álvaro (detecta pero no ejecuta) | Falta de recursos/budget para Power Automate |
+
+---
+
+### 2.5 PROCESO 5: AUDITORÍA INTERNA Y CONTROL
+
+#### 2.5.1 Descripción General
+Proceso que inicia con la planificación anual de auditoría y termina con implementación de acciones correctivas.
+
+#### 2.5.2 Diagrama de Flujo AS-IS (Markdown)
+
+```
+PLANIFICACIÓN Y METODOLOGÍA
+
+│
+├─ 1. PLAN DE AUDITORÍA ANUAL
+│  ├─ Responsable: Mauricio Clavijo (Auditor Interno)
+│  ├─ Actividades:
+│  │  ├─ Identificar áreas de riesgo (Logística, Finanzas, Operaciones)
+│  │  ├─ Priorizar basado en materialidad e impacto
+│  │  ├─ Asignar recursos y timeline
+│  │  └─ Coordinar con auditoría externa (si aplica)
+│  ├─ Herramientas: Matriz de riesgos, Excel
+│  └─ Frecuencia: Anual
+│
+├─ 2. CLASIFICACIÓN DE AUDITORÍAS
+│  ├─ Por tipo:
+│  │  ├─ Auditoría Rutinaria (procesos periódicos)
+│  │  ├─ Auditoría por Denuncia (investigación específica)
+│  │  ├─ Auditoría de Cumplimiento Normativo (legal)
+│  │  ├─ Auditoría de SAP (en implementación - crítica)
+│  │  └─ Fiscalizaciones Corporativas (Grupo Doria Medina)
+│  └─ Frecuencia: Variable según tipo
+
+EJECUCIÓN DE AUDITORÍA
+
+│
+├─ 3. PLANIFICACIÓN DE ALCANCE
+│  ├─ Responsable: Mauricio
+│  ├─ Actividades:
+│  │  ├─ Definir objetivo de auditoría
+│  │  ├─ Identificar procesos/áreas a revisar
+│  │  ├─ Determinar período de análisis
+│  │  ├─ Establecer equipo de auditoría
+│  │  └─ Comunicar a áreas auditadas
+│  ├─ Herramientas: Documento de planificación
+│  └─ Tiempo: 1-2 semanas
+│
+├─ 4. DETERMINACIÓN DE MUESTRAS
+│  ├─ Responsable: Mauricio
+│  ├─ Ejemplo de muestras:
+│  │  ├─ Auditoría de Compras: 10-15 órdenes de compra aleatorias
+│  │  ├─ Auditoría de Contabilidad: 20-30 transacciones aleatorias
+│  │  ├─ Auditoría de Caja: Revisión de movimientos críticos
+│  │  └─ Pain Point: Muestreo manual, riesgo de sesgo
+│  ├─ Herramientas: Excel (generador de números aleatorios)
+│  └─ Tiempo: 1 semana
+│
+├─ 5. RECOPILACIÓN DE EVIDENCIA
+│  ├─ Responsable: Mauricio + Equipo
+│  ├─ Actividades:
+│  │  ├─ Entrevistas con responsables (Alejandra, Carla, etc.)
+│  │  ├─ Revisión documental (carpetas, archivos)
+│  │  ├─ Análisis de registros en sistemas:
+│  │  │  ├─ CMNET (compras, pagos)
+│  │  │  ├─ SATCOM (facturación)
+│  │  │  └─ Simphony (ventas)
+│  │  ├─ Solicitar datos/reportes de áreas
+│  │  └─ Pain Point 1: Acceso a sistemas dependiente de "predisposición de personas"
+│  │  └─ Pain Point 2: Información en PDF/Word, no digitalizada
+│  │  └─ Pain Point 3: Demora en recepción de información
+│  ├─ Herramientas: Evidencia física (carpetas), archivos digitales, acceso a sistemas
+│  ├─ Tiempo: 2-4 semanas
+│  └─ Documentación: Crítica (evidencia respalda conclusiones)
+│
+├─ 6. ANÁLISIS Y CONCLUSIONES
+│  ├─ Responsable: Mauricio
+│  ├─ Actividades:
+│  │  ├─ Analizar evidencia recopilada
+│  │  ├─ Comparar contra:
+│  │  │  ├─ Políticas de la empresa
+│  │  │  ├─ Normativa legal (tributaria, laboral, aduanal)
+│  │  │  ├─ Mejores prácticas (industry standards)
+│  │  │  └─ Pain Point: Procedimientos no formalizados en algunas áreas
+│  │  ├─ Identificar hallazgos:
+│  │  │  ├─ Desviaciones de normas
+│  │  │  ├─ Riesgos identificados
+│  │  │  ├─ Ineficiencias operativas
+│  │  │  └─ Oportunidades de mejora
+│  │  └─ Clasificar por severidad (crítico, importante, recomendación)
+│  ├─ Herramientas: Excel, análisis documental
+│  ├─ Tiempo: 1-2 semanas
+│  └─ Resultado: Borrador de informe
+
+EMISIÓN Y SEGUIMIENTO
+
+│
+├─ 7. EMISIÓN DE INFORME
+│  ├─ Responsable: Mauricio (redacta), Gerencia General (aprueba)
+│  ├─ Formato: Word/PDF
+│  ├─ Contenido:
+│  │  ├─ Resumen Ejecutivo
+│  │  ├─ Hallazgos (detallados con evidencia)
+│  │  ├─ Recomendaciones (acciones correctivas)
+│  │  ├─ Cronograma de implementación
+│  │  └─ Responsables de ejecución
+│  ├─ Herramientas: Word, PDF
+│  ├─ Tiempo: 1 semana
+│  └─ Revisión: Gerencia General + Área Auditada
+│
+├─ 8. DISTRIBUCIÓN A ÁREAS
+│  ├─ Responsable: Mauricio
+│  ├─ Destinatarios:
+│  │  ├─ Gerencia General (Patricia)
+│  │  ├─ Gerentes de Área (Carla, Alejandra, etc.)
+│  │  ├─ Auditores Externos (si aplica)
+│  │  └─ Grupo Doria Medina (consolidación)
+│  ├─ Herramientas: Email, reunión
+│  └─ Frecuencia: Después de cada auditoría
+│
+├─ 9. REUNIONES DE ACLARACIONES
+│  ├─ Responsable: Mauricio + Área Auditada
+│  ├─ Actividades:
+│  │  ├─ Presentación de hallazgos
+│  │  ├─ Aclaraciones sobre interpretación
+│  │  ├─ Negociación de hallazgos (si hay desacuerdos)
+│  │  ├─ Definición de plan de acción
+│  │  └─ Pain Point: Falta de predisposición en algunas áreas
+│  ├─ Herramientas: Reunión presencial/virtual
+│  ├─ Tiempo: 2-4 horas
+│  └─ Resultado: Plan de acción formal
+│
+├─ 10. EJECUCIÓN DE ACCIONES CORRECTIVAS
+│   ├─ Responsable: Gerentes de Área (Carla, Alejandra, etc.)
+│   ├─ Actividades:
+│   │  ├─ Implementar recomendaciones
+│   │  ├─ Documentar acciones tomadas
+│   │  ├─ Comunicar avance a Auditoría
+│   │  └─ Pain Point: Lentitud en implementación por recursos
+│   ├─ Herramientas: Variable según acción
+│   ├─ Timeline: Variable (1-6 meses típicamente)
+│   └─ Seguimiento: Auditoría valida
+│
+└─ 11. SEGUIMIENTO DE IMPLEMENTACIÓN
+    ├─ Responsable: Mauricio
+    ├─ Actividades:
+    │  ├─ Revisión periódica de implementación (mensual/trimestral)
+    │  ├─ Validación de que acciones cumplan objetivo
+    │  ├─ Cierre de hallazgo cuando acción es efectiva
+    │  └─ Re-auditoría si acción es insuficiente
+    ├─ Herramientas: Excel (tracker de seguimiento)
+    ├─ Tiempo: Continuo
+    └─ Resultado: Reducción de riesgos
+```
+
+#### 2.5.3 Pain Points Identificados en Auditoría
+
+| # | Pain Point | Frecuencia | Impacto | Rol Afectado | Causa Raíz |
+|---|---|---|---|---|---|
+| 1 | Falta de acceso a sistemas | Alta | Medio-Alto | Mauricio | Dependencia de permisos/IT |
+| 2 | Demora en recepción de información | Alta | Medio | Mauricio | Falta de gobernanza de tiempos |
+| 3 | Poca predisposición ante auditorías | Media | Medio | Áreas Auditadas | Cultura: ven auditoría como castigo |
+| 4 | Procedimientos no formalizados | Media | Medio-Alto | Mauricio/Áreas | Documentación incompleta |
+| 5 | Documentación no digitalizada | Media | Medio | Mauricio | Archivos físicos, difícil acceso |
+| 6 | Muestreo manual con riesgo de sesgo | Media | Bajo-Medio | Mauricio | Proceso no sistematizado |
+
+---
+
+## 3. MATRIZ DE PRIORIZACIÓN DE PROCESOS PARA DEEP DIVE
+
+| Proceso | Impacto en Negocio | Vulnerabilidad | Madurez Actual | Prioridad para Deep Dive | Roadmap |
+|---|---|---|---|---|---|
+| **Operaciones Restaurantes** | Muy Alto | Alta | Nivel 2 | **ALTA** | Fase 1: Integración POS. Fase 2: Automatización ordenes |
+| **Logística y Compras** | Muy Alto | Alta | Nivel 2 | **ALTA** | Fase 1: Automatizar aprobaciones. Fase 2: Control stock SAP |
+| **Contabilidad Multi-Unidad** | Muy Alto | Alta | Nivel 2 | **ALTA** | Fase 1: Automatizar ventas Subway. Fase 2: BI dashboards |
+| **Gestión TI** | Muy Alto | Alta | Nivel 3 | **MEDIA-ALTA** | Fase 1: Power Automate quick wins. Fase 2: SAP go-live |
+| **Auditoría Interna** | Alto | Alta | Nivel 1-2 | **MEDIA** | Fase 1: Acceso directo sistemas. Fase 2: Portal digital |
+| **Control de Gestión** | Alto | Alta | Nivel 2 | **MEDIA** | Fase 1: BI dashboards. Fase 2: Análisis automático |
+| **Entrenamiento y Capacitación** | Medio | Media | Nivel 2 | **MEDIA** | Fase 1: Chatbot de capacitación. Fase 2: Plataforma digital |
+| **Mantenimiento Preventivo** | Medio-Alto | Media | Nivel 2 | **MEDIA** | Fase 1: Triaje de tickets. Fase 2: Calendario preventivo |
+
+---
+
+## 4. CLASIFICACIÓN DE PAIN POINTS
+
+### 4.1 Pain Points por Categoría
+
+**SISTEMAS (28 pain points identificados):**
+- Falta integración POS (Oracle Simphony) con ERP (CMNET → SAP)
+- Falta automatización de procesos (viáticos, fondos, compras, aprobaciones)
+- No hay plataforma unificada para seguimiento de proyectos
+- Registro manual de ventas Subway
+- Falta acceso directo a bases de datos para auditorías
+- Múltiples plataformas no integradas (CMNET, SAP, Simphony, Satcom, IZI, Power BI)
+
+**PROCESOS (26 pain points identificados):**
+- Aprobaciones manuales lentas (compras, viáticos, fondos)
+- Procesos burocráticos en contabilidad y finanzas
+- Alta carga de reuniones operativas con bajo valor
+- Falta procedimientos formalizados en algunas áreas
+- Alta rotación de personal en restaurantes impacta continuidad
+- Ciclo reactivo en mantenimiento
+
+**DATOS (21 pain points identificados):**
+- Información tardía de otras áreas
+- Doble registro de información (POS vs. CMNET, CMNET vs. Excel)
+- Archivos Excel pesados y manuales
+- Falta control de stock en sistema (se usa Excel)
+- Datos de facturación con información incorrecta desde origen
+
+**CULTURA (17 pain points identificados):**
+- Resistencia al cambio tecnológico
+- Falta predisposición ante auditorías
+- Comunicación limitada y fuera de tiempo
+- Alta rotación de personal (impacta capacitación)
+- Falta cultura de documentación y estandarización
+
+---
+
+## 5. RECOMENDACIONES PRIORITARIAS Y QUICK WINS
+
+### 5.1 Alta Prioridad (Implementar en Meses 1-3)
+
+1. **Completar migración CMNET → SAP con integración POS-ERP**
+   - Eliminar doble registro
+   - Datos en tiempo real
+   - Automatizar consolidación contable
+   - Responsables: Jefe Sistemas, Gerente Admin/Finanzas, Contador Senior, Auditor Interno
+
+2. **Automatizar procesos de aprobación con Power Automate**
+   - Viáticos
+   - Fondos a rendir
+   - Compras y solicitudes
+   - Alta/Baja/Modificación usuarios
+   - Responsables: Jefe Sistemas, Gerente Admin/Finanzas, Subgerente Logística
+
+3. **Implementar control de stock en sistema SAP**
+   - Eliminar kardex manual en Excel
+   - Visibilidad en tiempo real de inventarios
+   - Responsables: Contador Senior, Subgerente Logística, Jefe Sistemas
+
+4. **Crear dashboards en tiempo real para KPIs operativos**
+   - Power BI con datos de SAP y POS
+   - Ventas, labor cost, food cost, waste por restaurante
+   - Responsables: Coordinadora Control de Gestión, Jefe Sistemas
+
+### 5.2 Media Prioridad (Implementar en Meses 3-6)
+
+5. **Digitalizar SOPs operativos**
+   - Acceso móvil para personal de restaurantes
+   - Responsables: Supervisores Entrenamiento, Gerente General
+
+6. **Plataforma unificada para seguimiento de proyectos**
+   - Microsoft Planner (reemplazar múltiples herramientas)
+   - Responsable: Jefe Sistemas
+
+7. **Portal del auditor**
+   - Acceso directo a sistemas contables
+   - Documentación digitalizada
+   - Responsables: Auditor Interno, Jefe Sistemas, Gerente Admin/Finanzas
+
+8. **App corporativa para personal de restaurantes**
+   - Solicitudes centralizadas (mantenimiento, logística, RRHH)
+   - Responsable: Jefe Sistemas, Gerente General
+
+---
+
+## 6. ROADMAP DE TRANSFORMACIÓN (12-18 Meses)
+
+### Fase 0 (Mes 1): Pre-SAP - Quick Wins
+- Otorgar acceso de lectura a Auditoría
+- Pilotar Power Automate para 2 procesos
+- Crear matriz RACI formal
+- Establecer governance de datos
+
+### Fase 1 (Meses 2-6): Implementación SAP - Módulos Core
+- Go-Live SAP (Finanzas, Logística, MM)
+- Integración POS-SAP
+- Migración de data histórica
+- Testing exhaustivo
+
+### Fase 2 (Meses 6-12): Post-SAP - BI y Automatización
+- Implementar Power BI dashboards
+- Completar Power Automate workflows
+- Capacitación en nuevas herramientas
+- Optimización de procesos
+
+### Fase 3 (Meses 12-18): IA y Analítica Avanzada
+- Implementar RPA (Robotic Process Automation)
+- Modelos de predicción de demanda
+- Análisis automático de anomalías
+- Chatbots de soporte
+
+---
+
+## 7. KPIs DE MEDICIÓN DE ÉXITO
+
+### Operacionales
+- OTIF (On-Time In-Full) Logística: 90%+
+- Quiebres de stock: < 2%
+- Disponibilidad POS: 99.5%
+- Tiempo resolución incidentes: < 1 hora (críticos)
+
+### Financieros
+- Tiempo cierre contable: 4 días (vs. 6 actual)
+- Precisión CoS: ±2% vs presupuesto
+- Variación presupuesto operativo: ±3%
+
+### De Proceso
+- % Procesos automatizados: 60%+
+- Tiempo preparación datos: -70%
+- Errores manuales: -75%
+- Tiempo análisis vs preparación: 70/30 (vs. 20/80 actual)
+
+---
+
+**Versión:** 1.0 - Delivery 1
+**Fecha:** Noviembre 2025
+**Elaborado por:** Equipo de Diagnóstico de Transformación Digital

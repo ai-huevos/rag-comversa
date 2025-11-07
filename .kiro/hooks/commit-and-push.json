@@ -1,0 +1,7 @@
+{
+  "name": "Commit & Push to GitHub",
+  "description": "Stage all changes, commit with a message, and push to GitHub",
+  "trigger": "manual",
+  "icon": "git-commit",
+  "prompt": "Review the current git status and changed files. Then:\n1. Stage all changes with 'git add .'\n2. Ask me for a commit message (suggest a meaningful default based on the changes)\n3. Commit with that message\n4. Push to origin main\n5. Show me a summary of what was committed"
+}

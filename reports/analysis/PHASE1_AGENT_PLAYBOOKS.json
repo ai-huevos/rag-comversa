@@ -1,0 +1,613 @@
+{
+  "title": "ACIS AI Agent Playbooks - Phase 1",
+  "version": "1.0.0",
+  "generated": "2025-10-23",
+  "description": "Operational playbooks for Claude-powered automation agents",
+
+  "playbooks": [
+    {
+      "id": "AGENT-001",
+      "name": "Intake Router Agent",
+      "purpose": "Single-door intake for all operational requests with intelligent routing",
+      "tier": 1,
+      "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+
+      "trigger_conditions": [
+        "Message received via WhatsApp Business",
+        "Email to intake@ addresses",
+        "Web form submission",
+        "Direct system entry (MaintainX, ServiceDesk, etc.)"
+      ],
+
+      "context_required": [
+        "Request source channel",
+        "Requester identity and role",
+        "Request text/description",
+        "Attachments (photos, documents)",
+        "Timestamp",
+        "Company/business unit"
+      ],
+
+      "prompt_template": "You are the Intake Router Agent for [COMPANY]. Analyze the following request:\n\n**Source**: [CHANNEL]\n**From**: [NAME], [ROLE]\n**Timestamp**: [DATETIME]\n**Request**: [TEXT]\n**Attachments**: [LIST]\n\nYour tasks:\n1. **Classify** the request type: Maintenance, IT Support, Finance, Legal, Logistics, Commercial, HR, Other\n2. **Determine urgency**: Critical (safety/revenue impact), High (operational impact), Standard, Low\n3. **Identify responsible system**: MaintainX, ServiceDesk Plus, Jira, SAP, CMNET, Manual workflow\n4. **Assign owner**: Based on process ownership matrix\n5. **Set SLA**: Per urgency tier (Critical: 8h, High: 24h, Standard: 48h, Low: 5 days)\n6. **Extract key entities**: Asset IDs, room numbers, supplier names, amounts, dates\n7. **Create ticket** in target system with standardized format\n8. **Send acknowledgment** to requester with ticket ID, owner, and SLA\n\nOutput a structured JSON with all classifications and routing information.",
+
+      "output_schema": {
+        "ticket_id": "string",
+        "classification": {
+          "type": "string (enum)",
+          "domain": "string",
+          "urgency": "string (enum: Critical, High, Standard, Low)",
+          "complexity": "string (enum: Simple, Medium, Complex)"
+        },
+        "routing": {
+          "target_system": "string",
+          "assigned_to": "string (role)",
+          "sla_hours": "integer",
+          "sla_deadline": "ISO datetime"
+        },
+        "extracted_entities": {
+          "asset_id": "string (optional)",
+          "location": "string (optional)",
+          "supplier": "string (optional)",
+          "amount": "number (optional)",
+          "due_date": "date (optional)"
+        },
+        "acknowledgment": {
+          "sent": "boolean",
+          "channel": "string",
+          "message": "string"
+        }
+      },
+
+      "guardrails": {
+        "allowed_actions": [
+          "Read request content",
+          "Classify and prioritize",
+          "Create ticket in designated systems",
+          "Send acknowledgment messages",
+          "Update intake dashboard"
+        ],
+        "forbidden_actions": [
+          "Resolve requests without human approval",
+          "Modify existing tickets",
+          "Change SLA definitions",
+          "Access confidential data beyond request scope",
+          "Delete or archive requests"
+        ],
+        "escalation_conditions": [
+          "Cannot classify request confidently (< 70% confidence)",
+          "Multiple urgent/critical requests from same source in < 1 hour",
+          "Request involves safety or security concerns",
+          "Request references executive or VIP",
+          "System target unavailable"
+        ],
+        "human_handoff_triggers": [
+          "Ambiguous or conflicting information",
+          "Request requires policy decision",
+          "Escalation condition met",
+          "Requester explicitly requests human contact"
+        ]
+      },
+
+      "audit_requirements": [
+        "Log all request inputs and classifications",
+        "Record confidence scores for classifications",
+        "Track SLA compliance per ticket",
+        "Generate daily intake summary report",
+        "Flag mis-routed tickets for playbook refinement"
+      ],
+
+      "related_sops": ["SOP-INTAKE-001", "SOP-APPROVAL-001"],
+
+      "sample_interaction": {
+        "input": "WhatsApp message: 'Hola, el aire acondicionado de la habitación 305 no enfría. Huésped se queja. Urgente.' - From: Recepción, LTH",
+        "processing": "Classification: Maintenance | Urgency: High | System: MaintainX | Owner: Jefe de Ingeniería | SLA: 4 hours (guest comfort) | Entities: Room 305, Asset: HVAC",
+        "output": "Ticket #MNT-2510-1045 created in MaintainX. Assigned to Jefe de Ingeniería. SLA: Today 8:00 PM. Acknowledgment sent to Recepción via WhatsApp: 'Solicitud registrada #MNT-2510-1045. Ingeniería atenderá en máximo 4 horas. Seguimiento en MaintainX.'"
+      }
+    },
+
+    {
+      "id": "AGENT-002",
+      "name": "POS-ERP Reconciliation Agent",
+      "purpose": "Automated daily reconciliation of POS sales vs invoicing with exception flagging",
+      "tier": 1,
+      "companies": ["Los Tajibos", "Bolivian Foods"],
+
+      "trigger_conditions": [
+        "Daily end-of-day close completed",
+        "Scheduled run at 7:00 AM (after night audit)",
+        "Manual trigger by Contabilidad/Finance"
+      ],
+
+      "context_required": [
+        "Target date for reconciliation",
+        "POS system data: Opera PMS, Simphony, Micros",
+        "ERP invoicing data: Satcom (LTH), CMNET (BF)",
+        "Previous day's reconciliation results",
+        "Exception thresholds and rules"
+      ],
+
+      "prompt_template": "You are the POS-ERP Reconciliation Agent for [COMPANY]. Perform daily reconciliation for [DATE].\n\n**POS Data Source**: [SYSTEM]\n**ERP Data Source**: [SYSTEM]\n**Threshold**: Exceptions > [AMOUNT] or [PERCENTAGE]\n\nSteps:\n1. **Extract** POS sales totals by outlet, payment type, and folio\n2. **Extract** ERP invoicing totals for same scope\n3. **Match** transactions by folio ID, time window, and amount\n4. **Identify discrepancies**: Missing invoices, duplicate entries, amount mismatches, payment type errors\n5. **Classify** exceptions by reason code: Human error, System sync delay, Price mismatch, Refund not captured, Other\n6. **Generate** exception report with details for manual review\n7. **Calculate** trend: Exception rate vs 7-day average\n8. **Notify** Finance team if critical thresholds exceeded\n9. **Update** reconciliation dashboard\n\nOutput structured CSV and summary message.",
+
+      "output_schema": {
+        "reconciliation_summary": {
+          "date": "date",
+          "pos_total": "number",
+          "erp_total": "number",
+          "variance": "number",
+          "variance_percentage": "number",
+          "matched_transactions": "integer",
+          "exception_count": "integer"
+        },
+        "exceptions": [
+          {
+            "exception_id": "string",
+            "folio_id": "string",
+            "pos_amount": "number",
+            "erp_amount": "number",
+            "variance": "number",
+            "reason_code": "string (enum)",
+            "outlet": "string",
+            "payment_type": "string",
+            "timestamp": "ISO datetime",
+            "requires_action": "boolean"
+          }
+        ],
+        "trend_analysis": {
+          "7_day_avg_exception_rate": "number",
+          "today_vs_avg": "string (Higher/Lower/Same)",
+          "pattern_detected": "string (optional)"
+        },
+        "notifications_sent": [
+          {
+            "recipient": "string (role)",
+            "channel": "email/Teams",
+            "summary": "string"
+          }
+        ]
+      },
+
+      "guardrails": {
+        "allowed_actions": [
+          "Read POS and ERP sales data",
+          "Perform mathematical reconciliation",
+          "Generate exception reports",
+          "Update reconciliation dashboard",
+          "Send notification summaries"
+        ],
+        "forbidden_actions": [
+          "Modify POS or ERP source data",
+          "Auto-correct exceptions without human review",
+          "Approve transactions",
+          "Access customer payment details beyond transaction totals",
+          "Override manual reconciliation decisions"
+        ],
+        "escalation_conditions": [
+          "Exception rate > 5% of transactions",
+          "Total variance > $500 (LTH) or Bs 3,500 (BF)",
+          "Repeated exceptions for same outlet/cashier",
+          "System access unavailable",
+          "Exception reasons 'Unknown' > 10%"
+        ],
+        "human_handoff_triggers": [
+          "Exceptions require investigation beyond data matching",
+          "Pattern suggests fraud or systematic error",
+          "Escalation condition met",
+          "Manual override requested"
+        ]
+      },
+
+      "audit_requirements": [
+        "Archive all raw POS and ERP extracts",
+        "Log all matching logic and thresholds applied",
+        "Record exception investigation outcomes",
+        "Track exception resolution time",
+        "Monthly exception pattern analysis"
+      ],
+
+      "related_sops": ["SOP-RECONCILIATION-001", "SOP-DATA-CHANGE-001"],
+
+      "sample_interaction": {
+        "input": "Date: 2025-10-22 | POS: Opera+Simphony | ERP: Satcom | LTH",
+        "processing": "Extracted 342 POS transactions ($45,230). Satcom shows 340 invoices ($45,050). Variance: -$180, -0.4%. Matched 338 transactions. Found 4 exceptions: 2 missing invoices (Folio #12045, #12098), 1 duplicate entry (Folio #12052), 1 amount mismatch (Folio #12110: POS $125, Satcom $120). Reason codes: Sync delay (2), Human error (1), Price override not captured (1). 7-day avg exception rate: 1.2%, today: 1.17% (Lower). No critical thresholds exceeded.",
+        "output": "Reconciliation Report - 2025-10-22: Matched $44,870 (99.2%). 4 exceptions flagged for review. CSV exported to Finance shared drive. Email sent to Gerente de Contabilidad with summary and action items. Dashboard updated."
+      }
+    },
+
+    {
+      "id": "AGENT-003",
+      "name": "Recipe Costing Agent",
+      "purpose": "Instant recipe costing with latest ingredient prices and margin recommendations",
+      "tier": 2,
+      "companies": ["Los Tajibos"],
+
+      "trigger_conditions": [
+        "New recipe submitted by Chef",
+        "Recipe modification uploaded",
+        "Price refresh requested",
+        "Scheduled weekly price update"
+      ],
+
+      "context_required": [
+        "Recipe name and description",
+        "Ingredient list with quantities and units",
+        "Preparation method (optional)",
+        "Target menu category (buffet, à la carte, banquet)",
+        "Plate photo (optional)",
+        "SAP ingredient price database access"
+      ],
+
+      "prompt_template": "You are the Recipe Costing Agent for Los Tajibos. Cost the following recipe using latest SAP prices:\n\n**Recipe**: [NAME]\n**Category**: [CATEGORY]\n**Serving Size**: [SIZE]\n\n**Ingredients**:\n[INGREDIENT LIST with quantities]\n\nSteps:\n1. **Match** each ingredient to SAP master data by name/SKU\n2. **Retrieve** latest purchase price (last 30 days preferred, else last purchase)\n3. **Convert** units if necessary (kg → g, L → ml, etc.)\n4. **Calculate** cost per ingredient: Quantity × Unit Price\n5. **Sum** total recipe cost\n6. **Apply** yield factor if specified (default 100%)\n7. **Calculate** cost per serving: Total Cost / Servings\n8. **Recommend** selling price: Based on target food cost % (28-32% range)\n9. **Flag** if margin below threshold or ingredient price > 30 days old\n10. **Attach** plate photo if provided\n11. **Route** for approval to Costos CC and Chef\n\nOutput structured recipe cost sheet.",
+
+      "output_schema": {
+        "recipe_info": {
+          "name": "string",
+          "category": "string",
+          "servings": "integer",
+          "prep_time": "string (optional)",
+          "photo_url": "string (optional)"
+        },
+        "costing_details": {
+          "ingredients": [
+            {
+              "name": "string",
+              "sap_sku": "string",
+              "quantity": "number",
+              "unit": "string",
+              "unit_price": "number",
+              "price_date": "date",
+              "line_cost": "number",
+              "notes": "string (optional)"
+            }
+          ],
+          "total_cost": "number",
+          "yield_factor": "number",
+          "cost_per_serving": "number"
+        },
+        "pricing_recommendation": {
+          "target_food_cost_pct": "number",
+          "recommended_price_min": "number",
+          "recommended_price_max": "number",
+          "actual_margin_pct": "number (if current price exists)",
+          "flags": ["string array of warnings"]
+        },
+        "approval_routing": {
+          "to": ["Gerente de Costos CC", "Chef Ejecutivo"],
+          "status": "Pending Approval",
+          "sent_timestamp": "ISO datetime"
+        }
+      },
+
+      "guardrails": {
+        "allowed_actions": [
+          "Read recipe ingredients",
+          "Query SAP for ingredient prices",
+          "Perform cost calculations",
+          "Suggest pricing within defined ranges",
+          "Route for human approval",
+          "Update recipe database with approved costings"
+        ],
+        "forbidden_actions": [
+          "Approve recipes without human review",
+          "Modify SAP master data",
+          "Set final selling prices",
+          "Override target margin policies",
+          "Access ingredient suppliers beyond prices",
+          "Publish recipes to menus directly"
+        ],
+        "escalation_conditions": [
+          "Ingredient not found in SAP",
+          "Price > 30 days old for critical ingredient",
+          "Calculated margin < 20% or > 50%",
+          "Total recipe cost > $50 per serving",
+          "Unusual units or quantities detected"
+        ],
+        "human_handoff_triggers": [
+          "Escalation condition met",
+          "Chef requests manual review",
+          "New ingredient requires supplier sourcing",
+          "Recipe involves complex preparations (sous-vide, multi-day, etc.)"
+        ]
+      },
+
+      "audit_requirements": [
+        "Log all price queries with timestamps",
+        "Archive recipe versions with costing history",
+        "Track approval times and approvers",
+        "Flag price volatility trends per ingredient",
+        "Monthly ingredient cost analysis report"
+      ],
+
+      "related_sops": ["SOP-RECIPE-MGMT-001", "SOP-MENU-PRICING-001"],
+
+      "sample_interaction": {
+        "input": "Recipe: 'Pato Confitado con Reducción de Naranja' | Servings: 1 | Ingredients: Duck leg 250g, Orange 2 units, Red wine 50ml, Butter 20g, Thyme 5g, Salt/pepper, Honey 10ml | Category: À la carte",
+        "processing": "SAP prices: Duck leg Bs 45/kg (Oct 20), Orange Bs 8/kg (Oct 18), Red wine Bs 120/L (Oct 15), Butter Bs 35/kg (Oct 22), Thyme Bs 180/kg (Sep 28 - flagged), Honey Bs 65/L (Oct 19). Costs: Duck Bs 11.25, Orange Bs 0.80, Wine Bs 6.00, Butter Bs 0.70, Thyme Bs 0.90, Honey Bs 0.65. Total: Bs 20.30/serving. Target 30% food cost → Price range Bs 67-70. Current menu price (if exists) for comparison.",
+        "output": "Recipe Cost Sheet generated. Total: Bs 20.30/serving. Recommended price: Bs 68-70 (achieves 29-30% food cost). Flag: Thyme price > 30 days old. Routed to Costos CC and Chef for approval. ETA: 24 hours per SLA."
+      }
+    },
+
+    {
+      "id": "AGENT-004",
+      "name": "Preventive Maintenance Scheduler Agent",
+      "purpose": "Generate and manage PM schedules with parts availability and evidence closure",
+      "tier": 2,
+      "companies": ["Los Tajibos", "Bolivian Foods"],
+
+      "trigger_conditions": [
+        "Monthly PM calendar generation",
+        "Equipment due for PM per manufacturer intervals",
+        "MaintainX PM task created",
+        "Technician completes PM task"
+      ],
+
+      "context_required": [
+        "Asset register with PM frequencies",
+        "Equipment criticality classifications",
+        "Spare parts inventory (SAP/CMNET)",
+        "Technician schedules and availability",
+        "Operational blackout windows (e.g., guest check-in times)",
+        "Historical PM completion data"
+      ],
+
+      "prompt_template": "You are the Preventive Maintenance Scheduler Agent for [COMPANY]. Manage PM scheduling:\n\n**Mode**: [Generate Schedule | Assign Task | Validate Closure]\n**Equipment**: [ASSET LIST or ASSET ID]\n**Period**: [DATE RANGE]\n\nFor **Generate Schedule**:\n1. **Identify** all assets due for PM in period per manufacturer specs\n2. **Check** spare parts availability in SAP/CMNET\n3. **Flag** parts shortages and trigger reorder alerts\n4. **Optimize** schedule considering: Criticality, blackout windows, technician capacity\n5. **Create** work orders in MaintainX with checklists\n6. **Assign** technicians and set SLAs\n7. **Notify** operations teams of scheduled work\n\nFor **Validate Closure**:\n1. **Check** mandatory fields: Completion timestamp, technician signature, checklist 100%\n2. **Require** evidence photos for critical steps\n3. **Validate** parts consumption matches planned\n4. **Confirm** requester/operations sign-off\n5. **Update** PM completion metrics\n6. **Trigger** follow-up if issues noted\n\nOutput structured PM plan or closure validation.",
+
+      "output_schema": {
+        "pm_schedule": {
+          "period": "string (e.g., November 2025)",
+          "total_assets": "integer",
+          "total_pm_tasks": "integer",
+          "pm_by_week": [
+            {
+              "week": "integer",
+              "tasks": [
+                {
+                  "asset_id": "string",
+                  "asset_name": "string",
+                  "pm_type": "string (e.g., Monthly, Quarterly)",
+                  "criticality": "string (enum)",
+                  "scheduled_date": "date",
+                  "assigned_to": "string",
+                  "estimated_hours": "number",
+                  "parts_required": ["string array"],
+                  "parts_available": "boolean",
+                  "checklist_items": "integer"
+                }
+              ]
+            }
+          ],
+          "parts_alerts": [
+            {
+              "part_sku": "string",
+              "part_name": "string",
+              "required_qty": "integer",
+              "available_qty": "integer",
+              "reorder_triggered": "boolean"
+            }
+          ]
+        },
+        "closure_validation": {
+          "work_order_id": "string",
+          "completed": "boolean",
+          "validation_passed": "boolean",
+          "checklist_completion": "integer (percentage)",
+          "evidence_photos": "integer",
+          "requester_signoff": "boolean",
+          "issues_noted": ["string array"],
+          "follow_up_required": "boolean"
+        }
+      },
+
+      "guardrails": {
+        "allowed_actions": [
+          "Read asset register and PM frequencies",
+          "Check parts inventory",
+          "Create work orders in MaintainX",
+          "Assign tasks to technicians",
+          "Validate closure completeness",
+          "Update PM completion metrics",
+          "Send schedule notifications"
+        ],
+        "forbidden_actions": [
+          "Override manufacturer PM intervals without engineering approval",
+          "Assign tasks to unavailable technicians",
+          "Close work orders without evidence",
+          "Modify asset criticality classifications",
+          "Cancel scheduled PMs without authorization",
+          "Order parts without procurement approval"
+        ],
+        "escalation_conditions": [
+          "Critical asset PM delayed > 7 days",
+          "Parts shortage affecting > 3 PMs",
+          "PM completion rate < 60% in period",
+          "Repeated closure validation failures",
+          "Safety-critical equipment overdue"
+        ],
+        "human_handoff_triggers": [
+          "Asset requires unscheduled PM due to inspection findings",
+          "Technician reports equipment condition concerns",
+          "PM reveals need for capital replacement",
+          "Escalation condition met"
+        ]
+      },
+
+      "audit_requirements": [
+        "Log all PM schedules generated",
+        "Track PM completion vs planned",
+        "Record closure validation results",
+        "Archive evidence photos with work orders",
+        "Monthly PM completion rate report",
+        "Parts consumption vs planning accuracy"
+      ],
+
+      "related_sops": ["SOP-PM-SCHEDULING-001", "SOP-EVIDENCE-CLOSURE-001"],
+
+      "sample_interaction": {
+        "input": "Generate PM Schedule | Los Tajibos | November 2025 | Assets: All HVAC chillers, Elevators, Fire pumps, Kitchen equipment (critical only)",
+        "processing": "Asset register query: 15 HVAC units (monthly PM), 4 elevators (monthly PM), 2 fire pumps (quarterly PM), 8 critical kitchen assets (monthly PM). Total: 29 PM tasks. Parts check: Chiller filters (stock OK), Elevator brake pads (2 short - reorder alert), Fire pump impellers (OK), Kitchen burner nozzles (OK). Schedule optimization: Avoid Nov 15-18 (high occupancy), distribute tasks across weeks, assign 3 technicians. Work orders created in MaintainX with checklists.",
+        "output": "PM Schedule November 2025: 29 tasks across 4 weeks. Parts alert: Elevator brake pads - 2 units short, reorder triggered. Notifications sent to Operations and Ingeniería. Schedule published in MaintainX. Expected completion rate target: 90%."
+      }
+    },
+
+    {
+      "id": "AGENT-005",
+      "name": "Logistics Tracking Hub Agent",
+      "purpose": "Consolidated shipment tracking with delay alerts and receiving checklists",
+      "tier": 2,
+      "companies": ["Comversa", "Bolivian Foods"],
+
+      "trigger_conditions": [
+        "New PO issued with shipment expected",
+        "Tracking number received from supplier/carrier",
+        "Scheduled daily tracking refresh (8 AM, 2 PM)",
+        "Shipment status change detected"
+      ],
+
+      "context_required": [
+        "Purchase order details",
+        "Carrier tracking IDs (DHL, ASPB, MAERSK, DELPA)",
+        "Expected delivery dates",
+        "Destination (CD, restaurant, hotel)",
+        "Receiving requirements (safety, inocuity, checklists)",
+        "Supplier contact info"
+      ],
+
+      "prompt_template": "You are the Logistics Tracking Hub Agent for [COMPANY]. Track shipment:\n\n**PO ID**: [PO_NUMBER]\n**Tracking ID**: [TRACKING_NUMBER]\n**Carrier**: [CARRIER]\n**Expected Delivery**: [ETA_DATE]\n**Destination**: [LOCATION]\n\nSteps:\n1. **Query** carrier API for current status and location\n2. **Calculate** transit time vs expected\n3. **Detect** delays (actual > expected by > 2 days)\n4. **Classify** delay severity: Minor (2-3 days), Moderate (4-7 days), Critical (> 7 days or perishable)\n5. **Alert** logistics team and destination if delay detected\n6. **Generate** receiving checklist based on item type: Safety/inocuity inspections, quantity verification, condition assessment\n7. **Notify** destination 24h before arrival with checklist\n8. **Update** tracking dashboard with current status\n9. **Archive** shipment history on delivery confirmation\n\nOutput tracking update and alerts.",
+
+      "output_schema": {
+        "shipment_status": {
+          "po_id": "string",
+          "tracking_id": "string",
+          "carrier": "string",
+          "current_location": "string",
+          "status": "string (enum: In Transit, Out for Delivery, Delivered, Delayed, Exception)",
+          "last_update": "ISO datetime",
+          "expected_delivery": "date",
+          "actual_delivery": "date (if delivered)",
+          "transit_days": "integer"
+        },
+        "delay_analysis": {
+          "is_delayed": "boolean",
+          "delay_days": "integer",
+          "severity": "string (enum: None, Minor, Moderate, Critical)",
+          "reason": "string (from carrier, if available)",
+          "impact_assessment": "string"
+        },
+        "alerts_sent": [
+          {
+            "recipient": "string (role)",
+            "alert_type": "string (Delay, Arrival Notice)",
+            "timestamp": "ISO datetime",
+            "channel": "email/WhatsApp/Teams"
+          }
+        ],
+        "receiving_checklist": {
+          "items": [
+            {
+              "check": "string (e.g., Verify quantity matches PO)",
+              "category": "string (Safety/Inocuity/Quality/Documentation)",
+              "mandatory": "boolean",
+              "completed": "boolean",
+              "notes": "string (optional)"
+            }
+          ],
+          "signoff_required": ["string array of roles"]
+        }
+      },
+
+      "guardrails": {
+        "allowed_actions": [
+          "Query carrier tracking APIs",
+          "Calculate transit times and detect delays",
+          "Send alerts and notifications",
+          "Generate receiving checklists",
+          "Update tracking dashboard",
+          "Archive shipment records"
+        ],
+        "forbidden_actions": [
+          "Modify PO details",
+          "Contact carriers to reroute shipments",
+          "Approve receipt without human signoff",
+          "Override safety/inocuity requirements",
+          "Cancel shipments",
+          "Access supplier payment terms"
+        ],
+        "escalation_conditions": [
+          "Critical delay (> 7 days or perishable goods)",
+          "Carrier reports shipment exception",
+          "Multiple shipments delayed from same supplier",
+          "Receiving checklist identifies safety concern",
+          "Carrier API unavailable"
+        ],
+        "human_handoff_triggers": [
+          "Shipment requires customs clearance action",
+          "Quality issue detected on receipt",
+          "Delay requires supplier negotiation",
+          "Escalation condition met"
+        ]
+      },
+
+      "audit_requirements": [
+        "Log all tracking queries and responses",
+        "Record delay notifications and reasons",
+        "Archive completed receiving checklists",
+        "Track carrier performance (OTIF by carrier)",
+        "Monthly logistics performance report"
+      ],
+
+      "related_sops": ["SOP-RECEIVING-001", "SOP-SAFETY-INOCUITY-001"],
+
+      "sample_interaction": {
+        "input": "Track Shipment | BF | PO-2025-1234 | DHL Tracking: 9876543210 | Expected: Oct 25 | Destination: CD Santa Cruz | Items: Kitchen equipment (fryers, 2 units)",
+        "processing": "DHL API query: Status 'In Transit', Current location 'Miami Hub', Last update Oct 23 2:30 PM. Transit days: 8. Expected delivery: Oct 25. Delay: No (on time). Receiving checklist generated: Verify quantity (2 units), Check physical condition (dents, damage), Test electrical specs (voltage), Safety inspection (grounding, certifications), Documentation (invoice, warranty, manuals). 24h arrival notice pending for Oct 24.",
+        "output": "Shipment Status: On time, arriving Oct 25 as expected. No delays. Receiving checklist prepared with 5 safety/quality checks. Notification will be sent to CD Oct 24 at 9 AM with checklist. Dashboard updated."
+      }
+    }
+  ],
+
+  "cross_playbook_coordination": {
+    "description": "How agents interact and hand off work",
+    "coordination_patterns": [
+      {
+        "scenario": "Maintenance request routed from Intake requires parts",
+        "agents": ["AGENT-001 Intake Router", "AGENT-004 PM Scheduler"],
+        "flow": "Intake Router classifies as maintenance → Creates MaintainX ticket → PM Scheduler checks parts availability → If shortage, triggers reorder alert → Updates Intake Router on ETA → Intake Router updates requester"
+      },
+      {
+        "scenario": "Recipe costing identifies price volatility",
+        "agents": ["AGENT-003 Recipe Costing", "AGENT-005 Logistics Tracking"],
+        "flow": "Recipe Costing flags ingredient price > 30 days old or high volatility → Notifies Logistics to check incoming shipments → Logistics provides ETA and new price if available → Recipe Costing recalculates with updated info"
+      },
+      {
+        "scenario": "Reconciliation exceptions reveal POS malfunction",
+        "agents": ["AGENT-002 Reconciliation", "AGENT-001 Intake Router"],
+        "flow": "Reconciliation detects pattern: Specific POS terminal has consistent mismatches → Creates IT ticket via Intake Router → Intake routes to ServiceDesk with evidence → Tracks resolution"
+      }
+    ]
+  },
+
+  "implementation_guide": {
+    "month_1": {
+      "playbooks_to_deploy": ["AGENT-001 Intake Router"],
+      "focus": "Single-door intake across all companies",
+      "success_criteria": "80% of requests enter via agent, < 10% mis-routed"
+    },
+    "month_2": {
+      "playbooks_to_deploy": ["AGENT-002 Reconciliation"],
+      "focus": "Automate daily finance reconciliations",
+      "success_criteria": "Daily reconciliation report generated, exception rate measured"
+    },
+    "month_3": {
+      "playbooks_to_deploy": ["AGENT-003 Recipe Costing", "AGENT-004 PM Scheduler", "AGENT-005 Logistics Tracking"],
+      "focus": "Domain-specific automation deployment",
+      "success_criteria": "Recipe costing < 4 hours, PM completion rate > 70%, shipment delays flagged proactively"
+    }
+  },
+
+  "agent_performance_kpis": {
+    "intake_router": ["Classification accuracy > 90%", "SLA assignment correctness > 95%", "Mis-routing rate < 5%"],
+    "reconciliation": ["Exception detection rate 100%", "False positive rate < 2%", "Daily report on-time 100%"],
+    "recipe_costing": ["Price lookup success > 98%", "Turnaround time < 4 hours", "Approval rate > 85%"],
+    "pm_scheduler": ["Schedule generation on-time 100%", "Parts availability prediction accuracy > 90%", "PM completion rate correlation"],
+    "logistics_tracking": ["Delay detection accuracy 100%", "Alert timeliness (within 2 hours of delay)", "Checklist generation 100%"]
+  }
+}

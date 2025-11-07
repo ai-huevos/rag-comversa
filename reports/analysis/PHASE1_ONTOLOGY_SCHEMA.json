@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ACIS Knowledge Graph Ontology - Phase 1",
+  "description": "Unified schema for Los Tajibos, Comversa, and Bolivian Foods operational knowledge",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-23",
+
+  "entities": {
+    "InterviewResponse": {
+      "description": "Manager interview response",
+      "properties": {
+        "meta": {
+          "company": {"type": "string", "enum": ["Los Tajibos", "Comversa", "Bolivian Foods"]},
+          "respondent": {"type": "string"},
+          "role": {"type": "string"},
+          "date": {"type": "string", "format": "date"}
+        },
+        "responsibilities": {"type": "array", "items": {"type": "string"}},
+        "daily_process": {
+          "type": "array",
+          "items": {
+            "step": {"type": "integer"},
+            "description": {"type": "string"},
+            "systems": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "tools_stack": {"type": "array", "items": {"type": "string"}},
+        "critical_steps": {
+          "type": "array",
+          "items": {
+            "name": {"type": "string"},
+            "why": {"type": "string"}
+          }
+        },
+        "pain_points": {
+          "type": "array",
+          "items": {
+            "type": {"type": "string", "enum": ["Process", "Data", "Systems", "Culture"]},
+            "detail": {"type": "string"}
+          }
+        },
+        "inefficiencies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "examples": ["double-entry", "manual approvals", "reactive maintenance", "slow feedback"]
+        },
+        "improvements": {"type": "array", "items": {"type": "string"}},
+        "success_metrics": {
+          "type": "array",
+          "items": {
+            "metric": {"type": "string"},
+            "baseline": {"type": "string"},
+            "target": {"type": "string"},
+            "cadence": {"type": "string", "enum": ["hourly", "daily", "weekly", "monthly", "quarterly", "annual"]}
+          }
+        }
+      }
+    },
+
+    "Process": {
+      "description": "Business process definition",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "owner": {"type": "string"},
+        "company": {"type": "string"},
+        "domain": {"type": "string", "enum": ["Finance", "Operations", "Maintenance", "Sales", "IT", "HR", "Logistics", "Legal"]},
+        "inputs": {"type": "array", "items": {"type": "string"}},
+        "outputs": {"type": "array", "items": {"type": "string"}},
+        "systems": {"type": "array", "items": {"type": "string"}},
+        "slas": {
+          "type": "object",
+          "properties": {
+            "response_time": {"type": "string"},
+            "completion_time": {"type": "string"},
+            "quality_target": {"type": "string"}
+          }
+        },
+        "frequency": {"type": "string"},
+        "dependencies": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "System": {
+      "description": "Software system or tool",
+      "properties": {
+        "name": {"type": "string"},
+        "domain": {"type": "string"},
+        "vendor": {"type": "string"},
+        "type": {"type": "string", "enum": ["ERP", "PMS", "POS", "CRM", "CMMS", "BI", "Productivity", "Communication"]},
+        "companies_using": {"type": "array", "items": {"type": "string"}},
+        "integration_points": {"type": "array", "items": {"type": "string"}},
+        "owners": {"type": "array", "items": {"type": "string"}},
+        "data_tables": {"type": "array", "items": {"type": "string"}},
+        "usage_frequency": {"type": "integer"},
+        "pain_points": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "KPI": {
+      "description": "Key Performance Indicator",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "domain": {"type": "string"},
+        "definition": {"type": "string"},
+        "formula": {"type": "string"},
+        "owner": {"type": "string"},
+        "data_source": {"type": "string"},
+        "baseline": {"type": "string"},
+        "target": {"type": "string"},
+        "cadence": {"type": "string"},
+        "threshold_critical": {"type": "string"},
+        "threshold_warning": {"type": "string"},
+        "related_processes": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "AutomationCandidate": {
+      "description": "Process automation opportunity",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "process": {"type": "string"},
+        "trigger": {"type": "string"},
+        "action": {"type": "string"},
+        "output": {"type": "string"},
+        "owner": {"type": "string"},
+        "tier": {"type": "integer", "enum": [1, 2, 3]},
+        "complexity": {"type": "string", "enum": ["Low", "Medium", "High"]},
+        "impact": {"type": "string", "enum": ["Low", "Medium", "High", "Critical"]},
+        "effort_days": {"type": "integer"},
+        "roi_estimate": {"type": "string"},
+        "dependencies": {"type": "array", "items": {"type": "string"}},
+        "affected_roles": {"type": "array", "items": {"type": "string"}},
+        "systems_involved": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "AgentPlaybook": {
+      "description": "AI Agent operational playbook",
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "purpose": {"type": "string"},
+        "trigger_conditions": {"type": "array", "items": {"type": "string"}},
+        "context_required": {"type": "array", "items": {"type": "string"}},
+        "prompt_template": {"type": "string"},
+        "output_schema": {"type": "object"},
+        "guardrails": {
+          "type": "object",
+          "properties": {
+            "allowed_actions": {"type": "array", "items": {"type": "string"}},
+            "forbidden_actions": {"type": "array", "items": {"type": "string"}},
+            "escalation_conditions": {"type": "array", "items": {"type": "string"}},
+            "human_handoff_triggers": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "audit_requirements": {"type": "array", "items": {"type": "string"}},
+        "related_sops": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "PainPoint": {
+      "description": "Identified operational friction point",
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"type": "string", "enum": ["Process", "Data", "Systems", "Culture", "Training", "Approval", "Integration"]},
+        "description": {"type": "string"},
+        "affected_roles": {"type": "array", "items": {"type": "string"}},
+        "affected_processes": {"type": "array", "items": {"type": "string"}},
+        "frequency": {"type": "string", "enum": ["Daily", "Weekly", "Monthly", "Occasional"]},
+        "severity": {"type": "string", "enum": ["Low", "Medium", "High", "Critical"]},
+        "impact_description": {"type": "string"},
+        "proposed_solutions": {"type": "array", "items": {"type": "string"}},
+        "related_automations": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+
+  "knowledge_graph_structure": {
+    "description": "Relationships between entities",
+    "relationships": {
+      "Role_owns_Process": {"from": "InterviewResponse.meta.role", "to": "Process.owner"},
+      "Process_uses_System": {"from": "Process.systems", "to": "System.name"},
+      "Process_measures_KPI": {"from": "Process.id", "to": "KPI.related_processes"},
+      "KPI_sources_from_System": {"from": "KPI.data_source", "to": "System.name"},
+      "PainPoint_affects_Process": {"from": "PainPoint.affected_processes", "to": "Process.id"},
+      "AutomationCandidate_solves_PainPoint": {"from": "AutomationCandidate.id", "to": "PainPoint.related_automations"},
+      "AgentPlaybook_automates_Process": {"from": "AgentPlaybook.id", "to": "Process.id"}
+    }
+  },
+
+  "metadata": {
+    "data_sources": [
+      "Manager interviews (44 total across 3 companies)",
+      "System analysis (12 core systems identified)",
+      "Process documentation",
+      "Pain point extraction (84 identified)"
+    ],
+    "coverage": {
+      "Los_Tajibos": "18 interviews, Hotel operations focus",
+      "Comversa": "13 interviews, Construction & Real Estate focus",
+      "Bolivian_Foods": "13 interviews, Restaurant franchise operations focus"
+    }
+  }
+}

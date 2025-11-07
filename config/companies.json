@@ -1,0 +1,88 @@
+{
+  "holding_name": "Comversa Group",
+  "companies": [
+    {
+      "name": "Hotel Los Tajibos",
+      "business_units": [
+        {
+          "name": "Hospitality",
+          "aliases": ["Hospedaje", "Habitaciones", "Rooms"],
+          "departments": ["Recepción", "Housekeeping", "Reservas", "Concierge"]
+        },
+        {
+          "name": "Food & Beverage",
+          "aliases": ["Alimentos y Bebidas", "A&B", "F&B"],
+          "departments": ["Restaurantes", "Bares", "Buffet", "Cocina", "Room Service"]
+        },
+        {
+          "name": "Events & Catering",
+          "aliases": ["Eventos", "Banquetes"],
+          "departments": ["Eventos Corporativos", "Eventos Sociales", "Catering"]
+        },
+        {
+          "name": "Shared Services",
+          "aliases": ["Servicios Compartidos", "Soporte"],
+          "departments": ["IT", "Finanzas", "RRHH", "Compras", "Ingeniería", "Mantenimiento"]
+        }
+      ],
+      "industry_context": "Hospitality"
+    },
+    {
+      "name": "Comversa",
+      "business_units": [
+        {
+          "name": "Construction",
+          "aliases": ["Construcción", "Obras"],
+          "departments": ["Proyectos", "Ingeniería Civil", "Supervisión de Obras"]
+        },
+        {
+          "name": "Real Estate Management",
+          "aliases": ["Gestión Inmobiliaria", "Administración de Propiedades"],
+          "departments": ["Administración", "Mantenimiento de Edificios", "Atención al Cliente"]
+        },
+        {
+          "name": "Real Estate Investment",
+          "aliases": ["Inversión Inmobiliaria", "Desarrollo"],
+          "departments": ["Análisis de Inversiones", "Desarrollo de Proyectos", "Finanzas"]
+        },
+        {
+          "name": "Building Maintenance",
+          "aliases": ["Mantenimiento", "Facility Management"],
+          "departments": ["Mantenimiento Preventivo", "Mantenimiento Correctivo", "Servicios Generales"]
+        },
+        {
+          "name": "Corporate",
+          "aliases": ["Corporativo"],
+          "departments": ["Dirección General", "Finanzas", "Legal", "RRHH"]
+        }
+      ],
+      "industry_context": "Real Estate & Construction"
+    },
+    {
+      "name": "Bolivian Foods",
+      "business_units": [
+        {
+          "name": "Manufacturing",
+          "aliases": ["Producción", "Planta"],
+          "departments": ["Producción", "Control de Calidad", "Almacén de Materias Primas", "Mantenimiento Industrial"]
+        },
+        {
+          "name": "Franchise Operations",
+          "aliases": ["Franquicias", "Operaciones de Franquicia"],
+          "departments": ["Desarrollo de Franquicias", "Soporte a Franquiciados", "Auditoría de Franquicias"]
+        },
+        {
+          "name": "Distribution",
+          "aliases": ["Distribución", "Logística"],
+          "departments": ["Logística", "Almacén", "Transporte", "Ventas"]
+        },
+        {
+          "name": "Corporate",
+          "aliases": ["Corporativo"],
+          "departments": ["Dirección General", "Finanzas", "Marketing", "RRHH", "Compras"]
+        }
+      ],
+      "industry_context": "Food Manufacturing & Retail"
+    }
+  ]
+}

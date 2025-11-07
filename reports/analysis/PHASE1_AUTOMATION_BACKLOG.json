@@ -1,0 +1,477 @@
+{
+  "title": "Phase 1 Automation Backlog - Prioritized by Impact/Effort",
+  "version": "1.0.0",
+  "generated": "2025-10-23",
+  "methodology": "Impact/Effort matrix scoring (1-5 scale each), ROI = Impact / Effort",
+
+  "scoring_criteria": {
+    "impact": {
+      "5_critical": "Eliminates major bottleneck, affects multiple departments, > $50K annual value",
+      "4_high": "Significantly reduces friction, department-wide benefit, $20-50K annual value",
+      "3_medium": "Meaningful improvement, team-level benefit, $10-20K annual value",
+      "2_low": "Nice-to-have, individual benefit, $5-10K annual value",
+      "1_minimal": "Marginal improvement, < $5K annual value"
+    },
+    "effort": {
+      "5_very_high": "> 90 days, multiple systems, high complexity, requires vendors",
+      "4_high": "60-90 days, significant integration, medium-high complexity",
+      "3_medium": "30-60 days, moderate integration, standard complexity",
+      "2_low": "15-30 days, simple integration or configuration",
+      "1_minimal": "< 15 days, configuration only, no integration"
+    }
+  },
+
+  "tier_1_quick_wins": {
+    "description": "60-90 day implementations, high ROI, foundational automations",
+    "automations": [
+      {
+        "id": "AUTO-T1-001",
+        "name": "Single Intake Router + Auto-Acknowledgment",
+        "process": "Request intake across all departments",
+        "trigger": "WhatsApp Business, Email to intake@, Web form submission",
+        "action": "Classify request, route to appropriate system (MaintainX, ServiceDesk, Jira, Manual), assign owner, set SLA, send acknowledgment",
+        "output": "Ticket created, requester notified with ID and SLA",
+        "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+        "affected_roles": ["All staff (requesters)", "Jefe de Ingeniería", "Analista TI", "Jefe Nacional de Sistemas", "Legal", "Logistics"],
+        "systems_involved": ["WhatsApp Business API", "Email gateway", "MaintainX", "ServiceDesk Plus", "Jira", "Claude API"],
+        "impact_score": 5,
+        "impact_rationale": "Eliminates scattered communication (WhatsApp/email/verbal), reduces lost requests, improves SLA tracking, affects ALL departments",
+        "effort_score": 2,
+        "effort_rationale": "WhatsApp Business API setup + Claude classification + routing logic; minimal integration complexity",
+        "roi": 2.5,
+        "estimated_effort_days": 20,
+        "estimated_annual_value": "$45,000 (time saved: ~15 min/request × 50 requests/day × 250 days)",
+        "dependencies": ["WhatsApp Business account", "MaintainX/ServiceDesk API access", "Classification training data"],
+        "risks": ["Initial classification accuracy may be 70-80%, requires tuning"],
+        "success_metrics": ["80% requests via intake by Month 1", "Classification accuracy > 85%", "SLA compliance tracked 100%"]
+      },
+
+      {
+        "id": "AUTO-T1-002",
+        "name": "POS-ERP Daily Reconciliation Bot",
+        "process": "Daily sales reconciliation",
+        "trigger": "Daily EOD close (7:00 AM scheduled run)",
+        "action": "Extract POS data (Opera/Simphony/Micros), extract ERP data (Satcom/CMNET), match transactions, identify exceptions, classify by reason code, generate report, alert Finance if critical",
+        "output": "Daily exception report (CSV + summary email), trend analysis",
+        "companies": ["Los Tajibos", "Bolivian Foods"],
+        "affected_roles": ["Gerente de Contabilidad (LTH)", "Contador Senior (BF)", "Gerente de Control de Gestión", "Jefe de Cajas"],
+        "systems_involved": ["Opera PMS", "Simphony", "Micros", "Satcom", "CMNET", "Excel", "Email"],
+        "impact_score": 4,
+        "impact_rationale": "Eliminates 2-3 hours/day manual reconciliation, reduces month-end close time, catches errors early",
+        "effort_score": 2,
+        "effort_rationale": "Data extraction from APIs + matching logic + reporting; moderate scripting, low integration complexity",
+        "roi": 2.0,
+        "estimated_effort_days": 25,
+        "estimated_annual_value": "$35,000 (time saved: 2.5 hrs/day × $25/hr × 250 days + error reduction)",
+        "dependencies": ["Opera/Simphony API access", "Satcom data export", "Exception classification rules from Finance"],
+        "risks": ["POS-ERP schema mapping may need manual validation initially"],
+        "success_metrics": ["Daily report generated 100%", "Exception detection rate 100%", "False positive rate < 5%", "Finance team time saved > 2 hrs/day"]
+      },
+
+      {
+        "id": "AUTO-T1-003",
+        "name": "Preventive Maintenance Auto-Scheduler with Parts Check",
+        "process": "PM scheduling and parts availability",
+        "trigger": "Monthly calendar generation, Equipment due per intervals",
+        "action": "Identify assets due for PM, check spare parts in SAP/CMNET, flag shortages, optimize schedule (criticality, blackouts, capacity), create MaintainX work orders with checklists, assign technicians, notify Operations",
+        "output": "Monthly PM schedule, parts reorder alerts, work orders in MaintainX",
+        "companies": ["Los Tajibos", "Bolivian Foods"],
+        "affected_roles": ["Gerente de Ingeniería (LTH)", "Jefe de Ingeniería", "Jefe Nacional de Mantenimiento (BF)", "Subgerente de Logística"],
+        "systems_involved": ["MaintainX", "SAP", "CMNET", "Excel (asset register)"],
+        "impact_score": 5,
+        "impact_rationale": "Shifts from reactive to preventive maintenance, reduces emergency repairs, extends equipment life, prevents stockouts",
+        "effort_score": 3,
+        "effort_rationale": "Asset register integration + MaintainX API + SAP inventory check + scheduling optimization logic",
+        "roi": 1.67,
+        "estimated_effort_days": 35,
+        "estimated_annual_value": "$60,000 (reduced downtime: ~10 critical failures avoided × $5K each + PM time saved)",
+        "dependencies": ["Asset register with PM frequencies", "MaintainX deployment", "SAP/CMNET inventory API", "Critical spare parts list"],
+        "risks": ["Asset register may be incomplete, requiring manual data cleanup"],
+        "success_metrics": ["PM completion rate > 70% Month 1, > 85% Month 3", "Preventive vs reactive ratio 40% → 60%", "Parts stockout delays < 10%"]
+      },
+
+      {
+        "id": "AUTO-T1-004",
+        "name": "Contract Template Router with SLA Tracking",
+        "process": "Contract generation and legal review",
+        "trigger": "Sales closed (Comversa), Event confirmed (LTH), Vendor agreement needed",
+        "action": "Select contract template, populate with deal terms, route to Legal with SLA timer, track review progress, alert if SLA approaching, capture changes/feedback, finalize and route for signatures",
+        "output": "Contract draft to Legal, SLA dashboard, signed contract archived",
+        "companies": ["Comversa", "Los Tajibos"],
+        "affected_roles": ["Directora Legal (Comversa)", "Directora Comercial SC", "Director Comercial LP", "Directora de Eventos (LTH)"],
+        "systems_involved": ["Contract template library", "DocuSign or similar", "Email", "Document repository"],
+        "impact_score": 4,
+        "impact_rationale": "Major bottleneck resolved (15-30 day delays → < 10 days), accelerates sales cycle, improves cash flow",
+        "effort_score": 2,
+        "effort_rationale": "Template library setup + workflow routing + SLA tracking; low integration complexity",
+        "roi": 2.0,
+        "estimated_effort_days": 20,
+        "estimated_annual_value": "$40,000 (accelerated cash flow from faster closings + Legal time saved)",
+        "dependencies": ["Contract template library creation", "Legal review SLA definition", "Digital signature tool"],
+        "risks": ["Template coverage may not be 100%, some contracts still need custom drafting"],
+        "success_metrics": ["Contract signature cycle time < 10 days", "Template usage > 70% of contracts", "SLA compliance > 85%"]
+      },
+
+      {
+        "id": "AUTO-T1-005",
+        "name": "Housekeeping Room Readiness Tracker",
+        "process": "Room cleaning and inspection workflow",
+        "trigger": "Guest check-out in Opera, Arrival scheduled, Room status change",
+        "action": "Generate cleaning task, assign to housekeeping, track progress, alert on lencería shortages, trigger inspection, update Opera room status, notify Front Desk when ready",
+        "output": "Real-time room status, readiness ETA, lencería alerts",
+        "companies": ["Los Tajibos"],
+        "affected_roles": ["Jefa de Housekeeping", "Jefe de Recepción", "Directora de Operaciones"],
+        "systems_involved": ["Opera PMS", "MaintainX or task management system", "WhatsApp/Teams"],
+        "impact_score": 3,
+        "impact_rationale": "Improves guest satisfaction (faster check-in), reduces coordination overhead, tracks SLA (< 30 min response time)",
+        "effort_score": 2,
+        "effort_rationale": "Opera PMS integration + task workflow + notification logic",
+        "roi": 1.5,
+        "estimated_effort_days": 25,
+        "estimated_annual_value": "$18,000 (time saved in coordination + guest satisfaction improvement)",
+        "dependencies": ["Opera PMS API access", "Housekeeping task system (MaintainX or alternative)", "Lencería inventory baseline"],
+        "risks": ["Opera API limitations may require workarounds"],
+        "success_metrics": ["Room readiness SLA < 30 min cleaning, < 45 min total", "Lencería stockouts flagged proactively", "Housekeeping coordination time reduced 50%"]
+      },
+
+      {
+        "id": "AUTO-T1-006",
+        "name": "Approval Fast-Track with Auto-Routing",
+        "process": "Purchase orders, Payment requests, Budget variances",
+        "trigger": "Approval request submitted",
+        "action": "Validate documentation completeness, determine approval path per authority matrix, route to first approver, send notifications, track SLA, auto-escalate if approaching deadline, log all approvals",
+        "output": "Approval status dashboard, SLA compliance tracking, audit trail",
+        "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+        "affected_roles": ["All managers (approvers)", "Subgerente de Logística (BF)", "Gerente de Construcciones (Comversa)", "Sub Gerente Tesorería"],
+        "systems_involved": ["SAP", "CMNET", "Email", "Digital signature", "Workflow system"],
+        "impact_score": 4,
+        "impact_rationale": "Eliminates approval bottlenecks (3-7 days → < 3 days), improves supplier relations, enables timely procurement",
+        "effort_score": 3,
+        "effort_rationale": "Workflow engine setup + approval matrix configuration + integration with SAP/CMNET + notification system",
+        "roi": 1.33,
+        "estimated_effort_days": 40,
+        "estimated_annual_value": "$38,000 (time saved in approvals + avoided delays + supplier discounts for prompt payment)",
+        "dependencies": ["Approval authority matrix finalized", "Digital signature tool", "Integration with SAP/CMNET"],
+        "risks": ["Change management: managers must adopt digital approval workflow"],
+        "success_metrics": ["Approval cycle time < 3 days for standard, < 24h for urgent", "SLA compliance > 90%", "Escalation rate < 10%"]
+      }
+    ],
+    "tier_1_total_value": "$236,000 annual estimated value",
+    "tier_1_total_effort": "165 days (can be parallelized across ~2-3 months with team)"
+  },
+
+  "tier_2_high_value": {
+    "description": "3-6 month implementations, significant ROI, domain-specific automations",
+    "automations": [
+      {
+        "id": "AUTO-T2-001",
+        "name": "Recipe Costing Agent with Live Pricing",
+        "process": "Recipe creation and menu costing",
+        "trigger": "New recipe submitted, Recipe modified, Weekly price refresh",
+        "action": "Extract ingredients from recipe, query SAP for latest prices, calculate cost per serving, recommend selling price per target margin, flag if price > 30 days old, attach photo, route for approval to Costos and Chef",
+        "output": "Costed recipe sheet, price recommendations, approval workflow",
+        "companies": ["Los Tajibos"],
+        "affected_roles": ["Chef Ejecutivo", "Gerente de Costos CC"],
+        "systems_involved": ["SAP", "Recipe database", "Word/Excel (input)", "Approval workflow"],
+        "impact_score": 4,
+        "impact_rationale": "Reduces costing time 3-5 days → < 4 hours, enables dynamic menu pricing, improves food cost % control",
+        "effort_score": 3,
+        "effort_rationale": "SAP price API + recipe parsing (NLP) + cost calculation + workflow integration; moderate complexity",
+        "roi": 1.33,
+        "estimated_effort_days": 45,
+        "estimated_annual_value": "$32,000 (time saved: 3 days/recipe × 30 recipes/year + 0.5% food cost improvement)",
+        "dependencies": ["SAP ingredient master data cleanup", "Recipe database or structured input format", "Target margin policies defined"],
+        "risks": ["Ingredient matching may require manual validation for new items"],
+        "success_metrics": ["Costing turnaround time < 4 hours", "Approval rate > 85%", "Food cost % variance reduced"]
+      },
+
+      {
+        "id": "AUTO-T2-002",
+        "name": "Buffet Demand Forecaster",
+        "process": "Buffet production planning",
+        "trigger": "Daily forecast run (48h before service), Occupancy update",
+        "action": "Extract occupancy forecast (Opera), analyze historical consumption patterns, apply seasonality factors, calculate production range (± 10%), generate prep list, integrate with daily kitchen schedule",
+        "output": "Production forecast with confidence range, prep list",
+        "companies": ["Los Tajibos"],
+        "affected_roles": ["Chef Ejecutivo", "Sous Chef", "Kitchen team"],
+        "systems_involved": ["Opera PMS", "Historical consumption database", "Kitchen planning system"],
+        "impact_score": 3,
+        "impact_rationale": "Reduces food waste (currently high), improves guest satisfaction (reduces shortages), optimizes labor",
+        "effort_score": 4,
+        "effort_rationale": "Historical data analysis + forecasting model (ML) + Opera integration + kitchen system integration",
+        "roi": 0.75,
+        "estimated_effort_days": 50,
+        "estimated_annual_value": "$22,000 (waste reduction: 3% → 1.5% of buffet cost ~$150K annual = $2.25K + labor optimization)",
+        "dependencies": ["Historical consumption data (6-12 months)", "Occupancy forecast accuracy", "Seasonality analysis"],
+        "risks": ["Special events and groups may skew forecasts, requires override capability"],
+        "success_metrics": ["Forecast accuracy ± 15% variance", "Food waste reduction 3% → < 2%", "Guest complaints about shortages < 5/month"]
+      },
+
+      {
+        "id": "AUTO-T2-003",
+        "name": "Logistics Tracking Hub with Delay Alerts",
+        "process": "Import and domestic shipment tracking",
+        "trigger": "PO issued, Tracking number received, Scheduled status refresh (8 AM, 2 PM)",
+        "action": "Query carrier APIs (DHL, ASPB, MAERSK, DELPA), calculate transit time vs expected, detect delays, classify severity, alert logistics team and destination, generate receiving checklist (safety/inocuity), notify 24h before arrival",
+        "output": "Tracking dashboard, delay alerts, receiving checklists",
+        "companies": ["Comversa", "Bolivian Foods"],
+        "affected_roles": ["Supervisora Nacional de Logística (BF)", "Subgerente de Logística", "CD teams", "Gerente de Construcciones (Comversa)"],
+        "systems_involved": ["DHL, ASPB, MAERSK, DELPA APIs", "CMNET", "Email", "WhatsApp"],
+        "impact_score": 4,
+        "impact_rationale": "Eliminates manual email tracking, proactive delay management, improves OTIF, enables better receiving preparation",
+        "effort_score": 4,
+        "effort_rationale": "Multi-carrier API integration + delay detection logic + receiving checklist templates + notification system",
+        "roi": 1.0,
+        "estimated_effort_days": 55,
+        "estimated_annual_value": "$30,000 (time saved: 1 hr/day tracking + delay cost avoidance + receiving efficiency)",
+        "dependencies": ["Carrier API access/keys", "Expected delivery time baselines", "Receiving checklist templates (safety/inocuity)"],
+        "risks": ["Carrier API reliability may vary, need fallback to manual checks"],
+        "success_metrics": ["Tracking coverage > 90% of shipments", "Delay alerts within 2 hours of detection", "OTIF baseline → 75% by Month 6"]
+      },
+
+      {
+        "id": "AUTO-T2-004",
+        "name": "KPI Data Validation & Auto-Reporting",
+        "process": "Monthly KPI collection and validation",
+        "trigger": "Monthly data drop from business units (Day 1 of month)",
+        "action": "Extract data from source systems (SAP, Opera, CMNET, etc.), apply schema validation, reconcile against auxiliaries, flag distortions, request clarifications, generate clean dataset, populate presentation templates, send to Finance/Control de Gestión",
+        "output": "Validated KPI dataset, exception log, presentation-ready reports",
+        "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+        "affected_roles": ["Jefe de Finanzas y Proyectos (Comversa)", "Gerente de Control de Gestión (LTH)", "Coordinadora Nacional de Control de Gestión (BF)"],
+        "systems_involved": ["SAP", "Opera", "CMNET", "Excel", "Power BI", "PowerPoint"],
+        "impact_score": 3,
+        "impact_rationale": "Reduces manual reconciliation and reclassification time, improves KPI accuracy, accelerates reporting",
+        "effort_score": 4,
+        "effort_rationale": "Multi-system data extraction + validation rules + reconciliation logic + presentation generation; high integration complexity",
+        "roi": 0.75,
+        "estimated_effort_days": 60,
+        "estimated_annual_value": "$25,000 (time saved: 3 days/month × $120/day × 12 months + error reduction)",
+        "dependencies": ["KPI schema definitions", "Source system APIs", "Validation rules from Finance", "Presentation templates"],
+        "risks": ["Source data quality issues may require manual intervention initially"],
+        "success_metrics": ["KPI accuracy > 92% by Month 6", "Reporting time reduced 3 days → 1 day", "Exception rate < 10%"]
+      },
+
+      {
+        "id": "AUTO-T2-005",
+        "name": "IT Incident Auto-Classification & Routing",
+        "process": "IT support ticket management",
+        "trigger": "Ticket created in ServiceDesk Plus, Email to IT support",
+        "action": "Parse ticket description, classify issue type (network, hardware, software, access), determine urgency, assign to appropriate team/technician, set SLA, send acknowledgment, escalate if SLA approaching",
+        "output": "Classified and routed tickets, SLA tracking",
+        "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+        "affected_roles": ["Analista TI (LTH)", "Subgerente TI (Comversa)", "Jefe Nacional de Sistemas (BF)"],
+        "systems_involved": ["ServiceDesk Plus", "Jira", "Email", "Claude API"],
+        "impact_score": 3,
+        "impact_rationale": "Reduces ticket triage time, improves SLA compliance, enables better capacity planning",
+        "effort_score": 2,
+        "effort_rationale": "ServiceDesk API + classification model (Claude) + routing logic; low-medium complexity",
+        "roi": 1.5,
+        "estimated_effort_days": 30,
+        "estimated_annual_value": "$18,000 (time saved: 30 min/day triage × 250 days + SLA compliance improvement)",
+        "dependencies": ["ServiceDesk Plus API", "Historical ticket data for training", "IT team structure and assignment rules"],
+        "risks": ["Classification accuracy may start at 75-80%, requires tuning"],
+        "success_metrics": ["Classification accuracy > 85%", "Ticket routing time < 15 min", "SLA compliance > 90%"]
+      },
+
+      {
+        "id": "AUTO-T2-006",
+        "name": "Commercial CRM with Funnel Tracking",
+        "process": "Sales pipeline management",
+        "trigger": "Lead generated, Visit scheduled, Quote sent, Contract signed",
+        "action": "Capture lead source, track interactions (calls, visits, emails), record quote details, calculate conversion rates, flag stalled opportunities, generate sales reports, integrate with Opera (LTH) / contract system (Comversa)",
+        "output": "CRM database, funnel metrics dashboard, sales reports",
+        "companies": ["Comversa", "Los Tajibos"],
+        "affected_roles": ["Directora Comercial SC (Comversa)", "Director Comercial LP", "Gerente de Ventas B2B (LTH)", "Directora de Marketing y Ventas"],
+        "systems_involved": ["CRM system (new)", "Excel (migration)", "Opera PMS", "Email", "WhatsApp"],
+        "impact_score": 4,
+        "impact_rationale": "Major visibility improvement, enables pipeline forecasting, identifies conversion bottlenecks, improves sales management",
+        "effort_score": 5,
+        "effort_rationale": "CRM platform selection + deployment + data migration + training + integration with Opera/contract system; high complexity",
+        "roi": 0.8,
+        "estimated_effort_days": 75,
+        "estimated_annual_value": "$55,000 (improved conversion: 1-2% increase in close rate on ~$2M pipeline + sales team efficiency)",
+        "dependencies": ["CRM platform decision", "Historical sales data cleanup", "Sales process standardization"],
+        "risks": ["User adoption challenge (Excel → CRM transition)", "Data migration may be incomplete"],
+        "success_metrics": ["CRM adoption > 80% by Month 6", "Funnel metrics tracked 100%", "Lead-to-visit conversion baseline → +15%"]
+      }
+    ],
+    "tier_2_total_value": "$182,000 annual estimated value",
+    "tier_2_total_effort": "315 days (can be parallelized across ~3-6 months)"
+  },
+
+  "tier_3_strategic": {
+    "description": "6-12 month implementations, transformational impact, complex integrations",
+    "automations": [
+      {
+        "id": "AUTO-T3-001",
+        "name": "Enterprise Data Warehouse with BI Dashboards",
+        "process": "Consolidated data analytics",
+        "trigger": "Continuous ETL, User queries, Scheduled reports",
+        "action": "ETL from all source systems (Opera, SAP, CMNET, Simphony, Satcom, etc.), normalize to common schema, build star schema data models, create Power BI dashboards per role, enable self-service analytics, automate executive reporting",
+        "output": "Unified data warehouse, role-based dashboards, automated reports",
+        "companies": ["Los Tajibos", "Comversa", "Bolivian Foods"],
+        "affected_roles": ["All managers and executives", "Control de Gestión", "Finance", "Operations"],
+        "systems_involved": ["Opera", "SAP", "CMNET", "Simphony", "Satcom", "SQL Server or cloud DW", "Power BI"],
+        "impact_score": 5,
+        "impact_rationale": "Transformational: single source of truth, eliminates manual reporting, enables data-driven decisions, foundation for advanced analytics/AI",
+        "effort_score": 5,
+        "effort_rationale": "Multi-system ETL + data modeling + DW infrastructure + dashboard development + training; very high complexity",
+        "roi": 1.0,
+        "estimated_effort_days": 180,
+        "estimated_annual_value": "$150,000 (reporting time saved across all companies + decision quality improvement + enables advanced analytics)",
+        "dependencies": ["Data governance framework", "Source system access/APIs", "BI tool licensing", "Data analyst resources"],
+        "risks": ["Scope creep risk (start with core KPIs only)", "Data quality issues require cleanup"],
+        "success_metrics": ["Core KPIs available in DW by Month 6", "Monthly reporting time reduced 50%", "User adoption > 70% by Month 12"]
+      },
+
+      {
+        "id": "AUTO-T3-002",
+        "name": "AI-Powered Chatbot for Guest/Customer Service",
+        "process": "Guest inquiries, reservations, FAQs",
+        "trigger": "Message received via web, WhatsApp, social media",
+        "action": "Classify inquiry type, respond to FAQs from knowledge base, check availability (Opera API), quote rates, escalate complex queries to human agents, log all interactions, analyze sentiment",
+        "output": "Automated responses, escalated tickets, interaction analytics",
+        "companies": ["Los Tajibos"],
+        "affected_roles": ["Jefe de Recepción", "Call Center", "Directora de Marketing y Ventas"],
+        "systems_involved": ["WhatsApp Business API", "Web chat", "Social media platforms", "Opera PMS", "Claude or similar LLM", "CRM"],
+        "impact_score": 4,
+        "impact_rationale": "Improves guest experience (24/7 availability), reduces call center load, captures after-hours inquiries, enables multilingual support",
+        "effort_score": 5,
+        "effort_rationale": "Multi-channel integration + LLM fine-tuning + Opera integration + knowledge base creation + handoff logic; high complexity",
+        "roi": 0.8,
+        "estimated_effort_days": 90,
+        "estimated_annual_value": "$50,000 (call center time saved + after-hours conversion + guest satisfaction improvement)",
+        "dependencies": ["Knowledge base content creation", "Opera API for availability", "LLM platform selection", "Escalation workflows"],
+        "risks": ["Guest expectations for human touch may limit chatbot scope", "Language/cultural nuances require careful tuning"],
+        "success_metrics": ["FAQ resolution rate > 60%", "Call center volume reduced 20%", "Guest satisfaction maintained or improved"]
+      },
+
+      {
+        "id": "AUTO-T3-003",
+        "name": "Predictive Maintenance with IoT Sensors",
+        "process": "Equipment condition monitoring",
+        "trigger": "Sensor data thresholds exceeded, Scheduled analysis runs",
+        "action": "Collect sensor data (temperature, vibration, pressure), analyze trends, predict failures before they occur, generate preemptive work orders, optimize PM schedules based on actual condition, track equipment health",
+        "output": "Predictive maintenance alerts, condition-based PM schedules, equipment health dashboard",
+        "companies": ["Los Tajibos", "Bolivian Foods"],
+        "affected_roles": ["Gerente de Ingeniería", "Jefe Nacional de Mantenimiento"],
+        "systems_involved": ["IoT sensors (new)", "MaintainX", "Data analytics platform", "SAP (parts ordering)"],
+        "impact_score": 5,
+        "impact_rationale": "Prevents unplanned downtime, extends equipment life, optimizes PM frequency, reduces maintenance costs 15-25%",
+        "effort_score": 5,
+        "effort_rationale": "IoT sensor deployment + connectivity + data platform + ML model development + MaintainX integration; very high complexity and cost",
+        "roi": 1.0,
+        "estimated_effort_days": 120,
+        "estimated_annual_value": "$80,000 (downtime avoided + extended equipment life + optimized PM labor)",
+        "dependencies": ["IoT platform selection", "Sensor installation on critical assets", "Baseline equipment health data", "ML/analytics expertise"],
+        "risks": ["High upfront sensor costs", "Connectivity challenges in some locations", "Requires 6-12 months data collection for accurate predictions"],
+        "success_metrics": ["Unplanned downtime reduced 30%", "Equipment life extended 15%", "PM frequency optimized (reduced for healthy assets, increased for declining)"]
+      }
+    ],
+    "tier_3_total_value": "$280,000 annual estimated value",
+    "tier_3_total_effort": "390 days (requires 6-12 months, significant investment)"
+  },
+
+  "implementation_roadmap": {
+    "phase_1_months_1_3": {
+      "focus": "Foundation - Quick Wins",
+      "automations": ["AUTO-T1-001", "AUTO-T1-002", "AUTO-T1-003", "AUTO-T1-004", "AUTO-T1-005", "AUTO-T1-006"],
+      "estimated_value": "$236,000 annual",
+      "estimated_effort": "165 days (parallelized across 3 months)",
+      "resources_required": "2 full-time developers, 1 business analyst, part-time subject matter experts",
+      "success_criteria": "6 Tier 1 automations live, 80% adoption, measurable time savings"
+    },
+    "phase_2_months_4_6": {
+      "focus": "Domain-Specific High Value",
+      "automations": ["AUTO-T2-001", "AUTO-T2-002", "AUTO-T2-003", "AUTO-T2-004", "AUTO-T2-005", "AUTO-T2-006"],
+      "estimated_value": "$182,000 annual",
+      "estimated_effort": "315 days (parallelized across 3-6 months)",
+      "resources_required": "3 full-time developers (add ML/BI specialist), 1 business analyst, SMEs",
+      "success_criteria": "6 Tier 2 automations live, KPI improvements measurable, user satisfaction > 80%"
+    },
+    "phase_3_months_7_12": {
+      "focus": "Strategic Transformations",
+      "automations": ["AUTO-T3-001", "AUTO-T3-002", "AUTO-T3-003"],
+      "estimated_value": "$280,000 annual",
+      "estimated_effort": "390 days (staged deployment over 6-12 months)",
+      "resources_required": "4 full-time developers, 1 data engineer, 1 ML engineer, 1 IoT specialist, 1 business analyst, vendor support",
+      "success_criteria": "Data warehouse operational, chatbot deployed, IoT pilot complete"
+    }
+  },
+
+  "portfolio_summary": {
+    "total_automations": 15,
+    "tier_1_count": 6,
+    "tier_2_count": 6,
+    "tier_3_count": 3,
+    "total_annual_value": "$698,000 (Year 1 partial, Year 2+ full realization)",
+    "total_effort_days": "870 days (parallelizable to 12-15 months calendar time)",
+    "average_roi": 1.26,
+    "highest_roi_items": [
+      "AUTO-T1-001 Intake Router (ROI 2.5)",
+      "AUTO-T1-002 Reconciliation Bot (ROI 2.0)",
+      "AUTO-T1-004 Contract Router (ROI 2.0)"
+    ]
+  },
+
+  "dependencies_cross_cutting": {
+    "infrastructure": [
+      "WhatsApp Business API setup",
+      "Claude API or similar LLM access",
+      "MaintainX full deployment",
+      "ServiceDesk Plus API enablement",
+      "SAP/CMNET API access/documentation"
+    ],
+    "data": [
+      "Asset register cleanup and completion",
+      "Historical data collection (consumption, maintenance, sales)",
+      "Source system schema documentation",
+      "Data governance policies"
+    ],
+    "organizational": [
+      "Approval authority matrices finalized",
+      "SLA definitions per process",
+      "Contract template library creation",
+      "Training and change management programs"
+    ]
+  },
+
+  "risk_mitigation": {
+    "technical_risks": [
+      "API availability/reliability → Build fallback mechanisms, monitor SLAs with vendors",
+      "Data quality issues → Phased data cleanup, validation rules, human oversight initially",
+      "Integration complexity → Start with APIs, use file exports as fallback, incremental integration"
+    ],
+    "organizational_risks": [
+      "User adoption challenges → Early involvement of users, training, gradual rollout, show quick wins",
+      "Process change resistance → Communicate benefits clearly, involve process owners, pilot programs",
+      "Competing priorities → Executive sponsorship, dedicated project resources, clear ROI communication"
+    ],
+    "business_risks": [
+      "Scope creep → Strict backlog prioritization, phased delivery, avoid feature bloat",
+      "Budget overruns → Start with low-effort/high-ROI items, prove value, secure additional funding",
+      "Vendor dependencies → Multi-vendor strategy where possible, contract SLAs, exit strategies"
+    ]
+  },
+
+  "success_metrics_portfolio": {
+    "business_outcomes": [
+      "Total time saved: > 5,000 hours/year across all companies by Month 12",
+      "Process cycle time reductions: 30-50% average across automated processes",
+      "Error rates: 50% reduction in reconciliation/data errors",
+      "Cost savings: $698K annual value realization by Year 2"
+    ],
+    "operational_kpis": [
+      "Automation adoption: > 80% of users engaging with automated processes",
+      "SLA compliance: > 85% across all tracked processes",
+      "System uptime: > 98% for critical automation systems",
+      "User satisfaction: > 75% satisfied or very satisfied with automations"
+    ],
+    "strategic_indicators": [
+      "Decision quality: Measurable improvement in data-driven decisions",
+      "Competitive advantage: Faster time-to-market, better customer experience",
+      "Scalability: Automation foundation enables growth without proportional headcount increases",
+      "Innovation readiness: Data infrastructure and automation culture enable advanced AI/ML initiatives"
+    ]
+  }
+}

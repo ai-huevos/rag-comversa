@@ -1,0 +1,21 @@
+# Environment variables (NEVER commit these!)
+.env
+
+# Python virtual environment
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Database (contains extracted data)
+intelligence.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

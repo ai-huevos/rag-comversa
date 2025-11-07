@@ -1,0 +1,947 @@
+{
+  "roles": [
+    {
+      "company": "",
+      "role": "Gerente De Ingenieria",
+      "name": "Ferrufino Hurtado Javier"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Contabilidad",
+      "name": "Mejia Mangudo Pamela Lucia"
+    },
+    {
+      "company": "",
+      "role": "Analista Ti",
+      "name": "Flores Javier"
+    },
+    {
+      "company": "",
+      "role": "Chef Ejecutivo",
+      "name": "Alcantara Menacho Diego Omar"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Ingenieria",
+      "name": "Cascales Gutierrez Maria Ines"
+    },
+    {
+      "company": "",
+      "role": "Sub Gerente General",
+      "name": "Barroso Sanchez Patricia Griselda"
+    },
+    {
+      "company": "",
+      "role": "Director Centro De Convenciones",
+      "name": "Fridda Roca"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Housekeeping",
+      "name": "Perez Gutierrez Selva Araceli"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Control De Gestion",
+      "name": "Rocabado Rocabado Maria Antonieta"
+    },
+    {
+      "company": "",
+      "role": "Directora De Operaciones",
+      "name": "Torres Laura"
+    },
+    {
+      "company": "",
+      "role": "Asist.Subgerencia",
+      "name": "Mendoza Salazar Martha Elizabeth"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Recepcion",
+      "name": "Schmitt Columba Wendy Alicia"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Costos Cc",
+      "name": "Paricollo Serrano Carlos Juvenal"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Cajas",
+      "name": "Santillan Pizarro Gualberto"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Informatica Y Tecnologia",
+      "name": "Arias Zuleta Pavel Josue"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Ventas B2B",
+      "name": "Coimbra Noriega Marcia Gaby"
+    },
+    {
+      "company": "",
+      "role": "Directora De Marketing Y Ventas",
+      "name": "Ayaviri Del Carpio Andrea"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Bar Y Centro De Proudccion",
+      "name": "Caceres Juan Pablo"
+    },
+    {
+      "company": "",
+      "role": "Presidente Ejecutivo",
+      "name": "Samuel Doria Medina Auza"
+    },
+    {
+      "company": "",
+      "role": "Directora Legal",
+      "name": "Gabriela Loza"
+    },
+    {
+      "company": "",
+      "role": "Directora Comercial Sc",
+      "name": "Camila Roca"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Finanzas Y Proyectos",
+      "name": "Luis Nogales"
+    },
+    {
+      "company": "",
+      "role": "Gerente Construcciones",
+      "name": "Gabriel Quinteros"
+    },
+    {
+      "company": "",
+      "role": "Analista Financiero",
+      "name": "Nicolas Monje"
+    },
+    {
+      "company": "",
+      "role": "Gerente Green Tower Sc",
+      "name": "Enzo Negron"
+    },
+    {
+      "company": "",
+      "role": "Director Comercial Lp",
+      "name": "Ezequiel Escobar"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Auditoria",
+      "name": "Gonzalo Cadena"
+    },
+    {
+      "company": "",
+      "role": "Sub Gerente Ti",
+      "name": "Alain Pacheco"
+    },
+    {
+      "company": "",
+      "role": "Jefe De Marketing Y Comunicacion",
+      "name": "Noemi Vergara"
+    },
+    {
+      "company": "",
+      "role": "Sub Gerente Tesoreria",
+      "name": "Juan Jose Castellon"
+    },
+    {
+      "company": "",
+      "role": "Gerente De Finanzas",
+      "name": "Gonzalo Belaunde"
+    },
+    {
+      "company": "",
+      "role": "Gerente Nacional De Operaciones Y Mantenimiento",
+      "name": "Carlos Camacho"
+    },
+    {
+      "company": "",
+      "role": "Supervisor Nacional De Tesoreria",
+      "name": "Moises Mamani"
+    },
+    {
+      "company": "",
+      "role": "Subgerente De Logistica Y Compras",
+      "name": "Antonio Alvarez"
+    },
+    {
+      "company": "",
+      "role": "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "name": "Alejandra Flores"
+    },
+    {
+      "company": "",
+      "role": "Analista Costos",
+      "name": "Carla Flores"
+    },
+    {
+      "company": "",
+      "role": "Auditor Interno",
+      "name": "Mauricio Clavijo"
+    },
+    {
+      "company": "",
+      "role": "Gerente General",
+      "name": "Patricia Urdininea"
+    },
+    {
+      "company": "",
+      "role": "Coordinadora Nacional De Control De Gestion",
+      "name": "Micaela Gonzales"
+    },
+    {
+      "company": "",
+      "role": "Jefe Nacional De Sistemas",
+      "name": "Alvaro Coila"
+    },
+    {
+      "company": "",
+      "role": "Gerente Nacional De Administracion Y Finanzas",
+      "name": "Fabian Doria Medina"
+    },
+    {
+      "company": "",
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "name": "Luis La Fuente"
+    },
+    {
+      "company": "",
+      "role": "Supervisor Nacional De Contabilidad",
+      "name": "Sissy Fernandez"
+    },
+    {
+      "company": "",
+      "role": "Supervisor Regional De Entrenamiento Lp",
+      "name": "Danny Pinaya"
+    }
+  ],
+  "systems": {
+    "SAP": [
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Gerente De Contabilidad",
+      "Gerente De Contabilidad",
+      "Chef Ejecutivo",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Sub Gerente General",
+      "Director Centro De Convenciones",
+      "Gerente De Control De Gestion",
+      "Gerente De Control De Gestion",
+      "Asist.Subgerencia",
+      "Jefe De Recepcion",
+      "Gerente De Costos Cc",
+      "Gerente De Costos Cc",
+      "Gerente De Ventas B2B",
+      "Gerente De Ventas B2B",
+      "Gerente De Ventas B2B",
+      "Sub Gerente Ti",
+      "Sub Gerente Tesoreria",
+      "Gerente De Finanzas",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Subgerente De Logistica Y Compras",
+      "Auditor Interno",
+      "Jefe Nacional De Sistemas"
+    ],
+    "Opera": [
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Gerente De Contabilidad",
+      "Gerente De Contabilidad",
+      "Analista Ti",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Sub Gerente General",
+      "Sub Gerente General",
+      "Sub Gerente General",
+      "Sub Gerente General",
+      "Sub Gerente General",
+      "Director Centro De Convenciones",
+      "Director Centro De Convenciones",
+      "Jefe De Housekeeping",
+      "Gerente De Control De Gestion",
+      "Gerente De Control De Gestion",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Jefe De Recepcion",
+      "Jefe De Recepcion",
+      "Jefe De Cajas",
+      "Gerente De Informatica Y Tecnologia",
+      "Gerente De Ventas B2B",
+      "Gerente De Ventas B2B",
+      "Gerente De Ventas B2B",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Gerente De Bar Y Centro De Proudccion",
+      "Gerente De Bar Y Centro De Proudccion",
+      "Gerente De Bar Y Centro De Proudccion",
+      "Directora Comercial Sc",
+      "Gerente Green Tower Sc",
+      "Gerente Green Tower Sc",
+      "Gerente Green Tower Sc",
+      "Gerente Green Tower Sc",
+      "Gerente Green Tower Sc",
+      "Sub Gerente Ti",
+      "Sub Gerente Ti",
+      "Sub Gerente Ti",
+      "Sub Gerente Tesoreria",
+      "Gerente De Finanzas",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Subgerente De Logistica Y Compras",
+      "Subgerente De Logistica Y Compras",
+      "Subgerente De Logistica Y Compras",
+      "Subgerente De Logistica Y Compras",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Auditor Interno",
+      "Gerente General",
+      "Coordinadora Nacional De Control De Gestion",
+      "Coordinadora Nacional De Control De Gestion",
+      "Coordinadora Nacional De Control De Gestion",
+      "Coordinadora Nacional De Control De Gestion",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "Supervisor Nacional De Contabilidad",
+      "Supervisor Regional De Entrenamiento Lp",
+      "Supervisor Regional De Entrenamiento Lp",
+      "Supervisor Regional De Entrenamiento Lp"
+    ],
+    "WhatsApp": [
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Director Centro De Convenciones",
+      "Jefe De Recepcion",
+      "Sub Gerente Ti",
+      "Gerente Nacional De Operaciones Y Mantenimiento"
+    ],
+    "MaintainX": [
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Gerente De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Directora De Operaciones",
+      "Directora De Operaciones"
+    ],
+    "Excel": [
+      "Gerente De Ingenieria",
+      "Sub Gerente General",
+      "Sub Gerente General",
+      "Director Centro De Convenciones",
+      "Jefe De Housekeeping",
+      "Jefe De Housekeeping",
+      "Gerente De Control De Gestion",
+      "Gerente De Control De Gestion",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Directora De Operaciones",
+      "Asist.Subgerencia",
+      "Jefe De Recepcion",
+      "Gerente De Costos Cc",
+      "Directora De Marketing Y Ventas",
+      "Directora De Marketing Y Ventas",
+      "Gerente De Bar Y Centro De Proudccion",
+      "Directora Comercial Sc",
+      "Directora Comercial Sc",
+      "Jefe De Finanzas Y Proyectos",
+      "Gerente Construcciones",
+      "Gerente Green Tower Sc",
+      "Sub Gerente Tesoreria",
+      "Gerente De Finanzas",
+      "Gerente De Finanzas",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Analista Costos",
+      "Analista Costos",
+      "Analista Costos",
+      "Coordinadora Nacional De Control De Gestion",
+      "Coordinadora Nacional De Control De Gestion",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas",
+      "Supervisor Nacional De Contabilidad",
+      "Supervisor Regional De Entrenamiento Lp"
+    ],
+    "Outlook": [
+      "Gerente De Ingenieria",
+      "Jefe De Ingenieria",
+      "Jefe De Ingenieria",
+      "Directora De Operaciones",
+      "Jefe De Recepcion",
+      "Directora De Marketing Y Ventas",
+      "Jefe De Finanzas Y Proyectos",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones"
+    ],
+    "Simphony": [
+      "Gerente De Contabilidad",
+      "Gerente De Control De Gestion",
+      "Gerente De Informatica Y Tecnologia",
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Analista Costos",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas"
+    ],
+    "Micros": [
+      "Gerente De Contabilidad",
+      "Gerente De Contabilidad",
+      "Analista Ti",
+      "Sub Gerente General",
+      "Director Centro De Convenciones",
+      "Gerente De Control De Gestion",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Jefe De Recepcion",
+      "Gerente De Informatica Y Tecnologia",
+      "Directora De Marketing Y Ventas",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas"
+    ],
+    "Satcom": [
+      "Gerente De Contabilidad",
+      "Gerente De Contabilidad",
+      "Jefe De Recepcion",
+      "Gerente De Informatica Y Tecnologia",
+      "Analista Costos",
+      "Analista Costos",
+      "Jefe Nacional De Sistemas",
+      "Jefe Nacional De Sistemas"
+    ],
+    "Power BI": [
+      "Analista Ti",
+      "Jefe De Finanzas Y Proyectos",
+      "Gerente De Finanzas",
+      "Jefe Nacional De Sistemas"
+    ],
+    "Teams": [
+      "Director Centro De Convenciones",
+      "Directora De Operaciones",
+      "Asist.Subgerencia",
+      "Asist.Subgerencia",
+      "Jefe De Recepcion",
+      "Sub Gerente Ti",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones"
+    ],
+    "CMNET": [
+      "Gerente Nacional De Operaciones Y Mantenimiento",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "Jefe Nacional De Sistemas",
+      "Supervisor Nacional De Contabilidad"
+    ]
+  },
+  "pain_points": [
+    {
+      "role": "Gerente De Ingenieria",
+      "company": "",
+      "context": "Las herramientas de gestión que no contamos. (como te mencionaba) recientemente hemos adquirido el software MaintainX para gestionar nuestros mantenimientos y generar planes adecuados a la operativa d"
+    },
+    {
+      "role": "Gerente De Ingenieria",
+      "company": "",
+      "context": "1. falta de planificación y coordinación con otros áreas\n2. Falta de una herramienta de gestión de mantenimiento \n3. Falta de análisis de datos\n4. Inventarios ineficientes"
+    },
+    {
+      "role": "Analista Ti",
+      "company": "",
+      "context": "Mi jornada típica como Analista de TI, dada la diversidad de mis responsabilidades, la estructuro en varias fases para mantener el orden y la eficiencia, apoyándome mucho en la automatización:\n\n1. Al "
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Tengo una rutina estructurada que combina diferentes actividades:\n\nInicio la jornada revisando el reporte de incidencias y novedades del turno anterior. Priorizo y asigno los trabajos urgentes y corre"
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Actualmente no contamos con un sistema especializado de gestión de mantenimiento. Recién vamos a comenzar con un software de gestión de mantenimiento llamado MaintainX. \n\nLa coordinación y programació"
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Los pasos críticos en mi proceso y rol son:\n\n1. Captura y priorización de solicitudes: Recibo avisos por WhatsApp/Outlook, inspecciones en piso y reportes del personal; clasifico criticidad de trabajo"
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Los principales desafíos y problemas que enfrento regularmente son:\n\n- La falta de un sistema integrado de gestión de mantenimiento, que complica la coordinación y el seguimiento de las actividades. E"
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Sí, identifico ineficiencias en:\n\n- El ingreso disperso de solicitudes a través de diferentes canales como WhatsApp, correo electrónico, planillas, etc. Esto genera confusión y riesgo de omisiones.\n\n-"
+    },
+    {
+      "role": "Jefe De Ingenieria",
+      "company": "",
+      "context": "Entiendo que la implementación del software MaintainX dará solución a varios de los problemas, como:\n\n- Contar con una \"puerta única\" de ingreso de solicitudes, evitando la dispersión y pérdida de inf"
+    },
+    {
+      "role": "Sub Gerente General",
+      "company": "",
+      "context": "1. Revisión de agenda para planificar reuniones y espacios que queden libres para distribuir entre las áreas del hotel.\n2. Al iniciar el día reviso los arribos de huéspedes y eventos del día.\n3. Reuni"
+    },
+    {
+      "role": "Sub Gerente General",
+      "company": "",
+      "context": "Los principales desafíos que enfrento regularmente son:\n\n1. Lograr despegar me del detalle operativo diario para poder tener una visión más estratégica y macro del negocio. A veces me cuesta salirme d"
+    },
+    {
+      "role": "Sub Gerente General",
+      "company": "",
+      "context": "Sí, he identificado varios procesos en el hotel que considero ineficientes o redundantes, incluyendo:\n\n1. El manejo de información y registros, como los reportes de lavandería, que aún se llevan en Ex"
+    },
+    {
+      "role": "Jefe De Housekeeping",
+      "company": "",
+      "context": "Llego al hotel a las 9:00\nEnciendo la computadora para ingresar al sistema Opera y ver:\n- Los arribos del día\n- Las salidas  \n- Los traces\nLuego pido las novedades a la supervisora en turno.\nApoyo en "
+    },
+    {
+      "role": "Jefe De Housekeeping",
+      "company": "",
+      "context": "Los tiempos ajustados para poder completar todas mis tareas de manera excelente. Por ejemplo, cuando falta la lencería o no tengo la información actualizada de los cambios en las reservas, esto me ret"
+    },
+    {
+      "role": "Jefe De Housekeeping",
+      "company": "",
+      "context": "El proceso de hacer pedidos a almacén lo considero ineficiente, ya que implica varios pasos que generan demoras:\n1. Tener que crear el pedido después de haberlo solicitado\n2. Tener que esperar la apro"
+    },
+    {
+      "role": "Jefe De Housekeeping",
+      "company": "",
+      "context": "Sugiero que cambien el sistema actual de pedidos, el cual considero bastante ineficiente. Algunas mejoras que propondría son:\n- Poder realizar los pedidos directamente sin tener que crear una nueva so"
+    },
+    {
+      "role": "Gerente De Control De Gestion",
+      "company": "",
+      "context": "El principal desafío es el reproceso de reportes en base a la información obtenida del sistema ERP a formatos manuales utilizados por las gerencias."
+    },
+    {
+      "role": "Gerente De Control De Gestion",
+      "company": "",
+      "context": "La generación de estados financieros para reporte a las entidades reguladoras en el formato requerido elaborados de forma manual."
+    },
+    {
+      "role": "Directora De Operaciones",
+      "company": "",
+      "context": "- Exigir y equilibrar la excelencia en el servicio, la eficiencia operativa y la satisfacción del equipo. Mantener la consistencia del servicio en todos los departamentos es un gran desafío.\n- La alta"
+    },
+    {
+      "role": "Directora De Operaciones",
+      "company": "",
+      "context": "- Satisfacción del huésped: GSS (Guest Satisfaction Survey), puntajes en TripAdvisor/Google, % de quejas resueltas en primer contacto.\n- Eficiencia operativa: tiempos de respuesta en mantenimiento, li"
+    },
+    {
+      "role": "Asist.Subgerencia",
+      "company": "",
+      "context": "Uno de los principales desafíos que enfrento en la operativa del día a día, es que se puedan presentar imprevistos con relación a los problemas de mantenimiento de las habitaciones que afectan la ocup"
+    },
+    {
+      "role": "Asist.Subgerencia",
+      "company": "",
+      "context": "A veces ciertos pasos del proceso pueden ocasionar ciertas deficiencias en la operativa, cuando no hay la información oportuna y no hay coordinación entre las áreas. Esto puede generar demora en el se"
+    },
+    {
+      "role": "Jefe De Recepcion",
+      "company": "",
+      "context": "Inicio revisando llegadas de huéspedes, reservas, VIPs, grupos que tenemos para el día. Realizo line ups/briefings una vez al día, a veces dos, dependiendo de la información que tengamos que compartir"
+    },
+    {
+      "role": "Jefe De Recepcion",
+      "company": "",
+      "context": "Lo más crucial dentro de todo es el manejo y la resolución de conflictos / quejas que tenemos con los clientes. Esto es muy importante porque a nosotros nos miden con los GSS de Marriott, que son encu"
+    },
+    {
+      "role": "Jefe De Recepcion",
+      "company": "",
+      "context": "La dificultad que tengo es la supervisión constante del equipo, es un lindo equipo, pero hay que hacer micromanagement con cada uno de ellos. Me gustaría tener más herramientas para motivarlos más al "
+    },
+    {
+      "role": "Jefe De Recepcion",
+      "company": "",
+      "context": "Me gustaría que el proceso de tomar garantías al check in sea más digitalizado, solo hacerle swipe a la tarjeta en sistema y guardarla en cada reserva. Hacer voucher manuales de garantías o hacer picn"
+    },
+    {
+      "role": "Gerente De Costos Cc",
+      "company": "",
+      "context": "Los pasos críticos en mi proceso son:\n1) El proceso de solicitud de insumos para la cocina, que actualmente es manual y debería estar automatizado desde el pedido inicial, para mejorar la eficiencia.\n"
+    },
+    {
+      "role": "Gerente De Costos Cc",
+      "company": "",
+      "context": "Uno de los principales desafíos que enfrento regularmente es la necesidad de automatizar los procesos y minimizar la impresión de papeles, para lograr mayor eficiencia y agilidad en la gestión de los "
+    },
+    {
+      "role": "Gerente De Costos Cc",
+      "company": "",
+      "context": "Un paso ineficiente en mi proceso es el exceso de trabajo manual que se podría automatizar, reduciendo así la necesidad de impresiones en papel. Considero que automatizar más los procesos y minimizar "
+    },
+    {
+      "role": "Jefe De Cajas",
+      "company": "",
+      "context": "Falta de comunicación de algunas áreas, para que fluya la información y no afecte el proceso a seguir!"
+    },
+    {
+      "role": "Gerente De Informatica Y Tecnologia",
+      "company": "",
+      "context": "La gestion y supervision de toda la infraestructura tecnologica, incluyendo el funcionamiento de sus sistemas. La direccion del area de tecnologia para llevar a cabo el mantenimiento y soporte a usuar"
+    },
+    {
+      "role": "Gerente De Informatica Y Tecnologia",
+      "company": "",
+      "context": "Redundante, no. Ineficiente quizás. El tiempo que empleamos en poder encontrar una solucion o estabilización en nuestra red de comunicaciones en el hotel es algo moroso, por la estructura que se tiene"
+    },
+    {
+      "role": "Gerente De Informatica Y Tecnologia",
+      "company": "",
+      "context": "Me gustaria que la red funcione como un reloj suizo. Pero para ello debemos realizar una readecuacion del equipamiento en switching y antenas wireless, estabilizando en la parte cableada una velocidad"
+    },
+    {
+      "role": "Gerente De Ventas B2B",
+      "company": "",
+      "context": "Mi nombre es Marcia Coimbra Gerente de Ventas B2B Lidero el equipo de ventas corporativo, manteniendo relación comercial con nuestras empresas, desarrollo estrategias de ventas estableciendo objetivos"
+    },
+    {
+      "role": "Gerente De Ventas B2B",
+      "company": "",
+      "context": "El proceso que pudiera demorar es el envío cotizaciones, respuestas mediante wsap, contratos, seguimientos de ventas, cobros etc."
+    },
+    {
+      "role": "Gerente De Ventas B2B",
+      "company": "",
+      "context": "Si bien manejo cuentas corporativas, como líder, tambien manejo Resolución de quejas de clientes: Esto incluye abordar cualquier problema o queja de los clientes de manera rápida y profesional, por lo"
+    },
+    {
+      "role": "Directora De Marketing Y Ventas",
+      "company": "",
+      "context": "En el desarrollo de mis funciones como Directora de Marketing y Ventas, enfrento diversos desafíos que impactan directamente en la agilidad, eficiencia y alineación interdepartamental del trabajo. Los"
+    },
+    {
+      "role": "Directora De Marketing Y Ventas",
+      "company": "",
+      "context": "Sí, he identificado algunos elementos de mi proceso que considero ineficientes o redundantes:\n\n1. Reuniones operativas excesivas o con bajo valor estratégico: En ocasiones, participo en reuniones diar"
+    },
+    {
+      "role": "Gerente De Bar Y Centro De Proudccion",
+      "company": "",
+      "context": "Soy el Gerente o Jefe de todos los bares de Los Tajibos Hotel. Mi responsabilidad principal es poder asistirle al Gerente de Alimentos y Bebidas de ya sea Los Tajibos Hotel o de Green Tower y pueda co"
+    },
+    {
+      "role": "Gerente De Bar Y Centro De Proudccion",
+      "company": "",
+      "context": "Soy una persona muy organizada, me gusta escribir todas mis tareas por áreas. Si bien solo paso 3 días en Los Tajibos Hotel y 3 días en Cielo Bar, trato de visitar todos los áreas todos los días para "
+    },
+    {
+      "role": "Gerente De Bar Y Centro De Proudccion",
+      "company": "",
+      "context": "El principal desafío que enfrento es la limitación de tiempo, ya que tengo responsabilidades tanto en el día como en la noche. En ocasiones necesito comunicarme con algún colega para resolver problema"
+    },
+    {
+      "role": "Gerente De Bar Y Centro De Proudccion",
+      "company": "",
+      "context": "Creo que choco mucho con RRHH, porque si bien mi rol es Operacional, considero que es muy importante tratar de comunicarme con RRHH para que estén al tanto de todo. En algunas ocasiones esa coordinaci"
+    },
+    {
+      "role": "Directora Legal",
+      "company": "",
+      "context": "Los tiempos para recibir feedback suelen ser lentos."
+    },
+    {
+      "role": "Directora Comercial Sc",
+      "company": "",
+      "context": "El principal desafío que enfrento regularmente es lograr identificar de manera precisa las necesidades y el presupuesto real de los potenciales clientes.\n\nMuchas veces puedo terminar ofreciendo propie"
+    },
+    {
+      "role": "Directora Comercial Sc",
+      "company": "",
+      "context": "Tras analizar mi proceso, considero que una de las principales mejoras que podría implementar para hacer mi trabajo más eficiente es optimizar los aspectos administrativos y legales, especialmente tod"
+    },
+    {
+      "role": "Jefe De Finanzas Y Proyectos",
+      "company": "",
+      "context": "Los principales desafíos y problemas que enfrento regularmente son:\n\n1. Analizar si las desviaciones o distorsiones que identifico provienen del archivo de origen o de la hoja de cálculo principal. Es"
+    },
+    {
+      "role": "Jefe De Finanzas Y Proyectos",
+      "company": "",
+      "context": "A nivel general en la organización, considero que es necesario poder tecnificar la información, logrando que todos entiendan el uso de bases de datos, responsables de las mismas y que podamos usar con"
+    },
+    {
+      "role": "Gerente Construcciones",
+      "company": "",
+      "context": "A nivel de software: Excel (planillas, presupuestos), Project (planificación), Word(contratos, informes), Autocad(diseño, revisión de proyectos, planificación y ejecución).\nMuchos de los trabajos son "
+    },
+    {
+      "role": "Gerente Construcciones",
+      "company": "",
+      "context": "Las aprobaciones y definiciones, ya sea de materiales, diseño, funcionalidad, presupuesto, cotizaciones, por que el tiempo es lo mas valioso en la gestión de un proyecto, asi evitar demoras y cumplir "
+    },
+    {
+      "role": "Gerente Construcciones",
+      "company": "",
+      "context": "Que en muchos casos debemos atender problemas que son ocasionados por falta de mantenimiento, gestión de pagos, revisión de contratos"
+    },
+    {
+      "role": "Gerente Green Tower Sc",
+      "company": "",
+      "context": "Algunos de los principales desafíos y problemas que enfrento regularmente para cumplir con excelencia mis procesos son:\n\n1. Programación y ejecución de mantenimientos de los sistemas del edificio:\n   "
+    },
+    {
+      "role": "Gerente Green Tower Sc",
+      "company": "",
+      "context": "No he identificado pasos ineficientes o redundantes en mis procesos como Gerente de Green Tower y Gerente de Seguridad, Salud Ocupacional y Medio Ambiente. Mis flujos de trabajo y actividades clave es"
+    },
+    {
+      "role": "Gerente De Auditoria",
+      "company": "",
+      "context": "Cada inicio de gestión se elabora el plan anual aprobado por Directorio y a la vez surgen temas no incluidos en el mismo que también se deben revisar. También podemos evaluar un proceso, si es que exi"
+    },
+    {
+      "role": "Gerente De Auditoria",
+      "company": "",
+      "context": "En la mayoría de los casos, no se cuentan con procedimientos formales de los procesos en todas las áreas. Es un problema que debemos sopesar para efectuar un trabajo adecuado."
+    },
+    {
+      "role": "Gerente De Auditoria",
+      "company": "",
+      "context": "Veo que en algunos casos existe dualidad de funciones peor sobre todo el retraso en la entrega de solicitudes de información que realizamos. Es imperativo tener procesos ordenados con responsables bie"
+    },
+    {
+      "role": "Sub Gerente Ti",
+      "company": "",
+      "context": "El monitoreo es el más importante porque permite anticiparse a cualquier tipo de incidente que pueda detener la operativa.\nEl seguimiento de tareas, para cumplir cronogramas de tareas que afecta al re"
+    },
+    {
+      "role": "Sub Gerente Tesoreria",
+      "company": "",
+      "context": "Uno de los mayores problemas es el tiempo que me demora la obtención de la información contable en los formatos que considero adecuados. Se trata sobre todo de depurar y reclasificar la información qu"
+    },
+    {
+      "role": "Gerente De Finanzas",
+      "company": "",
+      "context": "Uno de los principales desafíos que enfrento es la dificultad para planificar el tiempo adecuadamente, ya que trabajo en un grupo empresarial muy dinámico donde surgen necesidades imprevistas de maner"
+    },
+    {
+      "role": "Gerente De Finanzas",
+      "company": "",
+      "context": "Sí, considero que en algunas ocasiones se preparan ciertas cosas o se evalúan proyectos que finalmente no llegan a ser revisados o implementados. Esto representa un uso ineficiente del tiempo y los re"
+    },
+    {
+      "role": "Gerente Nacional De Operaciones Y Mantenimiento",
+      "company": "",
+      "context": "excel, word, ppt, reportes de los sistemas que manejamos, copilot, whatsapp, calendario, manual de operaciones, archivos de recetas, archivos de costos, planillas generadas por uno mismo, reportes de "
+    },
+    {
+      "role": "Gerente Nacional De Operaciones Y Mantenimiento",
+      "company": "",
+      "context": "la capacitación del personal de restaurantes para el cumplimiento de los estándares de la marca seguridad alimenticia y experiencia al cliente, procedimientos establecidos por la corporación, tener pe"
+    },
+    {
+      "role": "Gerente Nacional De Operaciones Y Mantenimiento",
+      "company": "",
+      "context": "hay algunos pasos que son burocraticos en especial los que estan relacionados con la contabilidad, ya que las observaciones que plantean difirien entre el punto de vista de un contador con el otro, ha"
+    },
+    {
+      "role": "Gerente Nacional De Operaciones Y Mantenimiento",
+      "company": "",
+      "context": "bueno, sin embargo se demora mucho tiempo en sacar la informacion, calcular o armar informes para poder llegar al dato final"
+    },
+    {
+      "role": "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "company": "",
+      "context": "En mi rol como Supervisor Nacional de Logística y Compras, identifico varios pasos críticos que son fundamentales para el éxito del área y el funcionamiento eficiente de toda la operación. Estos pasos"
+    },
+    {
+      "role": "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "company": "",
+      "context": "Como Supervisor Nacional de Logística y Compras, me enfrento a diversos desafíos que pueden afectar la ejecución óptima de los procesos. Algunos de los más relevantes son: 1. Variabilidad en los tiemp"
+    },
+    {
+      "role": "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "company": "",
+      "context": "Sí, como parte de mi enfoque de mejora continua, he identificado algunos puntos en el proceso que podrían optimizarse para ganar eficiencia y reducir tiempos.\n1. Doble registro de información en herra"
+    },
+    {
+      "role": "Supervisora Nal. De Comercio Exterior Y Adquisiciones",
+      "company": "",
+      "context": "Con base en los desafíos e ineficiencias detectadas, considero que hay varias mejoras específicas que podrían implementarse para optimizar mi trabajo como Supervisor Nacional de Logística y Compras y,"
+    },
+    {
+      "role": "Analista Costos",
+      "company": "",
+      "context": "Para las ventas en particular la facturacion que desde el origen no seamos responsable en la informacion del cliente por ejemplo, porque esto genera uno de mis problemas mas frecuentes y por los que s"
+    },
+    {
+      "role": "Auditor Interno",
+      "company": "",
+      "context": "Unos de los pasos criticós dentro el proceso, es la obtención de la información de los sitemas contables ya que debemos a comodarnos a la predisposición de las personas que manejan la inormación. Serí"
+    },
+    {
+      "role": "Auditor Interno",
+      "company": "",
+      "context": "La demora en la entrega de la información."
+    },
+    {
+      "role": "Coordinadora Nacional De Control De Gestion",
+      "company": "",
+      "context": "Los principales desafíos que enfrento regularmente para cumplir con excelencia mis procesos son:\n1. Obtener la información necesaria\n2. Simplificar la información"
+    },
+    {
+      "role": "Coordinadora Nacional De Control De Gestion",
+      "company": "",
+      "context": "Sí, considero que el paso de organizar la información puede ser ineficiente o redundante en mis procesos."
+    },
+    {
+      "role": "Jefe Nacional De Sistemas",
+      "company": "",
+      "context": "Los principales desafíos que enfrento regularmente para cumplir con excelencia mi proceso son:\n\n- Mantener la estabilidad de los sistemas 24/7. \n- En restaurantes, mantener la conectividad y los siste"
+    },
+    {
+      "role": "Jefe Nacional De Sistemas",
+      "company": "",
+      "context": "Algunos pasos de mi proceso que considero ineficientes o redundantes son:\n\n- El proceso de Alta, Baja y Modificación de usuarios, la comunicación es limitada y fuera de tiempo.\n- El proceso de viático"
+    },
+    {
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "company": "",
+      "context": "Para el personal a mi cargo, dia anterior coordinamos los trabajos pendientes y se designan las tareas segun corresponda, iniciando el dia revisamos los pendientes que se tienen para ir cerrando ya se"
+    },
+    {
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "company": "",
+      "context": "Importante una  computadora, que tenga instalado  AUTO CAD  - EDITORES DE PDF  ADOBE ACROBAD  - VECTOR WORKS - REVID ,  herramientas como distanciometro, wincha de medicion, tester  con amperimetro, p"
+    },
+    {
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "company": "",
+      "context": "Ahora uno de los mayores problemas es el mantenimiento reactivo, ¿no? Ya sea tanto del del equipo que no se le hizo un un preventivo y falló por alguna circunstancia, o por la manipulación del operari"
+    },
+    {
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "company": "",
+      "context": "Sí, hay una parte donde los usuarios reportan los problemas que tienen diariamente o semanalmente. Ahí tenemos un un dato importante cuando llegan las auditorias a los restaurantes, los usuarios sacan"
+    },
+    {
+      "role": "Jefe Nacional De Mantenimiento Y Desarrollo",
+      "company": "",
+      "context": "Es importante la capacitación de los nuevos usuarios, pero hay un un tema ahí que es es muy recurrente, hay bastante movimiento de Personal en los restaurantes. Entonces, capacitas a un personal una s"
+    },
+    {
+      "role": "Supervisor Nacional De Contabilidad",
+      "company": "",
+      "context": "Los principales desafíos que enfrento regularmente son:\n\n1. Entrega de información tardía por parte de otras áreas de la empresa, lo cual dificulta y retrasa la elaboración de los estados financieros "
+    },
+    {
+      "role": "Supervisor Nacional De Contabilidad",
+      "company": "",
+      "context": "Los pasos que considero ineficientes o redundantes en mi proceso son:\n\n1. Las aprobaciones manuales de documentación, que generan retrasos innecesarios.\n2. La generación de anticipos de pago cuando ya"
+    },
+    {
+      "role": "Supervisor Nacional De Contabilidad",
+      "company": "",
+      "context": "Las mejoras que sugeriría para hacer mi trabajo más eficiente serían:\n\n1. Implementar reportes diarios, con la información necesaria, para que el equipo de contabilidad pueda acceder directamente a lo"
+    },
+    {
+      "role": "Supervisor Regional De Entrenamiento Lp",
+      "company": "",
+      "context": "Principalmente la pagia de RBI  de BKC s una de mis herramientas donde tengo diferentes plataformas  de donde puede sacar información, y actulizacion de datos como Qualtrics donde se ve el nivel de sa"
+    },
+    {
+      "role": "Supervisor Regional De Entrenamiento Lp",
+      "company": "",
+      "context": "En general de todas las tareas y procesos que realizo trato de cumplir al 100 los que se me.pide. el desafío es responder y dar solucion a los problemas que se van presentando que no tiene relacion co"
+    }
+  ],
+  "processes": [],
+  "top_tools": [
+    [
+      "Opera",
+      88
+    ],
+    [
+      "Excel",
+      38
+    ],
+    [
+      "SAP",
+      27
+    ],
+    [
+      "Micros",
+      14
+    ],
+    [
+      "WhatsApp",
+      10
+    ],
+    [
+      "MaintainX",
+      8
+    ],
+    [
+      "Outlook",
+      8
+    ],
+    [
+      "Satcom",
+      8
+    ],
+    [
+      "Simphony",
+      7
+    ],
+    [
+      "Teams",
+      7
+    ],
+    [
+      "CMNET",
+      5
+    ],
+    [
+      "Power BI",
+      4
+    ]
+  ]
+}
