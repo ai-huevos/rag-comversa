@@ -33,6 +33,17 @@ TEMPERATURE = 0.1  # Low temperature for consistent extraction
 MAX_RETRIES = 3
 TIMEOUT_SECONDS = 60
 
+# Ensemble Validation Settings (Forensic-Grade Quality Review)
+# Set ENABLE_ENSEMBLE_REVIEW=true in .env to enable
+# Set ENSEMBLE_MODE=full for multi-model extraction (expensive but highest quality)
+# Set ENSEMBLE_MODE=basic for single-model with quality scoring (cheaper, still good)
+ENABLE_ENSEMBLE_REVIEW = os.getenv("ENABLE_ENSEMBLE_REVIEW", "false").lower() == "true"
+ENSEMBLE_MODE = os.getenv("ENSEMBLE_MODE", "basic")  # "basic" or "full"
+
+# Anthropic API Key (optional - for Claude synthesis agent)
+# If not provided, will use GPT-4o for synthesis instead
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", None)
+
 # Companies
 COMPANIES = ["Los Tajibos", "Comversa", "Bolivian Foods"]
 
