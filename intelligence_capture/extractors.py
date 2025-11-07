@@ -2917,3 +2917,490 @@ If no automation candidates are found, return {{"automation_candidates": []}}.
         except Exception as e:
             print(f"Warning: LLM extraction failed: {e}")
             return []
+
+
+
+class TeamStructureExtractor:
+    """Extracts team structure entities from interview text"""
+    
+    def __init__(self, openai_api_key: Optional[str] = None):
+        """Initialize extractor with OpenAI client"""
+        api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
+    
+    def extract_from_interview(self, interview_data: Dict) -> List[Dict]:
+        """
+        Extract team structure from interview data
+        
+        Args:
+            interview_data: Dict with 'meta' and 'qa_pairs'
+            
+        Returns:
+            List of team structure entities
+        """
+        meta = interview_data.get("meta", {})
+        qa_pairs = interview_data.get("qa_pairs", {})
+        
+        # Combine all Q&A into text
+        full_text = "\n\n".join([f"Q: {q}\nA: {a}" for q, a in qa_pairs.items()])
+        
+        # Use LLM to extract team structure
+        team_structures = self._llm_extraction(full_text, meta)
+        
+        return team_structures
+    
+    def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
+        """Extract team structure using LLM"""
+        if not self.client:
+            return []
+        
+        prompt = f"""Extract team structure information from this interview.
+
+Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
+
+Interview text:
+{text[:3000]}
+
+Extract:
+1. Role/position of the interviewee
+2. Team size (number of people they work with or manage)
+3. Who they report to (boss/manager)
+4. Who they coordinate with (other departments/roles)
+5. External dependencies (vendors, partners they work with)
+
+Return as JSON array with this structure:
+[{{
+    "role": "specific role",
+    "team_size": number or null,
+    "reports_to": "role they report to" or null,
+    "coordinates_with": ["role1", "role2"],
+    "external_dependencies": ["vendor1", "partner1"],
+    "confidence_score": 0.0-1.0,
+    "extraction_reasoning": "why extracted"
+}}]
+
+If no team structure info found, return empty array []."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            team_structures = result.get("team_structures", [])
+            
+            # Add metadata
+            for ts in team_structures:
+                ts["extraction_source"] = "llm"
+                if ts.get("confidence_score", 0) < 0.7:
+                    ts["needs_review"] = True
+            
+            return team_structures
+            
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+            return []
+
+
+class KnowledgeGapExtractor:
+    """Extracts knowledge gap entities from interview text"""
+    
+    # Keywords indicating knowledge gaps
+    GAP_KEYWORDS = [
+        "no sé", "no sabemos", "no conozco", "desconozco",
+        "falta capacitación", "necesitamos training", "no entiendo",
+        "no está claro", "confuso", "complicado de entender",
+        "necesito aprender", "no me enseñaron", "falta conocimiento"
+    ]
+    
+    def __init__(self, openai_api_key: Optional[str] = None):
+        """Initialize extractor with OpenAI client"""
+        api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
+    
+    def extract_from_interview(self, interview_data: Dict) -> List[Dict]:
+        """
+        Extract knowledge gaps from interview data
+        
+        Args:
+            interview_data: Dict with 'meta' and 'qa_pairs'
+            
+        Returns:
+            List of knowledge gap entities
+        """
+        meta = interview_data.get("meta", {})
+        qa_pairs = interview_data.get("qa_pairs", {})
+        
+        # Combine all Q&A into text
+        full_text = "\n\n".join([f"Q: {q}\nA: {a}" for q, a in qa_pairs.items()])
+        
+        # Check if there are any gap keywords
+        text_lower = full_text.lower()
+        has_gaps = any(keyword in text_lower for keyword in self.GAP_KEYWORDS)
+        
+        if not has_gaps:
+            return []
+        
+        # Use LLM to extract knowledge gaps
+        knowledge_gaps = self._llm_extraction(full_text, meta)
+        
+        return knowledge_gaps
+    
+    def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
+        """Extract knowledge gaps using LLM"""
+        if not self.client:
+            return []
+        
+        prompt = f"""Extract knowledge gaps and training needs from this interview.
+
+Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
+
+Interview text:
+{text[:3000]}
+
+Look for:
+1. Things they don't know or understand
+2. Training needs mentioned
+3. Skills gaps
+4. Confusion about processes or systems
+5. Areas where they need help
+
+Return as JSON array:
+[{{
+    "area": "what they don't know/understand",
+    "affected_roles": ["role1", "role2"],
+    "impact": "how this affects their work",
+    "training_needed": "what training would help",
+    "confidence_score": 0.0-1.0,
+    "extraction_reasoning": "why extracted"
+}}]
+
+If no knowledge gaps found, return empty array []."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            gaps = result.get("knowledge_gaps", [])
+            
+            # Add metadata
+            for gap in gaps:
+                gap["extraction_source"] = "llm"
+                if gap.get("confidence_score", 0) < 0.7:
+                    gap["needs_review"] = True
+            
+            return gaps
+            
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+            return []
+
+
+class SuccessPatternExtractor:
+    """Extracts success pattern entities from interview text"""
+    
+    # Keywords indicating success
+    SUCCESS_KEYWORDS = [
+        "funciona bien", "funciona muy bien", "está funcionando",
+        "me gusta", "nos gusta", "es bueno", "es excelente",
+        "eficiente", "rápido", "fácil", "simple",
+        "mejor práctica", "best practice", "éxito",
+        "logro", "achievement", "bien hecho"
+    ]
+    
+    def __init__(self, openai_api_key: Optional[str] = None):
+        """Initialize extractor with OpenAI client"""
+        api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
+    
+    def extract_from_interview(self, interview_data: Dict) -> List[Dict]:
+        """
+        Extract success patterns from interview data
+        
+        Args:
+            interview_data: Dict with 'meta' and 'qa_pairs'
+            
+        Returns:
+            List of success pattern entities
+        """
+        meta = interview_data.get("meta", {})
+        qa_pairs = interview_data.get("qa_pairs", {})
+        
+        # Combine all Q&A into text
+        full_text = "\n\n".join([f"Q: {q}\nA: {a}" for q, a in qa_pairs.items()])
+        
+        # Check if there are any success keywords
+        text_lower = full_text.lower()
+        has_success = any(keyword in text_lower for keyword in self.SUCCESS_KEYWORDS)
+        
+        if not has_success:
+            return []
+        
+        # Use LLM to extract success patterns
+        success_patterns = self._llm_extraction(full_text, meta)
+        
+        return success_patterns
+    
+    def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
+        """Extract success patterns using LLM"""
+        if not self.client:
+            return []
+        
+        prompt = f"""Extract success patterns and best practices from this interview.
+
+Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
+
+Interview text:
+{text[:3000]}
+
+Look for:
+1. Things that work well
+2. Best practices
+3. Successful processes or systems
+4. Positive outcomes
+5. Things they're proud of
+
+Return as JSON array:
+[{{
+    "pattern": "what works well",
+    "role": "who does this",
+    "benefit": "why it works/what benefit it provides",
+    "replicable_to": ["where else this could be applied"],
+    "confidence_score": 0.0-1.0,
+    "extraction_reasoning": "why extracted"
+}}]
+
+If no success patterns found, return empty array []."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            patterns = result.get("success_patterns", [])
+            
+            # Add metadata
+            for pattern in patterns:
+                pattern["extraction_source"] = "llm"
+                if pattern.get("confidence_score", 0) < 0.7:
+                    pattern["needs_review"] = True
+            
+            return patterns
+            
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+            return []
+
+
+class BudgetConstraintExtractor:
+    """Extracts budget constraint entities from interview text"""
+    
+    # Keywords indicating budget constraints
+    BUDGET_KEYWORDS = [
+        "presupuesto", "budget", "costo", "cost", "precio", "price",
+        "aprobación", "approval", "autorización", "authorization",
+        "límite", "limit", "tope", "máximo", "maximum",
+        "$", "USD", "Bs", "bolivianos", "dólares", "dollars"
+    ]
+    
+    def __init__(self, openai_api_key: Optional[str] = None):
+        """Initialize extractor with OpenAI client"""
+        api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
+    
+    def extract_from_interview(self, interview_data: Dict) -> List[Dict]:
+        """
+        Extract budget constraints from interview data
+        
+        Args:
+            interview_data: Dict with 'meta' and 'qa_pairs'
+            
+        Returns:
+            List of budget constraint entities
+        """
+        meta = interview_data.get("meta", {})
+        qa_pairs = interview_data.get("qa_pairs", {})
+        
+        # Combine all Q&A into text
+        full_text = "\n\n".join([f"Q: {q}\nA: {a}" for q, a in qa_pairs.items()])
+        
+        # Check if there are any budget keywords
+        text_lower = full_text.lower()
+        has_budget = any(keyword in text_lower for keyword in self.BUDGET_KEYWORDS)
+        
+        if not has_budget:
+            return []
+        
+        # Use LLM to extract budget constraints
+        budget_constraints = self._llm_extraction(full_text, meta)
+        
+        return budget_constraints
+    
+    def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
+        """Extract budget constraints using LLM"""
+        if not self.client:
+            return []
+        
+        prompt = f"""Extract budget constraints and approval thresholds from this interview.
+
+Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
+
+Interview text:
+{text[:3000]}
+
+Look for:
+1. Budget limits or constraints
+2. Approval thresholds (amounts requiring approval)
+3. Who approves what amounts
+4. Budget-related pain points
+5. Spending authority limits
+
+Return as JSON array:
+[{{
+    "area": "what the budget is for",
+    "budget_type": "operational/capital/project/etc",
+    "approval_required_above": amount in USD or null,
+    "approver": "who approves",
+    "pain_point": "any budget-related problems",
+    "confidence_score": 0.0-1.0,
+    "extraction_reasoning": "why extracted"
+}}]
+
+If no budget constraints found, return empty array []."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            constraints = result.get("budget_constraints", [])
+            
+            # Add metadata
+            for constraint in constraints:
+                constraint["extraction_source"] = "llm"
+                if constraint.get("confidence_score", 0) < 0.7:
+                    constraint["needs_review"] = True
+            
+            return constraints
+            
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+            return []
+
+
+class ExternalDependencyExtractor:
+    """Extracts external dependency entities from interview text"""
+    
+    # Keywords indicating external dependencies
+    EXTERNAL_KEYWORDS = [
+        "proveedor", "vendor", "supplier", "tercero", "third party",
+        "contratista", "contractor", "partner", "socio",
+        "externo", "external", "outsource", "subcontrata"
+    ]
+    
+    def __init__(self, openai_api_key: Optional[str] = None):
+        """Initialize extractor with OpenAI client"""
+        api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
+    
+    def extract_from_interview(self, interview_data: Dict) -> List[Dict]:
+        """
+        Extract external dependencies from interview data
+        
+        Args:
+            interview_data: Dict with 'meta' and 'qa_pairs'
+            
+        Returns:
+            List of external dependency entities
+        """
+        meta = interview_data.get("meta", {})
+        qa_pairs = interview_data.get("qa_pairs", {})
+        
+        # Combine all Q&A into text
+        full_text = "\n\n".join([f"Q: {q}\nA: {a}" for q, a in qa_pairs.items()])
+        
+        # Check if there are any external keywords
+        text_lower = full_text.lower()
+        has_external = any(keyword in text_lower for keyword in self.EXTERNAL_KEYWORDS)
+        
+        if not has_external:
+            return []
+        
+        # Use LLM to extract external dependencies
+        external_deps = self._llm_extraction(full_text, meta)
+        
+        return external_deps
+    
+    def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
+        """Extract external dependencies using LLM"""
+        if not self.client:
+            return []
+        
+        prompt = f"""Extract external dependencies (vendors, partners, contractors) from this interview.
+
+Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
+
+Interview text:
+{text[:3000]}
+
+Look for:
+1. Vendor names and what they provide
+2. Service providers
+3. Partners or contractors
+4. How often they interact
+5. Who coordinates with them
+6. SLAs or service agreements
+7. Payment processes
+
+Return as JSON array:
+[{{
+    "vendor": "vendor/partner name",
+    "service": "what they provide",
+    "frequency": "how often used (Daily/Weekly/Monthly/etc)",
+    "coordinator": "who manages this relationship",
+    "sla": "service level agreement if mentioned",
+    "payment_process": "how payments are handled",
+    "confidence_score": 0.0-1.0,
+    "extraction_reasoning": "why extracted"
+}}]
+
+If no external dependencies found, return empty array []."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            deps = result.get("external_dependencies", [])
+            
+            # Add metadata
+            for dep in deps:
+                dep["extraction_source"] = "llm"
+                if dep.get("confidence_score", 0) < 0.7:
+                    dep["needs_review"] = True
+            
+            return deps
+            
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+            return []
