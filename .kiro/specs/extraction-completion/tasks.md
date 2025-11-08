@@ -6,9 +6,9 @@ This implementation plan provides discrete, actionable tasks to complete and opt
 
 ---
 
-## Phase 1: Core Fixes & Integration
+## Phase 1: Core Fixes & Integration ✅ COMPLETE
 
-- [ ] 1. Consolidate extraction logic to use v2.0 extractors
+- [x] 1. Consolidate extraction logic to use v2.0 extractors
   - Remove duplicate v1.0 extraction methods from `extractor.py`
   - Update `IntelligenceExtractor` to be a thin orchestrator
   - Initialize all 16 extractors from `extractors.py` in `__init__()`
@@ -16,34 +16,34 @@ This implementation plan provides discrete, actionable tasks to complete and opt
   - Add error handling for each extractor
   - _Requirements: 1, 2_
 
-- [ ] 1.1 Update IntelligenceExtractor class structure
+- [x] 1.1 Update IntelligenceExtractor class structure
   - Import all extractor classes from `extractors.py`
   - Create dictionary of extractors in `__init__()`
   - Remove old `_extract_*()` methods
   - _Requirements: 1, 2_
 
-- [ ] 1.2 Implement delegating extract_all() method
+- [x] 1.2 Implement delegating extract_all() method
   - Loop through all extractors
   - Call `extract_from_interview()` for each
   - Collect results in unified dict
   - Add progress logging for each entity type
   - _Requirements: 1, 2_
 
-- [ ] 1.3 Add error handling and fallback
+- [x] 1.3 Add error handling and fallback
   - Wrap each extractor call in try/except
   - Log errors but continue processing
   - Return empty list for failed extractions
   - Track failed extractions for reporting
   - _Requirements: 2, 8_
 
-- [ ] 2. Update processor to store all 17 entity types
+- [x] 2. Update processor to store all 17 entity types
   - Add storage calls for v2.0 entities in `process_interview()`
   - Extract business_unit from meta for v2.0 entities
   - Add error handling for each storage operation
   - Update progress reporting to show all entity types
   - _Requirements: 3_
 
-- [ ] 2.1 Add v2.0 entity storage calls
+- [x] 2.1 Add v2.0 entity storage calls
   - Add calls to `insert_communication_channel()`
   - Add calls to `insert_decision_point()`
   - Add calls to `insert_data_flow()`
@@ -56,14 +56,14 @@ This implementation plan provides discrete, actionable tasks to complete and opt
   - Add calls to `insert_external_dependency()`
   - _Requirements: 3_
 
-- [ ] 2.2 Add storage error handling
+- [x] 2.2 Add storage error handling
   - Wrap each storage call in try/except
   - Log errors with entity type and details
   - Continue processing remaining entities
   - Track storage failures for reporting
   - _Requirements: 3, 8_
 
-- [ ] 3. Add lightweight quality validation (always on)
+- [x] 3. Add lightweight quality validation (always on)
   - Create `validate_entity_quality()` function
   - Check required fields are populated
   - Check description length (min 20 chars)
@@ -71,21 +71,21 @@ This implementation plan provides discrete, actionable tasks to complete and opt
   - Check for encoding issues (escape sequences)
   - _Requirements: 5, 10_
 
-- [ ] 3.1 Create validation utility module
+- [x] 3.1 Create validation utility module
   - Create `intelligence_capture/validation.py`
   - Define required fields per entity type
   - Implement field validation functions
   - Implement encoding validation
   - _Requirements: 5, 10_
 
-- [ ] 3.2 Integrate validation into processor
+- [x] 3.2 Integrate validation into processor
   - Call validation after extraction
   - Log quality issues
   - Flag entities needing review
   - Optionally retry extraction on critical issues
   - _Requirements: 5, 10_
 
-- [ ] 4. Add extraction progress tracking
+- [x] 4. Add extraction progress tracking
   - Add extraction_status column to interviews table
   - Add extraction_attempts column to interviews table
   - Add last_extraction_error column to interviews table
@@ -93,20 +93,20 @@ This implementation plan provides discrete, actionable tasks to complete and opt
   - Implement resume capability
   - _Requirements: 8_
 
-- [ ] 4.1 Create database migration for progress tracking
+- [x] 4.1 Create database migration for progress tracking
   - Add new columns to interviews table
   - Create migration script
   - Test migration on sample database
   - _Requirements: 8_
 
-- [ ] 4.2 Implement status tracking in processor
+- [x] 4.2 Implement status tracking in processor
   - Update status to "in_progress" at start
   - Update status to "complete" on success
   - Update status to "failed" on error with error message
   - Increment extraction_attempts counter
   - _Requirements: 8_
 
-- [ ] 4.3 Implement resume capability
+- [x] 4.3 Implement resume capability
   - Add `get_interviews_by_status()` method to database
   - Add `resume` parameter to `process_all_interviews()`
   - Filter interviews by status when resuming
