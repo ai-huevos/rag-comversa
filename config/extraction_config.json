@@ -1,0 +1,81 @@
+{
+  "extraction": {
+    "model": "gpt-4o-mini",
+    "temperature": 0.1,
+    "max_retries": 3,
+    "timeout_seconds": 60,
+    "max_tokens": 4000
+  },
+  "validation": {
+    "enable_validation_agent": true,
+    "enable_llm_validation": false,
+    "min_description_length": 20,
+    "check_encoding": true,
+    "check_placeholders": true
+  },
+  "ensemble": {
+    "enable_ensemble_review": false,
+    "ensemble_mode": "basic",
+    "models": {
+      "primary": "gpt-4o-mini",
+      "secondary": "gpt-4o",
+      "synthesis": "claude-3-5-sonnet-20241022"
+    }
+  },
+  "monitoring": {
+    "enable_monitor": true,
+    "print_summary_every_n": 5,
+    "export_metrics": true,
+    "metrics_output_dir": "reports/metrics"
+  },
+  "quality_thresholds": {
+    "min_entities_per_interview": 5,
+    "max_validation_errors_per_interview": 10,
+    "min_completeness_score": 0.7,
+    "critical_entity_types": [
+      "pain_points",
+      "processes",
+      "systems"
+    ]
+  },
+  "entity_types": {
+    "v1.0": {
+      "required": [
+        "pain_points",
+        "processes",
+        "systems"
+      ],
+      "optional": [
+        "kpis",
+        "automation_candidates",
+        "inefficiencies"
+      ]
+    },
+    "v2.0": {
+      "required": [
+        "communication_channels",
+        "decision_points"
+      ],
+      "optional": [
+        "data_flows",
+        "temporal_patterns",
+        "failure_modes",
+        "team_structures",
+        "knowledge_gaps",
+        "success_patterns",
+        "budget_constraints",
+        "external_dependencies"
+      ]
+    }
+  },
+  "database": {
+    "batch_size": 100,
+    "use_transactions": true,
+    "connection_timeout": 30
+  },
+  "performance": {
+    "parallel_processing": false,
+    "max_workers": 4,
+    "enable_caching": false
+  }
+}

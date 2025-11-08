@@ -547,22 +547,123 @@ class IntelligenceDB:
         
         self.conn.commit()
     
+    def insert_entities_batch(
+        self,
+        entity_type: str,
+        entities: List[Dict],
+        interview_id: int,
+        company: str,
+        business_unit: str = None
+    ) -> Dict[str, Any]:
+        """
+        Batch insert multiple entities of the same type using transactions
+
+        Args:
+            entity_type: Type of entity (e.g., "pain_points", "processes")
+            entities: List of entity dictionaries
+            interview_id: Interview ID
+            company: Company name
+            business_unit: Business unit (for v2.0 entities)
+
+        Returns:
+            Dictionary with success status and error info
+        """
+        if not entities:
+            return {"success": True, "inserted": 0, "errors": []}
+
+        cursor = self.conn.cursor()
+        inserted = 0
+        errors = []
+
+        try:
+            # Start transaction
+            cursor.execute("BEGIN TRANSACTION")
+
+            # Map entity type to insert method
+            insert_methods = {
+                "pain_points": self.insert_pain_point,
+                "processes": self.insert_process,
+                "systems": self.insert_or_update_system,
+                "kpis": self.insert_kpi,
+                "automation_candidates": self.insert_automation_candidate,
+                "inefficiencies": self.insert_inefficiency,
+                "communication_channels": self.insert_communication_channel,
+                "decision_points": self.insert_decision_point,
+                "data_flows": self.insert_data_flow,
+                "temporal_patterns": self.insert_temporal_pattern,
+                "failure_modes": self.insert_failure_mode,
+                "team_structures": self.insert_team_structure,
+                "knowledge_gaps": self.insert_knowledge_gap,
+                "success_patterns": self.insert_success_pattern,
+                "budget_constraints": self.insert_budget_constraint,
+                "external_dependencies": self.insert_external_dependency,
+                "pain_points_v2": self.insert_enhanced_pain_point,
+                "systems_v2": self.insert_or_update_enhanced_system,
+                "automation_candidates_v2": self.insert_enhanced_automation_candidate
+            }
+
+            insert_method = insert_methods.get(entity_type)
+            if not insert_method:
+                raise ValueError(f"Unknown entity type: {entity_type}")
+
+            # Insert each entity
+            for entity in entities:
+                try:
+                    # Call appropriate insert method based on entity type
+                    if entity_type in ["systems", "systems_v2"]:
+                        # Systems don't need interview_id
+                        insert_method(entity, company)
+                    elif entity_type in ["communication_channels", "decision_points", "data_flows",
+                                       "temporal_patterns", "failure_modes", "team_structures",
+                                       "knowledge_gaps", "success_patterns", "budget_constraints",
+                                       "external_dependencies", "pain_points_v2", "automation_candidates_v2"]:
+                        # v2.0 entities need business_unit
+                        insert_method(interview_id, company, business_unit or "Unknown", entity)
+                    else:
+                        # v1.0 entities
+                        insert_method(interview_id, company, entity)
+
+                    inserted += 1
+
+                except Exception as e:
+                    errors.append(f"{entity.get('name', 'unknown')}: {str(e)[:100]}")
+
+            # Commit transaction
+            self.conn.commit()
+
+            return {
+                "success": len(errors) == 0,
+                "inserted": inserted,
+                "total": len(entities),
+                "errors": errors
+            }
+
+        except Exception as e:
+            # Rollback on error
+            self.conn.rollback()
+            return {
+                "success": False,
+                "inserted": 0,
+                "total": len(entities),
+                "errors": [f"Transaction failed: {str(e)}"]
+            }
+
     def get_stats(self) -> Dict:
         """Get database statistics"""
         cursor = self.conn.cursor()
-        
+
         stats = {}
-        
+
         # Count by table
-        for table in ["interviews", "pain_points", "processes", "systems", "kpis", 
+        for table in ["interviews", "pain_points", "processes", "systems", "kpis",
                      "automation_candidates", "inefficiencies"]:
             cursor.execute(f"SELECT COUNT(*) FROM {table}")
             stats[table] = cursor.fetchone()[0]
-        
+
         # Count by company
         cursor.execute("SELECT company, COUNT(*) FROM interviews GROUP BY company")
         stats["by_company"] = dict(cursor.fetchall())
-        
+
         return stats
 
 
