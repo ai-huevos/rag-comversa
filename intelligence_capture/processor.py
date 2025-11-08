@@ -7,16 +7,16 @@ import json
 import os
 from pathlib import Path
 from typing import Dict, List, Optional
-from database import IntelligenceDB
-from extractor import IntelligenceExtractor
-from validation import validate_extraction_results, print_validation_summary
-from validation_agent import ValidationAgent
-from monitor import ExtractionMonitor
-from config import DB_PATH, INTERVIEWS_FILE, EXTRACTION_CONFIG, load_extraction_config
+from .database import IntelligenceDB
+from .extractor import IntelligenceExtractor
+from .validation import validate_extraction_results, print_validation_summary
+from .validation_agent import ValidationAgent
+from .monitor import ExtractionMonitor
+from .config import DB_PATH, INTERVIEWS_FILE, EXTRACTION_CONFIG, load_extraction_config
 
 # Import ensemble reviewer if available
 try:
-    from reviewer import EnsembleReviewer
+    from .reviewer import EnsembleReviewer
     ENSEMBLE_AVAILABLE = True
 except ImportError:
     ENSEMBLE_AVAILABLE = False

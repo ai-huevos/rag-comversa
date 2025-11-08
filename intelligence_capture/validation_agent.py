@@ -5,7 +5,7 @@ Supports rule-based and optional LLM-based validation
 """
 import os
 from typing import Dict, List, Tuple, Any, Optional
-from validation import validate_entity, ValidationResult
+from .validation import validate_entity, ValidationResult
 import openai
 
 
@@ -262,7 +262,7 @@ Answer with YES or NO only."""
         Returns:
             Dictionary mapping entity type to list of ValidationResult
         """
-        from validation import validate_entities
+        from .validation import validate_entities
 
         all_results = {}
 

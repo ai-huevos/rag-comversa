@@ -6,10 +6,10 @@ Orchestrates v1.0 and v2.0 extractors for all 17 entity types
 import json
 from typing import Dict, List, Any
 from openai import OpenAI
-from config import OPENAI_API_KEY, MODEL, TEMPERATURE, MAX_RETRIES
+from .config import OPENAI_API_KEY, MODEL, TEMPERATURE, MAX_RETRIES
 
 # Import all v2.0 extractors
-from extractors import (
+from .extractors import (
     CommunicationChannelExtractor,
     SystemExtractor,
     DecisionPointExtractor,
