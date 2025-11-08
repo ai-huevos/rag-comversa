@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from database import IntelligenceDB
 from extractor import IntelligenceExtractor
+from validation import validate_extraction_results, print_validation_summary
 from config import DB_PATH, INTERVIEWS_FILE
 
 # Import ensemble reviewer if available
@@ -118,6 +119,25 @@ class IntelligenceProcessor:
             except Exception as e:
                 print(f"  ⚠️  Ensemble review failed: {str(e)}")
                 print(f"     Continuing with original extractions...")
+
+        # QUALITY VALIDATION: Validate extracted entities
+        print("  🔍 Running quality validation...")
+        try:
+            validation_results = validate_extraction_results(entities)
+
+            # Count validation issues
+            total_errors = sum(sum(len(r.errors) for r in results) for results in validation_results.values())
+            total_warnings = sum(sum(len(r.warnings) for r in results) for results in validation_results.values())
+
+            if total_errors > 0:
+                print(f"  ⚠️  Quality validation found {total_errors} errors, {total_warnings} warnings")
+                # Entities are marked with _validation_failed flag but still stored
+            else:
+                print(f"  ✓ Quality validation passed ({total_warnings} warnings)")
+
+        except Exception as e:
+            print(f"  ⚠️  Quality validation failed: {str(e)}")
+            print(f"     Continuing with storage...")
 
         # Extract business_unit for v2.0 entities (with fallback)
         business_unit = meta.get("business_unit", meta.get("department", "Unknown"))
