@@ -7,7 +7,7 @@ import json
 import os
 from pathlib import Path
 from typing import Dict, List, Optional
-from .database import IntelligenceDB
+from .database import IntelligenceDB, EnhancedIntelligenceDB
 from .extractor import IntelligenceExtractor
 from .validation import validate_extraction_results, print_validation_summary
 from .validation_agent import ValidationAgent
@@ -55,7 +55,7 @@ class IntelligenceProcessor:
 
         self.config = config
 
-        self.db = IntelligenceDB(db_path)
+        self.db = EnhancedIntelligenceDB(db_path)
         self.extractor = IntelligenceExtractor()
 
         # Read ensemble settings from config if not specified
@@ -110,7 +110,7 @@ class IntelligenceProcessor:
         """Initialize database"""
         print("🔧 Initializing database...")
         self.db.connect()
-        self.db.init_schema()
+        self.db.init_v2_schema()
         print("✓ Database ready")
         
     def process_interview(self, interview: Dict) -> bool:
