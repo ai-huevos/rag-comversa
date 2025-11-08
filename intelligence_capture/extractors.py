@@ -10,15 +10,12 @@ from openai import OpenAI, RateLimitError
 import os
 
 
-# Model fallback chain - try these models in order when rate limits hit
-# Based on available models in your OpenAI account
+# Model fallback chain - Optimized for structured extraction
+# gpt-4o-mini is PERFECT for structured JSON extraction tasks
 MODEL_FALLBACK_CHAIN = [
-    "gpt-4o-mini",              # Primary: Fast and cheap, good for most tasks
-    "gpt-4o",                   # Fallback 1: More capacity, different rate limit pool
-    "gpt-4-turbo",              # Fallback 2: Stable turbo model
-    "gpt-3.5-turbo",            # Fallback 3: Older but reliable, separate limits
-    "gpt-4",                    # Fallback 4: Original GPT-4, different quota
-    "gpt-3.5-turbo-16k",        # Fallback 5: Larger context, last resort
+    "gpt-4o-mini",              # Primary: Best cost/quality for structured extraction
+    "gpt-4o-mini",              # Retry: Rate limits are usually temporary
+    "gpt-4o",                   # Last resort: Only if 4o-mini completely unavailable
 ]
 
 
@@ -2718,7 +2715,7 @@ class AutomationCandidateExtractor:
             score += 0.5
         
         # Factor 4: Cost savings
-        cost_savings = candidate.get("estimated_annual_savings_usd", 0)
+        cost_savings = candidate.get("estimated_annual_savings_usd") or 0
         if cost_savings >= 50000:
             score += 1.5
         elif cost_savings >= 20000:

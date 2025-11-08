@@ -1319,3 +1319,147 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         ))
         
         self.conn.commit()
+
+    def insert_team_structure(self, interview_id: int, company: str, business_unit: str, team: Dict):
+        """Insert a team structure entity"""
+        cursor = self.conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO team_structures (
+                interview_id, company_name, business_unit, department,
+                role, team_size, reports_to, coordinates_with,
+                external_dependencies, confidence_score, needs_review, extraction_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            interview_id,
+            company,
+            business_unit,
+            team.get("department", "Unknown"),
+            team.get("role", ""),
+            team.get("team_size"),
+            team.get("reports_to", ""),
+            team.get("coordinates_with", ""),
+            team.get("external_dependencies", ""),
+            team.get("confidence_score", 0.0),
+            1 if team.get("confidence_score", 1.0) < 0.7 else 0,
+            team.get("extraction_source", "")
+        ))
+        
+        self.conn.commit()
+
+    def insert_knowledge_gap(self, interview_id: int, company: str, business_unit: str, gap: Dict):
+        """Insert a knowledge gap entity"""
+        cursor = self.conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO knowledge_gaps (
+                interview_id, company_name, business_unit, department,
+                area, affected_roles, impact, training_needed,
+                confidence_score, needs_review, extraction_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            interview_id,
+            company,
+            business_unit,
+            gap.get("department", "Unknown"),
+            gap.get("area", ""),
+            gap.get("affected_roles", ""),
+            gap.get("impact", ""),
+            gap.get("training_needed", ""),
+            gap.get("confidence_score", 0.0),
+            1 if gap.get("confidence_score", 1.0) < 0.7 else 0,
+            gap.get("extraction_source", "")
+        ))
+        
+        self.conn.commit()
+
+    def insert_success_pattern(self, interview_id: int, company: str, business_unit: str, pattern: Dict):
+        """Insert a success pattern entity"""
+        cursor = self.conn.cursor()
+        
+        # Handle replicable_to - might be list or string
+        replicable_to = pattern.get("replicable_to", "")
+        if isinstance(replicable_to, list):
+            replicable_to = ", ".join(replicable_to)
+        
+        cursor.execute("""
+            INSERT INTO success_patterns (
+                interview_id, company_name, business_unit, department,
+                pattern, role, benefit, replicable_to,
+                confidence_score, needs_review, extraction_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            interview_id,
+            company,
+            business_unit,
+            pattern.get("department", "Unknown"),
+            pattern.get("pattern", ""),
+            pattern.get("role", ""),
+            pattern.get("benefit", ""),
+            str(replicable_to),
+            pattern.get("confidence_score", 0.0),
+            1 if pattern.get("confidence_score", 1.0) < 0.7 else 0,
+            pattern.get("extraction_source", "")
+        ))
+        
+        self.conn.commit()
+
+    def insert_budget_constraint(self, interview_id: int, company: str, business_unit: str, constraint: Dict):
+        """Insert a budget constraint entity"""
+        cursor = self.conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO budget_constraints (
+                interview_id, company_name, business_unit, department,
+                area, budget_type, approval_required_above, approver, pain_point,
+                confidence_score, needs_review, extraction_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            interview_id,
+            company,
+            business_unit,
+            constraint.get("department", "Unknown"),
+            constraint.get("area", ""),
+            constraint.get("budget_type", ""),
+            constraint.get("approval_required_above"),
+            constraint.get("approver", ""),
+            constraint.get("pain_point", ""),
+            constraint.get("confidence_score", 0.0),
+            1 if constraint.get("confidence_score", 1.0) < 0.7 else 0,
+            constraint.get("extraction_source", "")
+        ))
+        
+        self.conn.commit()
+
+    def insert_external_dependency(self, interview_id: int, company: str, business_unit: str, dependency: Dict):
+        """Insert an external dependency entity"""
+        cursor = self.conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO external_dependencies (
+                interview_id, company_name, business_unit, department,
+                vendor, service, frequency, coordinator, sla, payment_process,
+                confidence_score, needs_review, extraction_source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            interview_id,
+            company,
+            business_unit,
+            dependency.get("department", "Unknown"),
+            dependency.get("vendor", ""),
+            dependency.get("service", ""),
+            dependency.get("frequency", ""),
+            dependency.get("coordinator", ""),
+            dependency.get("sla", ""),
+            dependency.get("payment_process", ""),
+            dependency.get("confidence_score", 0.0),
+            1 if dependency.get("confidence_score", 1.0) < 0.7 else 0,
+            dependency.get("extraction_source", "")
+        ))
+        
+        self.conn.commit()
+
+    def insert_enhanced_system(self, interview_id: int, company: str, business_unit: str, system: Dict):
+        """Insert or update an enhanced system entity"""
+        # For systems, we use insert_or_update_enhanced_system
+        self.insert_or_update_enhanced_system(system, company)
