@@ -194,6 +194,70 @@ This document defines requirements for completing and fixing the Intelligence Ca
 
 5. THE System SHALL provide a database integrity check script
 
+### Requirement 11: Knowledge Graph Consolidation
+
+**User Story:** As a Business Intelligence Analyst, I want entities consolidated across interviews, so that I can see patterns and consensus from multiple sources.
+
+#### Acceptance Criteria
+
+1. WHEN processing an interview, THE System SHALL identify duplicate entities across interviews
+
+2. WHEN duplicate entities are found, THE System SHALL merge them and track all source interviews
+
+3. THE System SHALL calculate consensus confidence scores based on number of sources
+
+4. THE System SHALL detect contradictions between different interview sources
+
+5. THE System SHALL discover relationships between entities across interviews (team coordination, shared pain points)
+
+### Requirement 12: Pattern Recognition
+
+**User Story:** As a Digital Transformation Officer, I want recurring patterns identified automatically, so that I can prioritize systemic issues.
+
+#### Acceptance Criteria
+
+1. WHEN processing interviews, THE System SHALL detect recurring pain points mentioned by 3+ people
+
+2. THE System SHALL identify system usage patterns (popularity, satisfaction trends)
+
+3. THE System SHALL detect communication patterns across teams
+
+4. THE System SHALL calculate priority scores for detected patterns
+
+5. THE System SHALL generate recommended actions for high-priority patterns
+
+### Requirement 13: Parallel Processing
+
+**User Story:** As a System Administrator, I want parallel interview processing, so that I can process large batches quickly.
+
+#### Acceptance Criteria
+
+1. THE System SHALL support parallel processing of multiple interviews simultaneously
+
+2. WHEN parallel processing is enabled, THE System SHALL use a configurable number of worker processes
+
+3. THE System SHALL handle database locking and concurrent access safely
+
+4. THE System SHALL provide 3-5x speedup compared to sequential processing
+
+5. THE System SHALL maintain data integrity during parallel operations
+
+### Requirement 14: Ensemble Validation
+
+**User Story:** As a Quality Manager, I want forensic-grade ensemble validation, so that I can ensure maximum extraction quality for critical decisions.
+
+#### Acceptance Criteria
+
+1. THE System SHALL support ensemble validation using multiple LLM models
+
+2. WHEN ensemble validation is enabled, THE System SHALL extract entities using multiple models
+
+3. THE System SHALL synthesize results from multiple models into consensus entities
+
+4. THE System SHALL calculate quality scores across multiple dimensions
+
+5. THE System SHALL provide configurable ensemble modes (BASIC, FULL)
+
 ## Success Criteria
 
 ### Completeness
@@ -203,19 +267,34 @@ This document defines requirements for completing and fixing the Intelligence Ca
 - ✅ All entities linked to valid interviews
 
 ### Quality
+- ✅ ValidationAgent operational
+- ✅ Zero missing entities guaranteed
+- ✅ 90%+ entities with quality score > 0.8
+- ✅ <5% entities needing human review
 - ✅ No empty descriptions or required fields
 - ✅ Spanish characters correctly encoded (UTF-8)
 - ✅ Confidence scores calculated for all entities
-- ✅ Ensemble validation available (optional)
+
+### Intelligence
+- ✅ Entities consolidated across interviews
+- ✅ Relationships discovered and validated
+- ✅ Patterns detected (recurring issues)
+- ✅ Contradictions flagged for review
+- ✅ Consensus confidence >0.85
+- ✅ Actionable insights generated
 
 ### Performance
-- ✅ Processing time: 30-45 min (ensemble off) or 60-90 min (ensemble full)
-- ✅ Cost: $1.50-$6.60 depending on mode
+- ✅ Processing time: 15-20 min (sequential) or 5-7 min (parallel)
+- ✅ Cost: $2.00-$3.50 depending on features
 - ✅ No rate limit failures
 - ✅ Graceful error handling
+- ✅ Resume capability
 
 ### Maintainability
 - ✅ Simple, clear code structure
 - ✅ Modular extractors for each entity type
 - ✅ Comprehensive error logging
 - ✅ Easy to add new entity types
+- ✅ Configuration-driven workflow
+- ✅ Real-time monitoring dashboard
+- ✅ Comprehensive test coverage (>80%)

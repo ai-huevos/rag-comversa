@@ -519,42 +519,59 @@ def test_full_extraction_pipeline():
     assert stats["interviews"] == 44
 ```
 
-## Implementation Plan
+## Implementation Phases
 
-### Phase 1: Update Extractor (1-2 hours)
+This design supports a phased implementation approach that builds an intelligent extraction system incrementally.
 
-1. Import v2.0 extractors from `extractors.py`
-2. Initialize extractor instances in `__init__()`
-3. Update `extract_all()` to call v2.0 extractors
-4. Test with single interview
+### Phase 1: Core Extraction & Storage ✅ COMPLETE
 
-### Phase 2: Update Processor (1 hour)
+**Goal**: Extract and store all 17 entity types
 
-1. Add storage calls for v2.0 entities
-2. Add error handling for each entity type
-3. Update progress reporting
-4. Test with single interview
+**Components**:
+- Enhanced IntelligenceExtractor (uses v2.0 extractors)
+- Enhanced IntelligenceProcessor (stores all 17 types)
+- Progress tracking and resume capability
 
-### Phase 3: Create Validation Script (30 min)
+**Time**: 2-3 hours
+**Status**: Complete
 
-1. Create `scripts/validate_extraction.py`
-2. Implement completeness checks
-3. Implement quality checks
-4. Test with sample database
+### Phase 2: Validation & Quality Infrastructure
 
-### Phase 4: Full Extraction (30-45 min)
+**Goal**: Ensure extraction completeness and quality
 
-1. Disable ensemble validation (set ENABLE_ENSEMBLE_REVIEW=false)
-2. Run full extraction on 44 interviews
-3. Validate results
-4. Generate report
+**Components**:
+- ValidationAgent (checks completeness, triggers re-extraction)
+- ExtractionMonitor (real-time dashboard)
+- Centralized configuration system
+- Batch database operations
 
-### Phase 5: Optional Ensemble Validation (60-90 min)
+**Time**: 2-3 hours
+**Benefits**: Zero missing entities, real-time visibility, optimized performance
 
-1. Enable ensemble validation (set ENABLE_ENSEMBLE_REVIEW=true)
-2. Choose mode (BASIC or FULL)
-3. Re-run extraction
-4. Compare quality metrics
+### Phase 3: Intelligent Knowledge Graph System
+
+**Goal**: Transform isolated data into interconnected intelligence
+
+**Components**:
+- KnowledgeConsolidationAgent (merge duplicates, consensus)
+- RelationshipDiscoveryAgent (team coordination, dependencies)
+- PatternRecognitionAgent (recurring issues, trends)
+- ContradictionDetector (flag inconsistencies)
+
+**Time**: 3-4 hours
+**Benefits**: 10x business value - patterns, relationships, validated consensus
+
+### Phase 4: Performance Enhancements (Optional)
+
+**Goal**: Optimize for speed and maximum quality
+
+**Components**:
+- Parallel processing (3-5x speedup)
+- Ensemble validation (forensic-grade quality)
+- Comprehensive reporting (Excel with visualizations)
+
+**Time**: 1-2 hours
+**Benefits**: Faster processing, higher quality, better reporting
 
 ## Migration Strategy
 
@@ -1157,30 +1174,7 @@ def process_interview(self, interview: Dict) -> bool:
 }
 ```
 
-## Recommended Implementation Order
 
-### Phase 1: Core Fixes (2-3 hours)
-1. ✅ Consolidate extraction logic (use only v2.0 extractors)
-2. ✅ Update processor to store all 17 entity types
-3. ✅ Add lightweight quality checks (always on)
-4. ✅ Add extraction progress tracking
-
-### Phase 2: Optimization (2-3 hours)
-5. ✅ Implement batch extraction (single LLM call)
-6. ✅ Add real-time validation dashboard
-7. ✅ Optimize database operations (batch inserts)
-8. ✅ Create extraction configuration
-
-### Phase 3: Testing & Validation (1-2 hours)
-9. ✅ Test with single interview
-10. ✅ Test with 5 interviews
-11. ✅ Run full extraction (44 interviews)
-12. ✅ Validate results
-
-### Phase 4: Optional Enhancements (1-2 hours)
-13. ⚪ Enable ensemble validation for final pass
-14. ⚪ Add parallel processing for speed
-15. ⚪ Create extraction report generator
 
 ## Expected Results After Optimization
 
@@ -1236,3 +1230,339 @@ def process_interview(self, interview: Dict) -> bool:
 - ✅ Easy to debug
 - ✅ Easy to extend
 - ✅ Centralized configuration
+
+---
+
+## Phase 3 Design: Knowledge Graph Enrichment
+
+**Purpose**: Transform from isolated data extraction to interconnected intelligence building
+
+**Key Concept**: Every new interview makes the entire knowledge graph smarter by:
+- Consolidating duplicate entities across interviews
+- Building relationships between entities
+- Detecting patterns and consensus
+- Identifying contradictions
+
+### Architecture Enhancement
+
+```
+New Interview
+     │
+     ▼
+Extraction Agents (17 specialized)
+     │
+     ▼
+Validation Agent
+     │
+     ▼
+┌────────────────────────────────────┐
+│ Knowledge Consolidation Agent     │ ← NEW
+│ • Find duplicate entities          │
+│ • Merge knowledge from sources     │
+│ • Calculate consensus scores       │
+└────────┬───────────────────────────┘
+         │
+         ▼
+┌────────────────────────────────────┐
+│ Relationship Discovery Agent       │ ← NEW
+│ • Team coordination networks       │
+│ • Process dependencies             │
+│ • Shared pain points               │
+└────────┬───────────────────────────┘
+         │
+         ▼
+┌────────────────────────────────────┐
+│ Pattern Recognition Agent          │ ← NEW
+│ • Recurring pain points            │
+│ • System usage patterns            │
+│ • Communication patterns           │
+└────────┬───────────────────────────┘
+         │
+         ▼
+┌────────────────────────────────────┐
+│ Contradiction Detector             │ ← NEW
+│ • Inconsistent information         │
+│ • Flag for human review            │
+└────────┬───────────────────────────┘
+         │
+         ▼
+Storage Agent (with relationships)
+```
+
+### 1. Knowledge Consolidation Agent
+
+**Purpose**: Merge duplicate entities and enrich from multiple sources
+
+**Key Features**:
+- Semantic similarity matching (find duplicates)
+- Entity merging with source tracking
+- Consensus confidence calculation
+- Contradiction detection
+
+**Example**:
+```
+Interview 5: "Opera PMS es lento" (confidence: 0.7)
+Interview 14: "Opera tiene problemas de velocidad" (confidence: 0.7)
+Interview 23: "Opera es muy lento" (confidence: 0.7)
+
+→ Consolidated: "Opera PMS slowness issue"
+  - Mentioned in: [5, 14, 23]
+  - Source count: 3
+  - Consensus confidence: 0.95 (3 sources agree)
+  - Pattern detected: System dissatisfaction
+```
+
+**Implementation**:
+```python
+class KnowledgeConsolidationAgent:
+    """Consolidates entities across interviews"""
+    
+    def consolidate_entity(
+        self,
+        new_entity: Dict,
+        entity_type: str,
+        interview_id: int
+    ) -> ConsolidationResult:
+        """
+        1. Find similar entities in knowledge graph
+        2. Calculate similarity scores
+        3. Decide: New entity OR merge with existing
+        4. Update confidence and consensus scores
+        """
+        
+        # Find similar entities
+        similar = self.find_similar_entities(
+            new_entity,
+            entity_type,
+            threshold=0.8
+        )
+        
+        if not similar:
+            # Truly new entity
+            return self.add_new_entity(new_entity, interview_id)
+        
+        # Find best match
+        best_match = max(similar, key=lambda x: x['similarity_score'])
+        
+        if best_match['similarity_score'] > 0.9:
+            # High confidence match - merge
+            return self.merge_entities(
+                existing=best_match['entity'],
+                new=new_entity,
+                interview_id=interview_id
+            )
+        else:
+            # Similar but different - create new with relationship
+            return self.add_related_entity(
+                new_entity,
+                related_to=best_match['entity'],
+                interview_id=interview_id
+            )
+```
+
+### 2. Relationship Discovery Agent
+
+**Purpose**: Discover connections between entities and interviews
+
+**Key Relationships**:
+- Team Coordination: Who works with whom
+- Process Dependencies: Which processes depend on others
+- Shared Pain Points: Which teams have same issues
+- System Integration: Which systems connect
+
+**Example**:
+```
+Interview 14 (Recepción): "Coordino con Housekeeping por WhatsApp"
+Interview 21 (Housekeeping): "Recibo solicitudes de Recepción por WhatsApp"
+
+→ Relationship Created:
+  - Type: coordinates_with
+  - Entity1: Recepción
+  - Entity2: Housekeeping
+  - Channel: WhatsApp
+  - Validated: true (both sides confirm)
+  - Confidence: 0.95
+```
+
+### 3. Pattern Recognition Agent
+
+**Purpose**: Identify recurring patterns and aggregate insights
+
+**Patterns Detected**:
+- Recurring pain points (mentioned by N+ people)
+- System usage patterns (popularity, satisfaction)
+- Communication patterns (preferred channels)
+- Success patterns (what works well)
+
+**Example**:
+```
+After 20 interviews:
+
+Pattern: "WhatsApp Tracking Issues"
+- Frequency: 12 interviews
+- Departments: [Recepción, Housekeeping, Ingeniería, Mantenimiento]
+- Priority Score: 9.8 (HIGH - affects multiple departments)
+- Recommended Action: "Implement WhatsApp alternative with tracking"
+```
+
+### 4. Contradiction Detector
+
+**Purpose**: Identify inconsistent information for review
+
+**Example**:
+```
+Interview 5: "SAP is essential, we use it daily"
+Interview 23: "We don't use SAP, only Opera"
+
+→ Contradiction Flagged:
+  - Field: system_usage
+  - Value1: "essential, daily use"
+  - Value2: "not used"
+  - Severity: high
+  - Recommended Resolution: human_review
+  - Possible Causes: Different departments, outdated info
+```
+
+### Database Schema Additions
+
+```sql
+-- Track entity consolidation
+ALTER TABLE pain_points ADD COLUMN mentioned_in_interviews TEXT; -- JSON array
+ALTER TABLE pain_points ADD COLUMN source_count INTEGER DEFAULT 1;
+ALTER TABLE pain_points ADD COLUMN consensus_confidence REAL DEFAULT 0.0;
+ALTER TABLE pain_points ADD COLUMN has_contradictions INTEGER DEFAULT 0;
+ALTER TABLE pain_points ADD COLUMN is_pattern INTEGER DEFAULT 0;
+
+-- Entity relationships
+CREATE TABLE entity_relationships (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    relationship_type TEXT NOT NULL,
+    entity1_type TEXT NOT NULL,
+    entity1_id INTEGER NOT NULL,
+    entity2_type TEXT NOT NULL,
+    entity2_id INTEGER NOT NULL,
+    mentioned_in_interviews TEXT,
+    validated INTEGER DEFAULT 0,
+    confidence REAL DEFAULT 0.0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Detected patterns
+CREATE TABLE detected_patterns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pattern_type TEXT NOT NULL,
+    pattern_name TEXT NOT NULL,
+    description TEXT,
+    frequency INTEGER,
+    mentioned_in_interviews TEXT,
+    departments TEXT,
+    priority_score REAL,
+    recommended_action TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Contradictions
+CREATE TABLE contradictions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_type TEXT NOT NULL,
+    field TEXT NOT NULL,
+    value1 TEXT,
+    value2 TEXT,
+    interview1_id INTEGER,
+    interview2_id INTEGER,
+    severity TEXT,
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Benefits of Knowledge Graph Enrichment
+
+**1. Compound Intelligence**
+- Interview 1: Base knowledge
+- Interview 2: Validates + enriches
+- Interview 21: Confirms patterns + adds depth
+- Knowledge quality increases exponentially
+
+**2. Pattern Recognition**
+```
+After 5 interviews: "WhatsApp mentioned 3 times"
+After 10 interviews: "WhatsApp is primary channel (8/10)"
+After 20 interviews: "WhatsApp issues is cross-department pattern (12 teams)"
+```
+
+**3. Consensus Validation**
+```
+1 person: "Opera is slow" → Confidence: 0.7
+3 people: "Opera is slow" → Confidence: 0.9
+8 people: "Opera is slow" → Confidence: 0.98 + Pattern detected
+```
+
+**4. Relationship Mapping**
+```
+Interview 14: "I coordinate with Housekeeping"
+Interview 21: "I receive requests from Reception"
+→ Validated relationship: Reception ↔ Housekeeping
+→ Channel: WhatsApp
+→ Both mention lack of tracking
+```
+
+### Cost Analysis
+
+**Additional Costs**:
+- Consolidation Agent: ~$0.01 per interview (mostly rule-based)
+- Relationship Discovery: ~$0.02 per interview (embeddings + matching)
+- Pattern Recognition: ~$0.05 per 5 interviews (LLM analysis)
+- **Total Additional**: ~$0.03-0.04 per interview
+
+**New Total Cost**:
+- Base extraction: $2.00 (multi-agent workflow)
+- Knowledge enrichment: ~$1.50
+- **Total**: ~$3.50 for 44 interviews
+
+**ROI**:
+- 2x cost → 10x value (interconnected knowledge vs isolated data)
+- Patterns emerge that would be impossible to see otherwise
+- Validation across sources increases confidence
+- Relationships reveal organizational insights
+
+
+
+### Expected Output
+
+After processing all 44 interviews with knowledge graph enrichment:
+
+```
+📊 FINAL KNOWLEDGE GRAPH SUMMARY
+{'='*60}
+
+Total Entities: 1,234 (consolidated from 2,156 raw extractions)
+├─ Pain Points: 89 unique (mentioned 347 times total)
+├─ Systems: 23 unique (mentioned 412 times total)
+├─ Processes: 67 unique (mentioned 289 times total)
+└─ ... (14 more types)
+
+Relationships Discovered: 456
+├─ Team Coordination: 127 (89 validated)
+├─ Process Dependencies: 98
+├─ Shared Pain Points: 156
+└─ System Integration: 75
+
+Patterns Detected: 23
+🔥 TOP PATTERNS:
+1. WhatsApp Tracking Issues (12 interviews, 4 depts) → Priority: 9.8
+2. Opera PMS Slowness (18 interviews, avg satisfaction: 3.1/10) → Priority: 9.5
+3. Manual Data Entry (15 interviews, 8h/week wasted) → Priority: 9.3
+
+Contradictions Found: 7
+⚠️  NEEDS REVIEW:
+1. SAP usage (5 say essential, 3 say not used)
+2. Maintenance SLA (reports vary: 15min to 24h)
+
+High-Confidence Entities: 789 (mentioned by 3+ sources)
+Consensus Confidence: 0.87 average
+
+Knowledge Graph is PRODUCTION-READY for AI Agents! ✨
+```
+
+
