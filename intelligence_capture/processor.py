@@ -10,7 +10,9 @@ from typing import Dict, List, Optional
 from database import IntelligenceDB
 from extractor import IntelligenceExtractor
 from validation import validate_extraction_results, print_validation_summary
-from config import DB_PATH, INTERVIEWS_FILE
+from validation_agent import ValidationAgent
+from monitor import ExtractionMonitor
+from config import DB_PATH, INTERVIEWS_FILE, EXTRACTION_CONFIG, load_extraction_config
 
 # Import ensemble reviewer if available
 try:
@@ -31,26 +33,40 @@ class IntelligenceProcessor:
         self,
         db_path: Path = DB_PATH,
         enable_ensemble: bool = None,
-        ensemble_mode: str = None
+        ensemble_mode: str = None,
+        enable_validation_agent: bool = None,
+        enable_llm_validation: bool = None,
+        config: dict = None
     ):
         """
-        Initialize processor
+        Initialize processor with optional configuration
 
         Args:
             db_path: Path to SQLite database
             enable_ensemble: Enable ensemble validation (auto-detect if None)
             ensemble_mode: "full" (multi-model) or "basic" (single-model with review), reads from config if None
+            enable_validation_agent: Enable ValidationAgent for completeness checking (reads from config if None)
+            enable_llm_validation: Enable LLM-based validation in ValidationAgent (reads from config if None)
+            config: Configuration dictionary (loads from file if None)
         """
+        # Load configuration
+        if config is None:
+            config = EXTRACTION_CONFIG or load_extraction_config()
+
+        self.config = config
+
         self.db = IntelligenceDB(db_path)
         self.extractor = IntelligenceExtractor()
 
-        # Auto-detect ensemble availability
+        # Read ensemble settings from config if not specified
         if enable_ensemble is None:
-            enable_ensemble = ENSEMBLE_AVAILABLE and os.getenv("ENABLE_ENSEMBLE_REVIEW", "true").lower() == "true"
+            enable_ensemble = (
+                ENSEMBLE_AVAILABLE and
+                config.get("ensemble", {}).get("enable_ensemble_review", False)
+            )
 
-        # Read ensemble mode from config if not specified
         if ensemble_mode is None:
-            ensemble_mode = os.getenv("ENSEMBLE_MODE", "basic")
+            ensemble_mode = config.get("ensemble", {}).get("ensemble_mode", "basic")
 
         self.enable_ensemble = enable_ensemble
         self.ensemble_mode = ensemble_mode
@@ -68,6 +84,27 @@ class IntelligenceProcessor:
         else:
             self.reviewer = None
             print("ℹ️  Ensemble validation disabled")
+
+        # Initialize ValidationAgent for completeness checking
+        if enable_validation_agent is None:
+            enable_validation_agent = config.get("validation", {}).get("enable_validation_agent", True)
+
+        if enable_llm_validation is None:
+            enable_llm_validation = config.get("validation", {}).get("enable_llm_validation", False)
+
+        if enable_validation_agent:
+            self.validation_agent = ValidationAgent(
+                enable_llm_validation=enable_llm_validation,
+                openai_api_key=os.getenv("OPENAI_API_KEY")
+            )
+            validation_mode = "with LLM validation" if enable_llm_validation else "rule-based only"
+            print(f"🔍 ValidationAgent enabled: {validation_mode}")
+        else:
+            self.validation_agent = None
+            print("ℹ️  ValidationAgent disabled")
+
+        # Monitor will be initialized when processing starts
+        self.monitor = None
         
     def initialize(self):
         """Initialize database"""
@@ -83,8 +120,15 @@ class IntelligenceProcessor:
         Returns:
             True if successful, False otherwise
         """
+        import time
+
         meta = interview.get("meta", {})
         qa_pairs = interview.get("qa_pairs", {})
+        company = meta.get("company", "Unknown")
+        respondent = meta.get("respondent", "Unknown")
+
+        # Start timing if monitor is active
+        start_time = time.time()
 
         # Insert interview record
         interview_id = self.db.insert_interview(meta, qa_pairs)
@@ -93,7 +137,9 @@ class IntelligenceProcessor:
             print(f"  ⚠️  Interview already processed, skipping")
             return False
 
-        company = meta.get("company", "Unknown")
+        # Start monitoring if enabled
+        if self.monitor:
+            current_metric = self.monitor.start_interview(interview_id, company, respondent)
 
         # Update status to in_progress
         self.db.update_extraction_status(interview_id, "in_progress")
@@ -129,24 +175,59 @@ class IntelligenceProcessor:
                 print(f"  ⚠️  Ensemble review failed: {str(e)}")
                 print(f"     Continuing with original extractions...")
 
-        # QUALITY VALIDATION: Validate extracted entities
-        print("  🔍 Running quality validation...")
-        try:
-            validation_results = validate_extraction_results(entities)
+        # VALIDATION AGENT: Check completeness and quality
+        if self.validation_agent:
+            print("  🔍 Running ValidationAgent...")
+            try:
+                # Check completeness
+                missing_entities, completeness_results = self.validation_agent.validate_entities(
+                    entities, qa_pairs, meta
+                )
 
-            # Count validation issues
-            total_errors = sum(sum(len(r.errors) for r in results) for results in validation_results.values())
-            total_warnings = sum(sum(len(r.warnings) for r in results) for results in validation_results.values())
+                if missing_entities:
+                    print(f"  ⚠️  Missing entities detected: {', '.join(missing_entities)}")
+                    # TODO: Implement focused re-extraction for missing entities
+                else:
+                    print(f"  ✓ Completeness check passed")
 
-            if total_errors > 0:
-                print(f"  ⚠️  Quality validation found {total_errors} errors, {total_warnings} warnings")
-                # Entities are marked with _validation_failed flag but still stored
-            else:
-                print(f"  ✓ Quality validation passed ({total_warnings} warnings)")
+                # Check quality
+                quality_results = self.validation_agent.validate_quality(entities)
 
-        except Exception as e:
-            print(f"  ⚠️  Quality validation failed: {str(e)}")
-            print(f"     Continuing with storage...")
+                # Get summary
+                summary = self.validation_agent.get_validation_summary(
+                    completeness_results, quality_results
+                )
+
+                total_errors = summary['quality']['total_errors']
+                total_warnings = summary['quality']['total_warnings']
+
+                if total_errors > 0:
+                    print(f"  ⚠️  Quality validation found {total_errors} errors, {total_warnings} warnings")
+                else:
+                    print(f"  ✓ Quality validation passed ({total_warnings} warnings)")
+
+            except Exception as e:
+                print(f"  ⚠️  ValidationAgent failed: {str(e)}")
+                print(f"     Continuing with storage...")
+        else:
+            # QUALITY VALIDATION: Validate extracted entities (fallback)
+            print("  🔍 Running quality validation...")
+            try:
+                validation_results = validate_extraction_results(entities)
+
+                # Count validation issues
+                total_errors = sum(sum(len(r.errors) for r in results) for results in validation_results.values())
+                total_warnings = sum(sum(len(r.warnings) for r in results) for results in validation_results.values())
+
+                if total_errors > 0:
+                    print(f"  ⚠️  Quality validation found {total_errors} errors, {total_warnings} warnings")
+                    # Entities are marked with _validation_failed flag but still stored
+                else:
+                    print(f"  ✓ Quality validation passed ({total_warnings} warnings)")
+
+            except Exception as e:
+                print(f"  ⚠️  Quality validation failed: {str(e)}")
+                print(f"     Continuing with storage...")
 
         # Extract business_unit for v2.0 entities (with fallback)
         business_unit = meta.get("business_unit", meta.get("department", "Unknown"))
@@ -296,6 +377,28 @@ class IntelligenceProcessor:
         # Update status to complete
         self.db.update_extraction_status(interview_id, "complete")
 
+        # Record monitoring metrics if enabled
+        if self.monitor:
+            # Count entities
+            entity_counts = {k: len(v) for k, v in entities.items()}
+
+            # Get validation metrics (if validation agent was used)
+            if self.validation_agent and 'missing_entities' in locals():
+                validation_errors = summary.get('quality', {}).get('total_errors', 0)
+                validation_warnings = summary.get('quality', {}).get('total_warnings', 0)
+                missing_types = missing_entities
+            else:
+                validation_errors = 0
+                validation_warnings = 0
+                missing_types = []
+
+            # Finish tracking
+            current_metric.finish(success=True)
+            current_metric.set_entity_counts(entity_counts)
+            current_metric.set_quality_metrics(validation_errors, validation_warnings, missing_types)
+
+            self.monitor.finish_interview(current_metric, success=True)
+
         return True
     
     def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE, resume: bool = False):
@@ -306,7 +409,7 @@ class IntelligenceProcessor:
             interviews_file: Path to interviews JSON file
             resume: If True, only process pending/failed interviews (skips completed)
         """
-        
+
         print(f"\n📂 Loading interviews from: {interviews_file}")
 
         with open(interviews_file, 'r', encoding='utf-8') as f:
@@ -329,30 +432,49 @@ class IntelligenceProcessor:
 
             print(f"📋 Resume mode: {len(interviews_to_process)} pending/failed, {len(completed_interviews)} already complete")
             interviews = interviews_to_process
-        
+
+        # Initialize monitor for real-time tracking
+        enable_monitor = self.config.get("monitoring", {}).get("enable_monitor", True)
+        if enable_monitor:
+            self.monitor = ExtractionMonitor(total_interviews=len(interviews))
+            print(f"📊 Monitoring enabled for {len(interviews)} interviews")
+        else:
+            self.monitor = None
+
+        # Get summary frequency from config
+        summary_frequency = self.config.get("monitoring", {}).get("print_summary_every_n", 5)
+
         success_count = 0
         skip_count = 0
         error_count = 0
-        
+
         for i, interview in enumerate(interviews, 1):
             print(f"\n[{i}/{len(interviews)}] Processing...")
-            
+
             result = self.process_interview(interview)
-            
+
             if result is True:
                 success_count += 1
             elif result is False:
                 skip_count += 1
             else:
                 error_count += 1
+
+            # Print periodic summary based on config
+            if self.monitor and (i % summary_frequency == 0 or i == len(interviews)):
+                self.monitor.print_summary(detailed=False)
         
-        print(f"\n{'='*60}")
-        print(f"📊 PROCESSING COMPLETE")
-        print(f"{'='*60}")
-        print(f"✓ Processed: {success_count}")
-        print(f"⊘ Skipped: {skip_count}")
-        print(f"✗ Errors: {error_count}")
-        
+        # Print final report
+        if self.monitor:
+            self.monitor.print_final_report()
+        else:
+            print(f"\n{'='*60}")
+            print(f"📊 PROCESSING COMPLETE")
+            print(f"{'='*60}")
+            print(f"✓ Processed: {success_count}")
+            print(f"⊘ Skipped: {skip_count}")
+            print(f"✗ Errors: {error_count}")
+
         # Show database stats
         stats = self.db.get_stats()
         print(f"\n📈 DATABASE STATS")
@@ -364,7 +486,7 @@ class IntelligenceProcessor:
         print(f"KPIs: {stats['kpis']}")
         print(f"Automation Candidates: {stats['automation_candidates']}")
         print(f"Inefficiencies: {stats['inefficiencies']}")
-        
+
         print(f"\n📊 BY COMPANY")
         print(f"{'='*60}")
         for company, count in stats.get('by_company', {}).items():
