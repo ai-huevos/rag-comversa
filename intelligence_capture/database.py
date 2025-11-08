@@ -56,9 +56,15 @@ class IntelligenceDB:
                 date TEXT NOT NULL,
                 raw_data TEXT NOT NULL,
                 processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                extraction_status TEXT DEFAULT 'pending',
+                extraction_attempts INTEGER DEFAULT 0,
+                last_extraction_error TEXT,
                 UNIQUE(respondent, company, date)
             )
         """)
+
+        # Migrate existing interviews table if needed
+        self._migrate_interviews_table(cursor)
         
         # Pain Points table
         cursor.execute("""
@@ -181,7 +187,137 @@ class IntelligenceDB:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_systems_name ON systems(name)")
         
         self.conn.commit()
-        
+
+    def _migrate_interviews_table(self, cursor):
+        """Add progress tracking columns to existing interviews table"""
+        try:
+            # Check if columns already exist
+            cursor.execute("PRAGMA table_info(interviews)")
+            columns = [row[1] for row in cursor.fetchall()]
+
+            # Add extraction_status if missing
+            if "extraction_status" not in columns:
+                cursor.execute("ALTER TABLE interviews ADD COLUMN extraction_status TEXT DEFAULT 'pending'")
+                print("  ✓ Added extraction_status column")
+
+            # Add extraction_attempts if missing
+            if "extraction_attempts" not in columns:
+                cursor.execute("ALTER TABLE interviews ADD COLUMN extraction_attempts INTEGER DEFAULT 0")
+                print("  ✓ Added extraction_attempts column")
+
+            # Add last_extraction_error if missing
+            if "last_extraction_error" not in columns:
+                cursor.execute("ALTER TABLE interviews ADD COLUMN last_extraction_error TEXT")
+                print("  ✓ Added last_extraction_error column")
+
+            self.conn.commit()
+
+        except Exception as e:
+            print(f"  ⚠️  Migration warning: {str(e)}")
+
+    def update_extraction_status(self, interview_id: int, status: str, error: str = None):
+        """
+        Update extraction status for an interview
+
+        Args:
+            interview_id: ID of the interview
+            status: 'pending', 'in_progress', 'complete', or 'failed'
+            error: Error message if status is 'failed'
+        """
+        cursor = self.conn.cursor()
+
+        if status == 'failed':
+            cursor.execute("""
+                UPDATE interviews
+                SET extraction_status = ?,
+                    extraction_attempts = extraction_attempts + 1,
+                    last_extraction_error = ?
+                WHERE id = ?
+            """, (status, error, interview_id))
+        else:
+            cursor.execute("""
+                UPDATE interviews
+                SET extraction_status = ?,
+                    extraction_attempts = extraction_attempts + 1
+                WHERE id = ?
+            """, (status, interview_id))
+
+        self.conn.commit()
+
+    def get_interviews_by_status(self, status: str = None) -> List[Dict]:
+        """
+        Get interviews filtered by extraction status
+
+        Args:
+            status: Filter by status ('pending', 'in_progress', 'complete', 'failed')
+                   If None, returns all interviews
+
+        Returns:
+            List of interview dictionaries with metadata
+        """
+        cursor = self.conn.cursor()
+
+        if status:
+            cursor.execute("""
+                SELECT id, company, respondent, role, date,
+                       extraction_status, extraction_attempts, last_extraction_error
+                FROM interviews
+                WHERE extraction_status = ?
+                ORDER BY id
+            """, (status,))
+        else:
+            cursor.execute("""
+                SELECT id, company, respondent, role, date,
+                       extraction_status, extraction_attempts, last_extraction_error
+                FROM interviews
+                ORDER BY id
+            """)
+
+        rows = cursor.fetchall()
+        interviews = []
+
+        for row in rows:
+            interviews.append({
+                "id": row[0],
+                "company": row[1],
+                "respondent": row[2],
+                "role": row[3],
+                "date": row[4],
+                "extraction_status": row[5] if len(row) > 5 else "pending",
+                "extraction_attempts": row[6] if len(row) > 6 else 0,
+                "last_extraction_error": row[7] if len(row) > 7 else None
+            })
+
+        return interviews
+
+    def reset_extraction_status(self, status_filter: str = None):
+        """
+        Reset extraction status for interviews (useful for re-running extractions)
+
+        Args:
+            status_filter: Only reset interviews with this status (e.g., 'failed')
+                          If None, resets all interviews
+        """
+        cursor = self.conn.cursor()
+
+        if status_filter:
+            cursor.execute("""
+                UPDATE interviews
+                SET extraction_status = 'pending',
+                    last_extraction_error = NULL
+                WHERE extraction_status = ?
+            """, (status_filter,))
+        else:
+            cursor.execute("""
+                UPDATE interviews
+                SET extraction_status = 'pending',
+                    extraction_attempts = 0,
+                    last_extraction_error = NULL
+            """)
+
+        self.conn.commit()
+        print(f"  ✓ Reset extraction status for {cursor.rowcount} interviews")
+
     def insert_interview(self, meta: Dict, qa_pairs: Dict) -> int:
         """Insert interview and return interview_id"""
         cursor = self.conn.cursor()

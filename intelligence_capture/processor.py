@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from database import IntelligenceDB
 from extractor import IntelligenceExtractor
+from validation import validate_extraction_results, print_validation_summary
 from config import DB_PATH, INTERVIEWS_FILE
 
 # Import ensemble reviewer if available
@@ -94,11 +95,16 @@ class IntelligenceProcessor:
 
         company = meta.get("company", "Unknown")
 
+        # Update status to in_progress
+        self.db.update_extraction_status(interview_id, "in_progress")
+
         # Extract entities using AI
         try:
             entities = self.extractor.extract_all(meta, qa_pairs)
         except Exception as e:
-            print(f"  ❌ Extraction failed: {str(e)}")
+            error_msg = str(e)[:200]  # Truncate error message
+            print(f"  ❌ Extraction failed: {error_msg}")
+            self.db.update_extraction_status(interview_id, "failed", error_msg)
             return False
 
         # ENSEMBLE VALIDATION: Review extractions if enabled
@@ -123,48 +129,206 @@ class IntelligenceProcessor:
                 print(f"  ⚠️  Ensemble review failed: {str(e)}")
                 print(f"     Continuing with original extractions...")
 
-        # Store extracted entities (with review metrics if available)
+        # QUALITY VALIDATION: Validate extracted entities
+        print("  🔍 Running quality validation...")
         try:
-            # Pain points
-            for pain_point in entities.get("pain_points", []):
-                self.db.insert_pain_point(interview_id, company, pain_point)
+            validation_results = validate_extraction_results(entities)
 
-            # Processes
-            for process in entities.get("processes", []):
-                self.db.insert_process(interview_id, company, process)
+            # Count validation issues
+            total_errors = sum(sum(len(r.errors) for r in results) for results in validation_results.values())
+            total_warnings = sum(sum(len(r.warnings) for r in results) for results in validation_results.values())
 
-            # Systems
-            for system in entities.get("systems", []):
-                self.db.insert_or_update_system(system, company)
-
-            # KPIs
-            for kpi in entities.get("kpis", []):
-                self.db.insert_kpi(interview_id, company, kpi)
-
-            # Automation candidates
-            for automation in entities.get("automation_candidates", []):
-                self.db.insert_automation_candidate(interview_id, company, automation)
-
-            # Inefficiencies
-            for inefficiency in entities.get("inefficiencies", []):
-                self.db.insert_inefficiency(interview_id, company, inefficiency)
-
-            print(f"  ✓ Stored all entities")
-            return True
+            if total_errors > 0:
+                print(f"  ⚠️  Quality validation found {total_errors} errors, {total_warnings} warnings")
+                # Entities are marked with _validation_failed flag but still stored
+            else:
+                print(f"  ✓ Quality validation passed ({total_warnings} warnings)")
 
         except Exception as e:
-            print(f"  ❌ Storage failed: {str(e)}")
-            return False
+            print(f"  ⚠️  Quality validation failed: {str(e)}")
+            print(f"     Continuing with storage...")
+
+        # Extract business_unit for v2.0 entities (with fallback)
+        business_unit = meta.get("business_unit", meta.get("department", "Unknown"))
+
+        # Store extracted entities (with review metrics if available)
+        storage_errors = []
+
+        # v1.0 entities
+        try:
+            for pain_point in entities.get("pain_points", []):
+                try:
+                    self.db.insert_pain_point(interview_id, company, pain_point)
+                except Exception as e:
+                    storage_errors.append(f"pain_point: {str(e)[:50]}")
+
+            for process in entities.get("processes", []):
+                try:
+                    self.db.insert_process(interview_id, company, process)
+                except Exception as e:
+                    storage_errors.append(f"process: {str(e)[:50]}")
+
+            for system in entities.get("systems", []):
+                try:
+                    self.db.insert_or_update_system(system, company)
+                except Exception as e:
+                    storage_errors.append(f"system: {str(e)[:50]}")
+
+            for kpi in entities.get("kpis", []):
+                try:
+                    self.db.insert_kpi(interview_id, company, kpi)
+                except Exception as e:
+                    storage_errors.append(f"kpi: {str(e)[:50]}")
+
+            for automation in entities.get("automation_candidates", []):
+                try:
+                    self.db.insert_automation_candidate(interview_id, company, automation)
+                except Exception as e:
+                    storage_errors.append(f"automation_candidate: {str(e)[:50]}")
+
+            for inefficiency in entities.get("inefficiencies", []):
+                try:
+                    self.db.insert_inefficiency(interview_id, company, inefficiency)
+                except Exception as e:
+                    storage_errors.append(f"inefficiency: {str(e)[:50]}")
+
+            print(f"  ✓ Stored v1.0 entities")
+
+        except Exception as e:
+            print(f"  ⚠️  v1.0 storage error: {str(e)}")
+
+        # v2.0 entities
+        try:
+            for channel in entities.get("communication_channels", []):
+                try:
+                    self.db.insert_communication_channel(interview_id, company, business_unit, channel)
+                except Exception as e:
+                    storage_errors.append(f"communication_channel: {str(e)[:50]}")
+
+            for decision in entities.get("decision_points", []):
+                try:
+                    self.db.insert_decision_point(interview_id, company, business_unit, decision)
+                except Exception as e:
+                    storage_errors.append(f"decision_point: {str(e)[:50]}")
+
+            for flow in entities.get("data_flows", []):
+                try:
+                    self.db.insert_data_flow(interview_id, company, business_unit, flow)
+                except Exception as e:
+                    storage_errors.append(f"data_flow: {str(e)[:50]}")
+
+            for pattern in entities.get("temporal_patterns", []):
+                try:
+                    self.db.insert_temporal_pattern(interview_id, company, business_unit, pattern)
+                except Exception as e:
+                    storage_errors.append(f"temporal_pattern: {str(e)[:50]}")
+
+            for failure in entities.get("failure_modes", []):
+                try:
+                    self.db.insert_failure_mode(interview_id, company, business_unit, failure)
+                except Exception as e:
+                    storage_errors.append(f"failure_mode: {str(e)[:50]}")
+
+            for team in entities.get("team_structures", []):
+                try:
+                    self.db.insert_team_structure(interview_id, company, business_unit, team)
+                except Exception as e:
+                    storage_errors.append(f"team_structure: {str(e)[:50]}")
+
+            for gap in entities.get("knowledge_gaps", []):
+                try:
+                    self.db.insert_knowledge_gap(interview_id, company, business_unit, gap)
+                except Exception as e:
+                    storage_errors.append(f"knowledge_gap: {str(e)[:50]}")
+
+            for pattern in entities.get("success_patterns", []):
+                try:
+                    self.db.insert_success_pattern(interview_id, company, business_unit, pattern)
+                except Exception as e:
+                    storage_errors.append(f"success_pattern: {str(e)[:50]}")
+
+            for constraint in entities.get("budget_constraints", []):
+                try:
+                    self.db.insert_budget_constraint(interview_id, company, business_unit, constraint)
+                except Exception as e:
+                    storage_errors.append(f"budget_constraint: {str(e)[:50]}")
+
+            for dependency in entities.get("external_dependencies", []):
+                try:
+                    self.db.insert_external_dependency(interview_id, company, business_unit, dependency)
+                except Exception as e:
+                    storage_errors.append(f"external_dependency: {str(e)[:50]}")
+
+            # Enhanced v1.0 entities (if present)
+            for pain_point in entities.get("pain_points_v2", []):
+                try:
+                    self.db.insert_enhanced_pain_point(interview_id, company, business_unit, pain_point)
+                except Exception as e:
+                    storage_errors.append(f"enhanced_pain_point: {str(e)[:50]}")
+
+            for system in entities.get("systems_v2", []):
+                try:
+                    self.db.insert_or_update_enhanced_system(system, company)
+                except Exception as e:
+                    storage_errors.append(f"enhanced_system: {str(e)[:50]}")
+
+            for automation in entities.get("automation_candidates_v2", []):
+                try:
+                    self.db.insert_enhanced_automation_candidate(interview_id, company, business_unit, automation)
+                except Exception as e:
+                    storage_errors.append(f"enhanced_automation_candidate: {str(e)[:50]}")
+
+            print(f"  ✓ Stored v2.0 entities")
+
+        except Exception as e:
+            print(f"  ⚠️  v2.0 storage error: {str(e)}")
+
+        # Report any storage errors
+        if storage_errors:
+            print(f"  ⚠️  {len(storage_errors)} storage errors:")
+            for error in storage_errors[:5]:  # Show first 5
+                print(f"     - {error}")
+            if len(storage_errors) > 5:
+                print(f"     ... and {len(storage_errors) - 5} more")
+
+        print(f"  ✓ Storage complete (errors: {len(storage_errors)})")
+
+        # Update status to complete
+        self.db.update_extraction_status(interview_id, "complete")
+
+        return True
     
-    def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE):
-        """Process all interviews from JSON file"""
+    def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE, resume: bool = False):
+        """
+        Process all interviews from JSON file
+
+        Args:
+            interviews_file: Path to interviews JSON file
+            resume: If True, only process pending/failed interviews (skips completed)
+        """
         
         print(f"\n📂 Loading interviews from: {interviews_file}")
-        
+
         with open(interviews_file, 'r', encoding='utf-8') as f:
             interviews = json.load(f)
-        
+
         print(f"✓ Found {len(interviews)} interviews")
+
+        # If resuming, check which interviews are already complete
+        if resume:
+            completed_interviews = self.db.get_interviews_by_status("complete")
+            completed_ids = {(i["respondent"], i["company"], i["date"]) for i in completed_interviews}
+
+            # Filter out completed interviews
+            interviews_to_process = []
+            for interview in interviews:
+                meta = interview.get("meta", {})
+                key = (meta.get("respondent"), meta.get("company"), meta.get("date"))
+                if key not in completed_ids:
+                    interviews_to_process.append(interview)
+
+            print(f"📋 Resume mode: {len(interviews_to_process)} pending/failed, {len(completed_interviews)} already complete")
+            interviews = interviews_to_process
         
         success_count = 0
         skip_count = 0
