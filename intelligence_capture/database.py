@@ -194,28 +194,71 @@ class IntelligenceDB:
         return result[0] if result else None
     
     def insert_pain_point(self, interview_id: int, company: str, pain_point: Dict):
-        """Insert a pain point"""
+        """Insert a pain point with optional review metrics"""
         cursor = self.conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO pain_points (
-                interview_id, company, type, description, affected_roles,
-                affected_processes, frequency, severity, impact_description,
-                proposed_solutions
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            interview_id,
-            company,
-            pain_point.get("type", "Unknown"),
-            pain_point.get("description", ""),
-            json.dumps(pain_point.get("affected_roles", [])),
-            json.dumps(pain_point.get("affected_processes", [])),
-            pain_point.get("frequency", "Unknown"),
-            pain_point.get("severity", "Unknown"),
-            pain_point.get("impact_description", ""),
-            json.dumps(pain_point.get("proposed_solutions", []))
-        ))
-        
+
+        # Extract review metrics if available
+        review_metrics = pain_point.get("_review_metrics", {})
+
+        # Check if review fields exist in table
+        cursor.execute("PRAGMA table_info(pain_points)")
+        columns = [row[1] for row in cursor.fetchall()]
+        has_review_fields = "review_quality_score" in columns
+
+        if has_review_fields:
+            cursor.execute("""
+                INSERT INTO pain_points (
+                    interview_id, company, type, description, affected_roles,
+                    affected_processes, frequency, severity, impact_description,
+                    proposed_solutions,
+                    review_quality_score, review_accuracy_score, review_completeness_score,
+                    review_relevance_score, review_consistency_score, review_hallucination_score,
+                    review_consensus_level, review_needs_human, review_feedback,
+                    review_model_agreement
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                interview_id,
+                company,
+                pain_point.get("type", "Unknown"),
+                pain_point.get("description", ""),
+                json.dumps(pain_point.get("affected_roles", [])),
+                json.dumps(pain_point.get("affected_processes", [])),
+                pain_point.get("frequency", "Unknown"),
+                pain_point.get("severity", "Unknown"),
+                pain_point.get("impact_description", ""),
+                json.dumps(pain_point.get("proposed_solutions", [])),
+                review_metrics.get("overall_quality", 0.0),
+                review_metrics.get("accuracy_score", 0.0),
+                review_metrics.get("completeness_score", 0.0),
+                review_metrics.get("relevance_score", 0.0),
+                review_metrics.get("consistency_score", 0.0),
+                review_metrics.get("hallucination_score", 0.0),
+                review_metrics.get("consensus_level", 0.0),
+                1 if review_metrics.get("needs_human_review", False) else 0,
+                review_metrics.get("review_feedback", ""),
+                json.dumps(review_metrics.get("model_agreement", {}))
+            ))
+        else:
+            # Fallback to original insert without review fields
+            cursor.execute("""
+                INSERT INTO pain_points (
+                    interview_id, company, type, description, affected_roles,
+                    affected_processes, frequency, severity, impact_description,
+                    proposed_solutions
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                interview_id,
+                company,
+                pain_point.get("type", "Unknown"),
+                pain_point.get("description", ""),
+                json.dumps(pain_point.get("affected_roles", [])),
+                json.dumps(pain_point.get("affected_processes", [])),
+                pain_point.get("frequency", "Unknown"),
+                pain_point.get("severity", "Unknown"),
+                pain_point.get("impact_description", ""),
+                json.dumps(pain_point.get("proposed_solutions", []))
+            ))
+
         self.conn.commit()
     
     def insert_process(self, interview_id: int, company: str, process: Dict):
@@ -486,17 +529,81 @@ class EnhancedIntelligenceDB(IntelligenceDB):
     def _add_column_if_not_exists(self, table: str, column: str, column_type: str):
         """Add column to table if it doesn't already exist"""
         cursor = self.conn.cursor()
-        
+
         # Check if column exists
         cursor.execute(f"PRAGMA table_info({table})")
         columns = [row[1] for row in cursor.fetchall()]
-        
+
         if column not in columns:
             try:
                 cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
                 print(f"  Added column {table}.{column}")
             except sqlite3.OperationalError as e:
                 print(f"  Warning: Could not add {table}.{column}: {e}")
+
+    def add_ensemble_review_fields(self):
+        """
+        Add ensemble validation tracking fields to all entity tables
+        For forensic-grade quality review system
+        """
+        print("\n🔬 Adding ensemble review tracking fields...")
+
+        # Tables to enhance with review fields
+        entity_tables = [
+            "pain_points",
+            "processes",
+            "systems",
+            "kpis",
+            "automation_candidates",
+            "inefficiencies",
+            "communication_channels",
+            "decision_points",
+            "data_flows",
+            "temporal_patterns",
+            "failure_modes",
+            "team_structures",
+            "knowledge_gaps",
+            "success_patterns",
+            "budget_constraints",
+            "external_dependencies"
+        ]
+
+        # Ensemble review fields
+        review_fields = [
+            ("review_quality_score", "REAL DEFAULT 0.0"),           # Overall quality 0.0-1.0
+            ("review_accuracy_score", "REAL DEFAULT 0.0"),          # Accuracy vs source
+            ("review_completeness_score", "REAL DEFAULT 0.0"),      # Completeness
+            ("review_relevance_score", "REAL DEFAULT 0.0"),         # Relevance
+            ("review_consistency_score", "REAL DEFAULT 0.0"),       # Internal consistency
+            ("review_hallucination_score", "REAL DEFAULT 0.0"),     # 1.0=no hallucination, 0.0=high
+            ("review_consensus_level", "REAL DEFAULT 0.0"),         # Agreement across models
+            ("review_needs_human", "INTEGER DEFAULT 0"),            # Flag for human review
+            ("review_feedback", "TEXT"),                            # Structured feedback
+            ("review_model_agreement", "TEXT"),                     # JSON: model agreement data
+            ("review_iteration_count", "INTEGER DEFAULT 0"),        # Refinement iterations
+            ("review_ensemble_models", "TEXT"),                     # JSON: models used
+            ("review_cost_usd", "REAL DEFAULT 0.0"),               # Estimated API cost
+            ("final_approved", "INTEGER DEFAULT 0"),                # Human approval flag
+        ]
+
+        # Add fields to each table
+        for table in entity_tables:
+            # Check if table exists
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                (table,)
+            )
+            if not cursor.fetchone():
+                print(f"  ⊘ Table {table} doesn't exist, skipping")
+                continue
+
+            print(f"  Enhancing {table}...")
+            for field_name, field_type in review_fields:
+                self._add_column_if_not_exists(table, field_name, field_type)
+
+        self.conn.commit()
+        print("✅ Ensemble review fields added successfully")
     
     def _create_communication_channels_table(self):
         """Create communication_channels table"""
