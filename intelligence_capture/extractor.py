@@ -1,49 +1,114 @@
 """
 AI-powered extraction of structured intelligence from interview responses
 Uses GPT-4 to extract entities based on PHASE1_ONTOLOGY_SCHEMA.json
+Orchestrates v1.0 and v2.0 extractors for all 17 entity types
 """
 import json
 from typing import Dict, List, Any
 from openai import OpenAI
 from config import OPENAI_API_KEY, MODEL, TEMPERATURE, MAX_RETRIES
 
+# Import all v2.0 extractors
+from extractors import (
+    CommunicationChannelExtractor,
+    SystemExtractor,
+    DecisionPointExtractor,
+    DataFlowExtractor,
+    TemporalPatternExtractor,
+    FailureModeExtractor,
+    EnhancedPainPointExtractor,
+    AutomationCandidateExtractor,
+    TeamStructureExtractor,
+    KnowledgeGapExtractor,
+    SuccessPatternExtractor,
+    BudgetConstraintExtractor,
+    ExternalDependencyExtractor
+)
+
 
 class IntelligenceExtractor:
     """Extracts structured data from interview responses using GPT-4"""
-    
+
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_KEY)
+
+        # Initialize all v2.0 extractors
+        print("🔧 Initializing extractors...")
+        self.v2_extractors = {
+            "communication_channels": CommunicationChannelExtractor(OPENAI_API_KEY),
+            "systems_v2": SystemExtractor(OPENAI_API_KEY),
+            "decision_points": DecisionPointExtractor(OPENAI_API_KEY),
+            "data_flows": DataFlowExtractor(OPENAI_API_KEY),
+            "temporal_patterns": TemporalPatternExtractor(OPENAI_API_KEY),
+            "failure_modes": FailureModeExtractor(OPENAI_API_KEY),
+            "pain_points_v2": EnhancedPainPointExtractor(OPENAI_API_KEY),
+            "automation_candidates_v2": AutomationCandidateExtractor(OPENAI_API_KEY),
+            "team_structures": TeamStructureExtractor(OPENAI_API_KEY),
+            "knowledge_gaps": KnowledgeGapExtractor(OPENAI_API_KEY),
+            "success_patterns": SuccessPatternExtractor(OPENAI_API_KEY),
+            "budget_constraints": BudgetConstraintExtractor(OPENAI_API_KEY),
+            "external_dependencies": ExternalDependencyExtractor(OPENAI_API_KEY)
+        }
+        print(f"✓ Initialized {len(self.v2_extractors)} v2.0 extractors")
         
     def extract_all(self, meta: Dict, qa_pairs: Dict) -> Dict[str, List[Dict]]:
         """
-        Extract all entity types from an interview
-        
+        Extract all 17 entity types from an interview
+
         Returns:
             {
+                # v1.0 entities (kept for backward compatibility)
                 "pain_points": [...],
                 "processes": [...],
                 "systems": [...],
                 "kpis": [...],
                 "automation_candidates": [...],
-                "inefficiencies": [...]
+                "inefficiencies": [...],
+
+                # v2.0 entities (new)
+                "communication_channels": [...],
+                "decision_points": [...],
+                "data_flows": [...],
+                "temporal_patterns": [...],
+                "failure_modes": [...],
+                "team_structures": [...],
+                "knowledge_gaps": [...],
+                "success_patterns": [...],
+                "budget_constraints": [...],
+                "external_dependencies": [...]
             }
         """
-        
+
         # Build context from interview
         interview_text = self._format_interview(meta, qa_pairs)
-        
+        interview_data = {"meta": meta, "qa_pairs": qa_pairs}
+
         # Extract each entity type
         results = {}
-        
+
         print(f"\n🔍 Extracting from: {meta.get('respondent')} ({meta.get('role')})")
-        
+
+        # v1.0 extractions (legacy, for backward compatibility)
+        print("  📦 Running v1.0 extractors...")
         results["pain_points"] = self._extract_pain_points(interview_text, meta)
         results["processes"] = self._extract_processes(interview_text, meta)
         results["systems"] = self._extract_systems(interview_text, meta)
         results["kpis"] = self._extract_kpis(interview_text, meta)
         results["automation_candidates"] = self._extract_automation_candidates(interview_text, meta)
         results["inefficiencies"] = self._extract_inefficiencies(interview_text, meta)
-        
+
+        # v2.0 extractions (new entity types)
+        print("  📦 Running v2.0 extractors...")
+        for entity_type, extractor in self.v2_extractors.items():
+            try:
+                entities = extractor.extract_from_interview(interview_data)
+                results[entity_type] = entities
+                print(f"    ✓ {entity_type}: {len(entities)}")
+            except Exception as e:
+                print(f"    ⚠️  {entity_type} failed: {str(e)}")
+                results[entity_type] = []
+                # Continue processing remaining entity types
+
         return results
     
     def _format_interview(self, meta: Dict, qa_pairs: Dict) -> str:
