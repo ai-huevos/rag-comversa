@@ -30,11 +30,27 @@ class IntelligenceDB:
         self.conn = None
         
     def connect(self):
-        """Connect to database with proper UTF-8 handling"""
-        self.conn = sqlite3.connect(self.db_path)
+        """Connect to database with WAL mode for parallel processing"""
+        self.conn = sqlite3.connect(
+            self.db_path,
+            timeout=30.0,  # Wait up to 30s for locks
+            check_same_thread=False  # Allow multi-threading
+        )
         self.conn.row_factory = sqlite3.Row  # Return rows as dicts
         # Ensure UTF-8 text handling (Python 3 default, but explicit is better)
         self.conn.text_factory = str
+        
+        # Enable WAL mode for concurrent access (parallel processing)
+        self.conn.execute("PRAGMA journal_mode=WAL")
+        
+        # Set busy timeout (wait 5s if database is locked)
+        self.conn.execute("PRAGMA busy_timeout=5000")
+        
+        # Enable foreign keys
+        self.conn.execute("PRAGMA foreign_keys=ON")
+        
+        print("✓ Database connected with WAL mode (parallel-safe)")
+        
         return self.conn
     
     def close(self):

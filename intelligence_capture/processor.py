@@ -401,6 +401,31 @@ class IntelligenceProcessor:
 
         return True
     
+    def _estimate_extraction_cost(self, num_interviews: int) -> float:
+        """
+        Estimate API cost for extraction
+        
+        Args:
+            num_interviews: Number of interviews to process
+            
+        Returns:
+            Estimated cost in USD
+        """
+        # Rough estimates:
+        # - 17 entity types per interview
+        # - ~$0.001-0.002 per API call with gpt-4o-mini
+        # - Ensemble multiplies by 3x
+        
+        base_cost_per_interview = 0.02  # $0.02 per interview
+        
+        if self.enable_ensemble:
+            multiplier = 3  # Ensemble uses 3x API calls
+        else:
+            multiplier = 1
+            
+        total_cost = num_interviews * base_cost_per_interview * multiplier
+        return total_cost
+    
     def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE, resume: bool = False):
         """
         Process all interviews from JSON file
@@ -416,6 +441,23 @@ class IntelligenceProcessor:
             interviews = json.load(f)
 
         print(f"✓ Found {len(interviews)} interviews")
+        
+        # Estimate cost and get confirmation
+        estimated_cost = self._estimate_extraction_cost(len(interviews))
+        print(f"\n💰 Estimated cost: ${estimated_cost:.2f}")
+        print(f"   (Based on ~17 API calls per interview at $0.001-0.002 per call)")
+        
+        if estimated_cost > 1.0:
+            try:
+                confirm = input(f"\n⚠️  Estimated cost is ${estimated_cost:.2f}. Continue? (y/n): ")
+                if confirm.lower() != 'y':
+                    print("❌ Extraction cancelled by user")
+                    return
+            except (EOFError, KeyboardInterrupt):
+                print("\n❌ Extraction cancelled")
+                return
+        
+        print(f"✓ Starting extraction...")
 
         # If resuming, check which interviews are already complete
         if resume:

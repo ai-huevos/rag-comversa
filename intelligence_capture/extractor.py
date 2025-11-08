@@ -7,6 +7,7 @@ import json
 from typing import Dict, List, Any
 from openai import OpenAI
 from .config import OPENAI_API_KEY, MODEL, TEMPERATURE, MAX_RETRIES
+from .rate_limiter import get_rate_limiter
 
 # Import all v2.0 extractors
 from .extractors import (
@@ -31,6 +32,7 @@ class IntelligenceExtractor:
 
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.rate_limiter = get_rate_limiter(max_calls_per_minute=50)
 
         # Initialize all v2.0 extractors
         print("🔧 Initializing extractors...")
@@ -130,10 +132,15 @@ class IntelligenceExtractor:
         return "\n".join(lines)
     
     def _call_gpt4(self, system_prompt: str, user_prompt: str) -> Dict:
-        """Call GPT-4 with retry logic"""
+        """Call GPT-4 with retry logic and rate limiting"""
+        import time
+        from openai import RateLimitError
         
         for attempt in range(MAX_RETRIES):
             try:
+                # WAIT for rate limiter BEFORE making call
+                self.rate_limiter.wait_if_needed()
+                
                 response = self.client.chat.completions.create(
                     model=MODEL,
                     temperature=TEMPERATURE,
@@ -147,11 +154,21 @@ class IntelligenceExtractor:
                 result = json.loads(response.choices[0].message.content)
                 return result
                 
+            except RateLimitError as e:
+                # Should rarely happen now with rate limiter
+                wait_time = min(2 ** attempt, 60)  # Exponential backoff, max 60s
+                print(f"  ⚠️  Rate limit hit (unexpected), waiting {wait_time}s...")
+                time.sleep(wait_time)
+                if attempt == MAX_RETRIES - 1:
+                    print(f"  ❌ Rate limit exceeded after {MAX_RETRIES} attempts")
+                    return {}
             except Exception as e:
                 print(f"  ⚠️  Attempt {attempt + 1} failed: {str(e)}")
                 if attempt == MAX_RETRIES - 1:
                     print(f"  ❌ Failed after {MAX_RETRIES} attempts")
                     return {}
+                # Small delay between retries
+                time.sleep(1)
         
         return {}
     
