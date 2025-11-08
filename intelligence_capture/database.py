@@ -9,6 +9,19 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 
+def json_serialize(obj: Any) -> str:
+    """
+    Serialize object to JSON with proper UTF-8 handling for Spanish text
+    
+    Args:
+        obj: Object to serialize (dict, list, etc.)
+        
+    Returns:
+        JSON string with Spanish characters preserved
+    """
+    return json.dumps(obj, ensure_ascii=False)
+
+
 class IntelligenceDB:
     """Manages SQLite database for captured intelligence"""
     
@@ -17,9 +30,11 @@ class IntelligenceDB:
         self.conn = None
         
     def connect(self):
-        """Connect to database"""
+        """Connect to database with proper UTF-8 handling"""
         self.conn = sqlite3.connect(self.db_path)
         self.conn.row_factory = sqlite3.Row  # Return rows as dicts
+        # Ensure UTF-8 text handling (Python 3 default, but explicit is better)
+        self.conn.text_factory = str
         return self.conn
     
     def close(self):
@@ -179,7 +194,7 @@ class IntelligenceDB:
             meta.get("respondent", "Unknown"),
             meta.get("role", "Unknown"),
             meta.get("date", "Unknown"),
-            json.dumps({"meta": meta, "qa_pairs": qa_pairs})
+            json_serialize({"meta": meta, "qa_pairs": qa_pairs})
         ))
         
         self.conn.commit()
@@ -221,12 +236,12 @@ class IntelligenceDB:
                 company,
                 pain_point.get("type", "Unknown"),
                 pain_point.get("description", ""),
-                json.dumps(pain_point.get("affected_roles", [])),
-                json.dumps(pain_point.get("affected_processes", [])),
+                json_serialize(pain_point.get("affected_roles", [])),
+                json_serialize(pain_point.get("affected_processes", [])),
                 pain_point.get("frequency", "Unknown"),
                 pain_point.get("severity", "Unknown"),
                 pain_point.get("impact_description", ""),
-                json.dumps(pain_point.get("proposed_solutions", [])),
+                json_serialize(pain_point.get("proposed_solutions", [])),
                 review_metrics.get("overall_quality", 0.0),
                 review_metrics.get("accuracy_score", 0.0),
                 review_metrics.get("completeness_score", 0.0),
@@ -236,7 +251,7 @@ class IntelligenceDB:
                 review_metrics.get("consensus_level", 0.0),
                 1 if review_metrics.get("needs_human_review", False) else 0,
                 review_metrics.get("review_feedback", ""),
-                json.dumps(review_metrics.get("model_agreement", {}))
+                json_serialize(review_metrics.get("model_agreement", {}))
             ))
         else:
             # Fallback to original insert without review fields
@@ -251,12 +266,12 @@ class IntelligenceDB:
                 company,
                 pain_point.get("type", "Unknown"),
                 pain_point.get("description", ""),
-                json.dumps(pain_point.get("affected_roles", [])),
-                json.dumps(pain_point.get("affected_processes", [])),
+                json_serialize(pain_point.get("affected_roles", [])),
+                json_serialize(pain_point.get("affected_processes", [])),
                 pain_point.get("frequency", "Unknown"),
                 pain_point.get("severity", "Unknown"),
                 pain_point.get("impact_description", ""),
-                json.dumps(pain_point.get("proposed_solutions", []))
+                json_serialize(pain_point.get("proposed_solutions", []))
             ))
 
         self.conn.commit()
@@ -277,11 +292,11 @@ class IntelligenceDB:
             process.get("owner", ""),
             process.get("domain", ""),
             process.get("description", ""),
-            json.dumps(process.get("inputs", [])),
-            json.dumps(process.get("outputs", [])),
-            json.dumps(process.get("systems", [])),
+            json_serialize(process.get("inputs", [])),
+            json_serialize(process.get("outputs", [])),
+            json_serialize(process.get("systems", [])),
             process.get("frequency", ""),
-            json.dumps(process.get("dependencies", []))
+            json_serialize(process.get("dependencies", []))
         ))
         
         self.conn.commit()
@@ -306,7 +321,7 @@ class IntelligenceDB:
                 UPDATE systems 
                 SET companies_using = ?, usage_count = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
-            """, (json.dumps(companies), usage_count + 1, system_id))
+            """, (json_serialize(companies), usage_count + 1, system_id))
         else:
             # Insert new system
             cursor.execute("""
@@ -317,8 +332,8 @@ class IntelligenceDB:
                 system.get("domain", ""),
                 system.get("vendor", ""),
                 system.get("type", ""),
-                json.dumps([company]),
-                json.dumps(system.get("pain_points", []))
+                json_serialize([company]),
+                json_serialize(system.get("pain_points", []))
             ))
         
         self.conn.commit()
@@ -344,7 +359,7 @@ class IntelligenceDB:
             kpi.get("baseline", ""),
             kpi.get("target", ""),
             kpi.get("cadence", ""),
-            json.dumps(kpi.get("related_processes", []))
+            json_serialize(kpi.get("related_processes", []))
         ))
         
         self.conn.commit()
@@ -370,7 +385,7 @@ class IntelligenceDB:
             automation.get("complexity", ""),
             automation.get("impact", ""),
             automation.get("effort_estimate", ""),
-            json.dumps(automation.get("systems_involved", []))
+            json_serialize(automation.get("systems_involved", []))
         ))
         
         self.conn.commit()
@@ -1094,10 +1109,10 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             channel.get("channel_name", ""),
             channel.get("purpose", ""),
             channel.get("frequency", ""),
-            json.dumps(channel.get("participants", [])),
+            json_serialize(channel.get("participants", [])),
             channel.get("response_sla_minutes"),
-            json.dumps(channel.get("pain_points", [])),
-            json.dumps(channel.get("related_processes", [])),
+            json_serialize(channel.get("pain_points", [])),
+            json_serialize(channel.get("related_processes", [])),
             channel.get("confidence_score", 0.0),
             1 if channel.get("confidence_score", 1.0) < 0.7 else 0,
             channel.get("extraction_source", ""),
@@ -1126,7 +1141,7 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             decision.get("department"),
             decision.get("decision_type", ""),
             decision.get("decision_maker_role", ""),
-            json.dumps(decision.get("decision_criteria", [])),
+            json_serialize(decision.get("decision_criteria", [])),
             1 if decision.get("approval_required") else 0,
             decision.get("approval_threshold"),
             decision.get("authority_limit_usd"),
@@ -1165,8 +1180,8 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             flow.get("data_type", ""),
             flow.get("transfer_method", ""),
             flow.get("transfer_frequency", ""),
-            json.dumps(flow.get("data_quality_issues", [])),
-            json.dumps(flow.get("pain_points", [])),
+            json_serialize(flow.get("data_quality_issues", [])),
+            json_serialize(flow.get("pain_points", [])),
             flow.get("related_process"),
             flow.get("confidence_score", 0.0),
             1 if flow.get("confidence_score", 1.0) < 0.7 else 0,
@@ -1198,8 +1213,8 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             pattern.get("frequency", ""),
             pattern.get("time_of_day"),
             pattern.get("duration_minutes"),
-            json.dumps(pattern.get("participants", [])),
-            json.dumps(pattern.get("triggers_actions", [])),
+            json_serialize(pattern.get("participants", [])),
+            json_serialize(pattern.get("triggers_actions", [])),
             pattern.get("related_process"),
             pattern.get("confidence_score", 0.0),
             1 if pattern.get("confidence_score", 1.0) < 0.7 else 0,
@@ -1269,12 +1284,12 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             pain_point.get("department"),
             pain_point.get("type", "Process Inefficiency"),
             pain_point.get("description", ""),
-            json.dumps(pain_point.get("affected_roles", [])),
-            json.dumps(pain_point.get("affected_processes", [])),
+            json_serialize(pain_point.get("affected_roles", [])),
+            json_serialize(pain_point.get("affected_processes", [])),
             pain_point.get("frequency", "Ad-hoc"),
             pain_point.get("severity", "Medium"),
             pain_point.get("impact_description", ""),
-            json.dumps(pain_point.get("proposed_solutions", [])),
+            json_serialize(pain_point.get("proposed_solutions", [])),
             pain_point.get("intensity_score", 5),
             1 if pain_point.get("hair_on_fire") else 0,
             pain_point.get("time_wasted_per_occurrence_minutes"),
@@ -1340,11 +1355,11 @@ class EnhancedIntelligenceDB(IntelligenceDB):
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
             """, (
-                json.dumps(companies), 
+                json_serialize(companies), 
                 usage_count + 1,
-                json.dumps(merged_pain_points),
-                json.dumps(merged_integration_pain_points),
-                json.dumps(merged_data_quality_issues),
+                json_serialize(merged_pain_points),
+                json_serialize(merged_integration_pain_points),
+                json_serialize(merged_data_quality_issues),
                 system.get("user_satisfaction_score"),
                 1 if system.get("replacement_candidate") else 0,
                 system.get("adoption_rate"),
@@ -1364,10 +1379,10 @@ class EnhancedIntelligenceDB(IntelligenceDB):
                 system.get("domain", ""),
                 system.get("vendor", ""),
                 system.get("type", ""),
-                json.dumps([company]),
-                json.dumps(system.get("pain_points", [])),
-                json.dumps(system.get("integration_pain_points", [])),
-                json.dumps(system.get("data_quality_issues", [])),
+                json_serialize([company]),
+                json_serialize(system.get("pain_points", [])),
+                json_serialize(system.get("integration_pain_points", [])),
+                json_serialize(system.get("data_quality_issues", [])),
                 system.get("user_satisfaction_score"),
                 1 if system.get("replacement_candidate") else 0,
                 system.get("adoption_rate")
@@ -1406,12 +1421,12 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             candidate.get("complexity", "Medium"),
             candidate.get("impact", "Medium"),
             candidate.get("effort_estimate"),
-            json.dumps(candidate.get("systems_involved", [])),
+            json_serialize(candidate.get("systems_involved", [])),
             candidate.get("current_manual_process_description", ""),
-            json.dumps(candidate.get("data_sources_needed", [])),
+            json_serialize(candidate.get("data_sources_needed", [])),
             1 if candidate.get("approval_required") else 0,
             candidate.get("approval_threshold_usd"),
-            json.dumps(candidate.get("monitoring_metrics", [])),
+            json_serialize(candidate.get("monitoring_metrics", [])),
             candidate.get("effort_score", 3),
             candidate.get("impact_score", 3),
             candidate.get("priority_quadrant", "Incremental"),

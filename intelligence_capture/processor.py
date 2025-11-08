@@ -30,7 +30,7 @@ class IntelligenceProcessor:
         self,
         db_path: Path = DB_PATH,
         enable_ensemble: bool = None,
-        ensemble_mode: str = "basic"
+        ensemble_mode: str = None
     ):
         """
         Initialize processor
@@ -38,7 +38,7 @@ class IntelligenceProcessor:
         Args:
             db_path: Path to SQLite database
             enable_ensemble: Enable ensemble validation (auto-detect if None)
-            ensemble_mode: "full" (multi-model) or "basic" (single-model with review)
+            ensemble_mode: "full" (multi-model) or "basic" (single-model with review), reads from config if None
         """
         self.db = IntelligenceDB(db_path)
         self.extractor = IntelligenceExtractor()
@@ -46,6 +46,10 @@ class IntelligenceProcessor:
         # Auto-detect ensemble availability
         if enable_ensemble is None:
             enable_ensemble = ENSEMBLE_AVAILABLE and os.getenv("ENABLE_ENSEMBLE_REVIEW", "true").lower() == "true"
+
+        # Read ensemble mode from config if not specified
+        if ensemble_mode is None:
+            ensemble_mode = os.getenv("ENSEMBLE_MODE", "basic")
 
         self.enable_ensemble = enable_ensemble
         self.ensemble_mode = ensemble_mode
