@@ -91,11 +91,16 @@ class IntelligenceProcessor:
 
         company = meta.get("company", "Unknown")
 
+        # Update status to in_progress
+        self.db.update_extraction_status(interview_id, "in_progress")
+
         # Extract entities using AI
         try:
             entities = self.extractor.extract_all(meta, qa_pairs)
         except Exception as e:
-            print(f"  ❌ Extraction failed: {str(e)}")
+            error_msg = str(e)[:200]  # Truncate error message
+            print(f"  ❌ Extraction failed: {error_msg}")
+            self.db.update_extraction_status(interview_id, "failed", error_msg)
             return False
 
         # ENSEMBLE VALIDATION: Review extractions if enabled
@@ -283,17 +288,43 @@ class IntelligenceProcessor:
                 print(f"     ... and {len(storage_errors) - 5} more")
 
         print(f"  ✓ Storage complete (errors: {len(storage_errors)})")
+
+        # Update status to complete
+        self.db.update_extraction_status(interview_id, "complete")
+
         return True
     
-    def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE):
-        """Process all interviews from JSON file"""
+    def process_all_interviews(self, interviews_file: Path = INTERVIEWS_FILE, resume: bool = False):
+        """
+        Process all interviews from JSON file
+
+        Args:
+            interviews_file: Path to interviews JSON file
+            resume: If True, only process pending/failed interviews (skips completed)
+        """
         
         print(f"\n📂 Loading interviews from: {interviews_file}")
-        
+
         with open(interviews_file, 'r', encoding='utf-8') as f:
             interviews = json.load(f)
-        
+
         print(f"✓ Found {len(interviews)} interviews")
+
+        # If resuming, check which interviews are already complete
+        if resume:
+            completed_interviews = self.db.get_interviews_by_status("complete")
+            completed_ids = {(i["respondent"], i["company"], i["date"]) for i in completed_interviews}
+
+            # Filter out completed interviews
+            interviews_to_process = []
+            for interview in interviews:
+                meta = interview.get("meta", {})
+                key = (meta.get("respondent"), meta.get("company"), meta.get("date"))
+                if key not in completed_ids:
+                    interviews_to_process.append(interview)
+
+            print(f"📋 Resume mode: {len(interviews_to_process)} pending/failed, {len(completed_interviews)} already complete")
+            interviews = interviews_to_process
         
         success_count = 0
         skip_count = 0
