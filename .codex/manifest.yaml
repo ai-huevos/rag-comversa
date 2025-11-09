@@ -1,0 +1,54 @@
+version: 1
+default_language: es
+cost_guardrail:
+  monthly_budget_min_usd: 500
+  monthly_budget_max_usd: 1000
+global_guardrails:
+  - "Nunca traduzcas las entrevistas ni las respuestas del sistema a otro idioma."
+  - "Respeta los metadatos de consentimiento y los límites per-org definidos por el Context Registry."
+  - "No ejecutes acciones destructivas (reset hard, datos sensibles) sin aprobación documentada."
+  - "Reporta todos los resultados, métricas y checkpoints en español."
+projects:
+  rag-2.0-enhancement:
+    summary: "RAG 2.0: ingestion multi-formato, PostgreSQL+pgvector, Neo4j, agentes Pydantic, FastAPI."
+    specs:
+      requirements: ".kiro/specs/rag-2.0-enhancement/requirements.md"
+      design: ".kiro/specs/rag-2.0-enhancement/design.md"
+      tasks: ".kiro/specs/rag-2.0-enhancement/tasks.md"
+    primary_paths:
+      - "intelligence_capture"
+      - "api"
+      - "agent"
+      - "scripts"
+      - "reports"
+    checkpoints:
+      - ingestion
+      - ocr
+      - consolidation
+      - retrieval_evaluation
+      - preproduction_agent
+    dependencies:
+      - ".kiro/specs/knowledge-graph-consolidation/requirements.md"
+      - "CLAUDE.MD"
+  knowledge-graph-consolidation:
+    summary: "Deduplicación de entidades, consenso y sincronización con Neo4j."
+    specs:
+      requirements: ".kiro/specs/knowledge-graph-consolidation/requirements.md"
+      tasks: ".kiro/specs/knowledge-graph-consolidation/tasks.md"
+    primary_paths:
+      - "intelligence_capture/consolidation_agent.py"
+      - "intelligence_capture/entity_merger.py"
+      - "intelligence_capture/database.py"
+      - "reports/checkpoints"
+workflow:
+  phases:
+    - name: "Week 1 - Intake & OCR"
+      focus: "Context Registry, conectores, DocumentProcessor, OCR, chunking."
+    - name: "Week 2 - Dual Storage"
+      focus: "PostgreSQL+pgvector, embeddings, Neo4j builder."
+    - name: "Week 3 - Agentes & API"
+      focus: "Pydantic AI, herramientas de retrieval, FastAPI, CLI."
+    - name: "Week 4 - Calidad & Gobernanza"
+      focus: "Evaluación, español, performance, CostGuard, checkpoints."
+    - name: "Week 5 - Consolidación & Operaciones"
+      focus: "ConsolidationSync, workers de ingesta end-to-end, runbooks."

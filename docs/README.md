@@ -1,345 +1,449 @@
-# Phase 1 Transformation Deliverables
-## ACIS AI-Ready Operations - Complete Package
+# System0 - Intelligence Extraction System
 
-**Generated**: October 23, 2025
-**Scope**: Los Tajibos Hotel • Comversa (Construction/Real Estate) • Bolivian Foods (Restaurant Franchise)
-**Source Data**: 44 manager interviews, 12 core systems, 84 pain points identified
-
----
-
-## 📦 **What's in This Package**
-
-**7 comprehensive documents** (160 KB total) ready for immediate implementation:
-
-### 1. **START HERE** → [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) (13 KB)
-Your roadmap for the first week and how to use each deliverable.
-
-**Read this first** if you want to:
-- Understand what you have and how to use it
-- Get your Week 1 action plan (leadership, technical, operational)
-- See practical examples of using each document
-- Get answers to common questions
+**Status**: 🟡 Development (80% complete, 5 critical bugs blocking production)
+**Last Updated**: November 9, 2025
+**Primary Contact**: Development Team
 
 ---
 
-### 2. **EXECUTIVE OVERVIEW** → [PHASE1_EXECUTIVE_SUMMARY.md](PHASE1_EXECUTIVE_SUMMARY.md) (17 KB)
-Complete strategic synthesis and business case.
+## Quick Start (5 Minutes)
 
-**Contents**:
-- ✅ What was built from your manager interviews
-- 📊 Key insights: Information friction, system fragmentation, decision latency
-- 🎯 Pain point patterns across 44 roles
-- 🚀 Implementation roadmap (Phases 1-3, 12 months)
-- 💰 $698K annual value projection by Year 2
-- 📈 Success metrics portfolio-wide
-- 🎓 Essentialism triage (Do now / Defer / Clarify)
+```bash
+# 1. Install dependencies
+pip install openai python-dotenv
 
-**For**: General Managers, Operations Directors, Steering Committee
-**Time**: 30 min read
-**Action**: Approve Phase 1 scope, allocate budget, assign sponsors
+# 2. Configure API key
+cp .env.example .env
+echo "OPENAI_API_KEY=sk-proj-your-key-here" >> .env
 
----
+# 3. Test single interview
+python scripts/test_single_interview.py
 
-### 3. **DATA MODEL** → [PHASE1_ONTOLOGY_SCHEMA.json](PHASE1_ONTOLOGY_SCHEMA.json) (8 KB)
-Structured schema for Claude's operational knowledge graph.
+# 4. See results
+sqlite3 intelligence.db "SELECT COUNT(*) FROM pain_points;"
+```
 
-**Entities defined**:
-- **InterviewResponse**: 44 manager inputs synthesized
-- **Process**: Workflows with inputs, outputs, systems, SLAs
-- **System**: 12 tools with integration points and pain points
-- **KPI**: 24 metrics with formulas and targets
-- **AutomationCandidate**: 15 opportunities ranked by ROI
-- **AgentPlaybook**: 5 AI agent specifications
-- **PainPoint**: 84 friction points classified
-
-**For**: Technical Architects, Developers building Claude integrations
-**Use**: RAG store structure, API design, knowledge graph queries
+**Expected**: ~30 seconds, $0.03, extraction of all 17 entity types
 
 ---
 
-### 4. **PERFORMANCE METRICS** → [PHASE1_KPI_DICTIONARY.json](PHASE1_KPI_DICTIONARY.json) (21 KB)
-24 KPIs across 7 domains with 12-month targets.
+## What Is This?
 
-**Domains covered**:
-- 🔧 **Maintenance** (4 KPIs): PM completion, MTTR, preventive ratio, stockouts
-- 🍽️ **Culinary** (4 KPIs): Food cost %, recipe costing time, buffet accuracy, waste
-- 💼 **Finance** (4 KPIs): Reconciliation exceptions, close time, data accuracy, payment approval
-- 📞 **Commercial** (4 KPIs): Lead conversion, contract cycle, guest satisfaction, revenue
-- 📦 **Logistics** (3 KPIs): OTIF delivery, transit variance, approval cycle
-- 💻 **IT Operations** (3 KPIs): System uptime, SLA compliance, project on-time
-- ✅ **Audit/Quality** (2 KPIs): Audit implementation, brand audit score
+**Intelligence Extraction System** that extracts structured business intelligence from 44 Spanish interview transcripts and stores it in a queryable SQLite database for AI agent use.
 
-**Each KPI includes**: Owner, formula, data source, baseline, 3/6/12-month targets, thresholds
-
-**For**: All managers, Finance/Control de Gestión, Operations
-**Use**: Set targets, track progress, link to automations
+**Core Capabilities**:
+- ✅ Extracts 17 entity types (pain points, processes, systems, KPIs, etc.)
+- ✅ Spanish-first processing (no translation)
+- ✅ Multi-company support (Los Tajibos, Comversa, Bolivian Foods)
+- ✅ 99.9% extraction success with 6-model LLM fallback chain
+- ✅ Rule-based quality validation
+- ⚠️ Parallel processing (implemented but has bugs)
+- ⚠️ Knowledge Graph consolidation (documented but not implemented)
 
 ---
 
-### 5. **AI AUTOMATION SPECS** → [PHASE1_AGENT_PLAYBOOKS.json](PHASE1_AGENT_PLAYBOOKS.json) (29 KB)
-5 production-ready Claude agent playbooks.
+## Current Status: Honest Assessment
 
-**Agents included**:
+### What's Working ✅
+- All 17 entity types extracting correctly
+- ValidationAgent (completeness checking)
+- ExtractionMonitor (real-time progress)
+- LLM fallback chain (gpt-4o-mini → gpt-4o → ... → claude-3.5-sonnet)
+- Cost optimization ($0.23 vs $1.50 target)
+- Sequential extraction (44 interviews in ~20 minutes)
 
-#### AGENT-001: Intake Router (Tier 1) - ROI 2.5
-**Purpose**: Single-door intake with auto-classification and routing
-**Companies**: All 3
-**Impact**: Eliminates scattered communication, universal time savings
+### Critical Bugs 🚨
+1. **Rate limiting**: No exponential backoff, hits OpenAI rate limits
+2. **Database locking**: Parallel processing causes SQLite lock errors
+3. **No cost controls**: Missing cost estimation and confirmation
+4. **Memory management**: No cleanup of temporary data
+5. **Error handling**: Inconsistent error recovery across components
 
-#### AGENT-002: Reconciliation Bot (Tier 1) - ROI 2.0
-**Purpose**: Daily POS-ERP reconciliation with exception flagging
-**Companies**: Los Tajibos, Bolivian Foods
-**Impact**: Saves 2-3 hrs/day, accelerates month-end close
+**Verdict**: System works for **single interviews** and **small batches**. Full 44-interview extraction **may fail** due to rate limiting.
 
-#### AGENT-003: Recipe Costing Agent (Tier 2) - ROI 1.33
-**Purpose**: Instant recipe costing with live SAP prices
-**Companies**: Los Tajibos
-**Impact**: 3-5 days → < 4 hours turnaround, enables dynamic pricing
-
-#### AGENT-004: PM Scheduler (Tier 2) - ROI 1.67
-**Purpose**: Preventive maintenance scheduling with parts check
-**Companies**: Los Tajibos, Bolivian Foods
-**Impact**: Shifts reactive → preventive, reduces emergency repairs
-
-#### AGENT-005: Logistics Tracker (Tier 2) - ROI 1.0
-**Purpose**: Multi-carrier tracking with delay alerts
-**Companies**: Comversa, Bolivian Foods
-**Impact**: Proactive delay management, improves OTIF
-
-**Each playbook includes**: Full prompt templates, output schemas, guardrails, audit requirements, sample interactions
-
-**For**: Developers, Process Owners
-**Use**: Implement agents, configure guardrails, link to SOPs
+**DO NOT**: Run full production extraction until addressing critical bugs above.
 
 ---
 
-### 6. **HUMAN PROCEDURES** → [PHASE1_SOP_PACK.md](PHASE1_SOP_PACK.md) (21 KB)
-4 Standard Operating Procedures that pair with AI agents.
+## Master Documentation
 
-**SOPs included**:
+This is the **single source of truth** for the project. All other documentation is archived.
 
-#### SOP-INTAKE-001: One-Door Intake Process (8 pages)
-**Purpose**: Single entry point for all requests
-**Channels**: WhatsApp Business, intake@email, web form
-**Urgency tiers**: Critical (8h) • High (24h) • Standard (48h) • Low (5 days)
-**Impact**: 95% channel compliance, 85% SLA compliance target
+### Core Documents
 
-#### SOP-APPROVAL-001: Approval Workflow & SLAs (6 pages)
-**Purpose**: Standardized approval processes with clear authority
-**Coverage**: PO, Payments, Contracts, Budget variances
-**Authority matrix**: By amount and type (4h to 10 days SLAs)
-**Impact**: 90% SLA compliance, < 10% rejection rate target
+1. **[ARCHITECTURE.md](ARCHITECTURE.md)** - System Architecture
+   - Component overview and data flow
+   - Technical patterns and design decisions
+   - Performance characteristics
+   - Security considerations
 
-#### SOP-EVIDENCE-CLOSURE-001: Evidence-Based Closure (5 pages)
-**Purpose**: Validate work completion with objective evidence
-**Evidence types**: Photos, checklists, test results, signoffs
-**Retention**: 2-7 years depending on type
-**Impact**: 95% evidence completeness, < 5% reopen rate target
+2. **[DECISIONS.md](DECISIONS.md)** - Architecture Decision Records (ADRs)
+   - 9 ADRs documenting WHY decisions were made
+   - Pattern analysis of successful vs failed decisions
+   - Lessons learned and recommendations
 
-#### SOP-DATA-CHANGE-001: Data Change Control (7 pages)
-**Purpose**: Prevent errors through controlled data changes
-**Coverage**: Prices, Recipes, KPIs, Configs, Permissions
-**3-tier risk**: Low (24h) • Medium (48h) • High (5 days)
-**Impact**: < 2% rollback rate, < 5% emergency changes target
+3. **[RUNBOOK.md](RUNBOOK.md)** - Operations Guide
+   - Setup and configuration (5 minutes)
+   - Development workflow
+   - Testing hierarchy
+   - Troubleshooting guide for 5 critical bugs
+   - Emergency procedures
 
-**For**: All staff, Process owners, Managers
-**Use**: Day-to-day operations, training programs, audit compliance
+4. **[EXPERIMENTS.md](EXPERIMENTS.md)** - Experiment Log
+   - 5 completed experiments with results
+   - Pattern analysis of what worked vs what didn't
+   - Experiment template and guidelines
 
----
+### Quick Reference
 
-### 7. **IMPLEMENTATION ROADMAP** → [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json) (32 KB)
-15 automations ranked by Impact/Effort ROI across 12 months.
-
-**Portfolio breakdown**:
-
-#### **Tier 1: Quick Wins** (60-90 days) - $236K annual value
-1. Intake Router (ROI 2.5) - 20 days
-2. Reconciliation Bot (ROI 2.0) - 25 days
-3. PM Scheduler (ROI 1.67) - 35 days
-4. Contract Router (ROI 2.0) - 20 days
-5. Room Readiness Tracker (ROI 1.5) - 25 days
-6. Approval Fast-Track (ROI 1.33) - 40 days
-**Total**: 165 days (parallelizable to 3 months)
-
-#### **Tier 2: High Value** (3-6 months) - $182K annual value
-7. Recipe Costing Agent (ROI 1.33) - 45 days
-8. Buffet Forecaster (ROI 0.75) - 50 days
-9. Logistics Tracking Hub (ROI 1.0) - 55 days
-10. KPI Auto-Reporting (ROI 0.75) - 60 days
-11. IT Incident Router (ROI 1.5) - 30 days
-12. Commercial CRM (ROI 0.8) - 75 days
-**Total**: 315 days (parallelizable to 3-6 months)
-
-#### **Tier 3: Strategic** (6-12 months) - $280K annual value
-13. Enterprise Data Warehouse (ROI 1.0) - 180 days
-14. AI Chatbot (ROI 0.8) - 90 days
-15. Predictive Maintenance (ROI 1.0) - 120 days
-**Total**: 390 days (requires 6-12 months)
-
-**Grand Total**: $698K annual value by Year 2, 870 effort-days parallelizable to 12-15 months
-
-**For**: PMO, Steering Committee, Development Team
-**Use**: Sprint planning, resource allocation, ROI tracking
+| Need | Document | Section |
+|------|----------|---------|
+| System overview | [ARCHITECTURE.md](ARCHITECTURE.md) | Overview |
+| Setup instructions | [RUNBOOK.md](RUNBOOK.md) | Setup |
+| Why was X built this way? | [DECISIONS.md](DECISIONS.md) | ADR-xxx |
+| How do I test? | [RUNBOOK.md](RUNBOOK.md) | Testing |
+| What experiments were tried? | [EXPERIMENTS.md](EXPERIMENTS.md) | Completed |
+| Known issues | [ARCHITECTURE.md](ARCHITECTURE.md) | Known Issues |
+| Troubleshooting | [RUNBOOK.md](RUNBOOK.md) | Troubleshooting |
 
 ---
 
-## 🎯 **Quick Navigation by Role**
+## Development Path
 
-### If you are a **General Manager / Executive**:
-1. Read: [PHASE1_EXECUTIVE_SUMMARY.md](PHASE1_EXECUTIVE_SUMMARY.md) (30 min)
-2. Review: [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json) → Tier 1 section (30 min)
-3. Decide: Approve scope, budget, sponsors
-4. Next: Form steering committee, kickoff Week 1
+### For New Developers
 
-### If you are a **Finance Director / Control de Gestión**:
-1. Read: [PHASE1_KPI_DICTIONARY.json](PHASE1_KPI_DICTIONARY.json) → Finance section (20 min)
-2. Action: Measure Month 0 baselines for your KPIs
-3. Review: AUTO-T1-002 (Reconciliation Bot) in [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json)
-4. Impact: 2-3 hrs/day saved, faster month-end close
+**Path 1: Understand the System (30 minutes)**
+1. Read [ARCHITECTURE.md](ARCHITECTURE.md) - Understand components and data flow
+2. Run single interview test - See it work
+3. Review [DECISIONS.md](DECISIONS.md) - Understand WHY decisions were made
+4. Check [RUNBOOK.md](RUNBOOK.md) troubleshooting - Know the bugs
 
-### If you are an **Operations Director / Gerente de Ingeniería**:
-1. Read: [PHASE1_SOP_PACK.md](PHASE1_SOP_PACK.md) → SOP-INTAKE-001, SOP-EVIDENCE-CLOSURE-001 (30 min)
-2. Review: AGENT-001 (Intake Router), AGENT-004 (PM Scheduler) in [PHASE1_AGENT_PLAYBOOKS.json](PHASE1_AGENT_PLAYBOOKS.json)
-3. Action: Prepare asset register, confirm MaintainX deployment
-4. Impact: Reactive → preventive maintenance, SLA tracking
+**Path 2: Fix Critical Bugs (1-2 days)**
+1. Read [RUNBOOK.md](RUNBOOK.md) - Understand the 5 critical bugs
+2. Pick one bug to fix (start with rate limiting)
+3. Document your fix in [DECISIONS.md](DECISIONS.md) as new ADR
+4. Test with batch of 5 interviews
+5. Move to next bug
 
-### If you are a **Legal Director / Directora Legal**:
-1. Read: [PHASE1_SOP_PACK.md](PHASE1_SOP_PACK.md) → SOP-APPROVAL-001 (15 min)
-2. Review: AUTO-T1-004 (Contract Router) in [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json)
-3. Action: Prepare contract template library, define SLAs
-4. Impact: 15-30 day delays → < 10 days, cash flow acceleration
+**Path 3: Implement Knowledge Graph (1 week)**
+1. Read `.kiro/specs/knowledge-graph-consolidation/` - Understand consolidation system
+2. Review [DECISIONS.md](DECISIONS.md) ADR-008 - Why was this postponed?
+3. Implement Tasks 1-18 from consolidation spec
+4. Document experiment in [EXPERIMENTS.md](EXPERIMENTS.md)
 
-### If you are an **IT Manager / Subgerente TI**:
-1. Read: [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) → Technical Setup section (15 min)
-2. Review: [PHASE1_ONTOLOGY_SCHEMA.json](PHASE1_ONTOLOGY_SCHEMA.json) (30 min)
-3. Action: API access audit, infrastructure setup (WhatsApp Business, Claude API, MaintainX)
-4. Next: Development team allocation, sprint planning
+### For Production Deployment
 
-### If you are a **Process Owner** (Chef, Logistics, Commercial):
-1. Read: [PHASE1_SOP_PACK.md](PHASE1_SOP_PACK.md) → Your relevant SOPs (20 min)
-2. Review: Your domain's automations in [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json)
-3. Action: Data cleanup (recipes, parts, contracts), KPI baseline measurement
-4. Impact: Domain-specific time savings and quality improvements
+**DO NOT deploy until**:
+- ✅ All 5 critical bugs are fixed
+- ✅ Full 44-interview extraction completes successfully
+- ✅ Quality validation shows >85% high confidence
+- ✅ Cost controls are working correctly
+- ✅ Knowledge Graph consolidation is implemented
 
-### If you are a **Developer / Technical Architect**:
-1. Read: [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) → Using Agent Playbooks section (20 min)
-2. Study: [PHASE1_ONTOLOGY_SCHEMA.json](PHASE1_ONTOLOGY_SCHEMA.json) (1 hour)
-3. Review: [PHASE1_AGENT_PLAYBOOKS.json](PHASE1_AGENT_PLAYBOOKS.json) → Start with AGENT-001 (2 hours)
-4. Action: API integration planning, development environment setup
+**Current estimate**: 1-2 weeks of bug fixes + 1 week for Knowledge Graph
 
 ---
 
-## 📈 **Key Metrics at a Glance**
+## Key Technical Decisions
 
-### Data Analysis Foundation
-- **44** manager interviews processed
-- **12** core systems mapped
-- **84** pain points identified and classified
-- **24** KPIs defined with 12-month targets
-- **15** automations prioritized by ROI
+### Spanish-First Processing (ADR-001)
+**Decision**: Extract directly from Spanish interviews, never translate
+**Rationale**: Preserves context, reduces cost, maintains accuracy
+**Status**: ✅ Implemented, correct decision
 
-### Implementation Roadmap
-- **Phase 1** (Months 1-3): 6 automations, $236K annual value, 165 days
-- **Phase 2** (Months 4-6): 6 automations, $182K annual value, 315 days
-- **Phase 3** (Months 7-12): 3 automations, $280K annual value, 390 days
-- **Total Portfolio**: $698K annual value by Year 2
+### Multi-Model Fallback Chain (from EXP-003)
+**Decision**: 6-model chain with exponential backoff
+**Rationale**: 99.9% success rate with negligible cost increase
+**Status**: ✅ Implemented, highly successful
 
-### Resource Requirements
-- **Phase 1**: 2 full-time developers, 1 business analyst, part-time SMEs
-- **Phase 2**: 3 developers (add ML/BI specialist), 1 BA, SMEs
-- **Phase 3**: 4 developers, 1 data engineer, 1 ML engineer, 1 IoT specialist, 1 BA, vendors
+### Ensemble Validation Disabled (ADR-006)
+**Decision**: Built ensemble but disabled by default
+**Rationale**: 3-5x cost not justified for quality gain
+**Status**: ⚠️ Implemented but disabled, correct decision
 
----
+### Knowledge Graph Postponed (ADR-008)
+**Decision**: Defer consolidation until after bug fixes
+**Rationale**: 20-30% duplicate data, but extraction bugs take priority
+**Status**: ⏸️ Deferred, spec complete but not implemented
 
-## ✅ **Week 1 Checklist**
+### Feature Before Bugs (ADR-009)
+**Decision**: Build Phases 2-4 before fixing Phase 1 bugs
+**Rationale**: Excitement about features > fixing foundation
+**Status**: 🚨 **Critical mistake** - Created technical debt
 
-### Leadership (Day 1-2)
-- [ ] Executive team reads [PHASE1_EXECUTIVE_SUMMARY.md](PHASE1_EXECUTIVE_SUMMARY.md)
-- [ ] Review and approve Phase 1 scope (6 Tier 1 automations)
-- [ ] Allocate budget for development and infrastructure
-- [ ] Assign executive sponsors (one per company)
-- [ ] Form steering committee with monthly meeting cadence
-
-### Technical (Day 3-4)
-- [ ] Complete API access audit (Opera, SAP, CMNET, Simphony, Satcom)
-- [ ] Register WhatsApp Business accounts (3 companies)
-- [ ] Obtain Claude API keys (Anthropic)
-- [ ] Confirm MaintainX deployment status (LTH, BF)
-- [ ] Enable ServiceDesk Plus API (if not active)
-- [ ] Review [PHASE1_ONTOLOGY_SCHEMA.json](PHASE1_ONTOLOGY_SCHEMA.json) with dev team
-
-### Operational (Day 5)
-- [ ] Schedule SOP training sessions (4 SOPs × 3 companies = 12 sessions)
-- [ ] Initiate data cleanup sprint (asset registers, ingredient masters, contract templates)
-- [ ] Begin KPI baseline measurement (all managers identify their KPIs)
-- [ ] Select 2-3 pilot automations from Tier 1
-- [ ] Schedule Sprint 1 kickoff
+**Lesson learned**: Fix bugs before building features.
 
 ---
 
-## 🚀 **Getting Started**
+## Quick Commands
 
-### Option 1: Executive Fast Track (60 min)
-1. Read [PHASE1_EXECUTIVE_SUMMARY.md](PHASE1_EXECUTIVE_SUMMARY.md) - 30 min
-2. Skim [PHASE1_AUTOMATION_BACKLOG.json](PHASE1_AUTOMATION_BACKLOG.json) Tier 1 - 20 min
-3. Review Week 1 checklist above - 10 min
-4. Call leadership meeting to approve and allocate
+### Testing
+```bash
+# Single interview test (~30s, $0.03)
+python scripts/test_single_interview.py
 
-### Option 2: Technical Deep Dive (3 hours)
-1. Read [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) - 30 min
-2. Study [PHASE1_ONTOLOGY_SCHEMA.json](PHASE1_ONTOLOGY_SCHEMA.json) - 1 hour
-3. Review [PHASE1_AGENT_PLAYBOOKS.json](PHASE1_AGENT_PLAYBOOKS.json) AGENT-001 - 1 hour
-4. Complete API access audit - 30 min
+# Batch test - 5 interviews (~3 min, $0.15)
+python scripts/test_batch_interviews.py --batch-size 5
 
-### Option 3: Operations Readiness (2 hours)
-1. Read [PHASE1_SOP_PACK.md](PHASE1_SOP_PACK.md) - 1 hour
-2. Review [PHASE1_KPI_DICTIONARY.json](PHASE1_KPI_DICTIONARY.json) your KPIs - 30 min
-3. Identify data cleanup needs (your domain) - 30 min
+# Validate extraction results
+python scripts/validate_extraction.py --db data/test_batch.db
+```
 
----
+### Extraction
+```bash
+# Full extraction - 44 interviews (~20 min, $0.50-1.00)
+# ⚠️ WARNING: May fail due to rate limiting bug
+python intelligence_capture/run.py
 
-## 📞 **Support & Questions**
+# Resume interrupted extraction
+python intelligence_capture/run.py --resume
+```
 
-### For This Package
-- **What to read first?** → [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md)
-- **Business case questions?** → [PHASE1_EXECUTIVE_SUMMARY.md](PHASE1_EXECUTIVE_SUMMARY.md)
-- **Technical questions?** → Contact your IT manager for API access and infrastructure
-- **Process questions?** → Contact your department manager or process owner
+### Database
+```bash
+# Open database
+sqlite3 intelligence.db
 
-### Phase 1 Success Criteria
-By end of Month 3:
-- ✅ 6 Tier 1 automations deployed and operational
-- ✅ 80% of requests flowing through automated intake
-- ✅ Classification accuracy > 85%
-- ✅ KPI baselines measured for all 24 metrics
-- ✅ SOPs trained and adopted across all 3 companies
-- ✅ Measurable time savings documented (target: > 5,000 hours/year)
+# Count entities
+SELECT COUNT(*) FROM pain_points;
 
----
-
-## 📄 **Document Versions**
-
-All documents: **Version 1.0.0**
-Generated: **2025-10-23**
-Next review: **Post-Phase 1 completion (Month 3)**
+# Top systems by usage
+SELECT name, usage_count FROM systems
+ORDER BY usage_count DESC LIMIT 10;
+```
 
 ---
 
-## 🎉 **You're Ready!**
+## Performance Characteristics
 
-With these 7 documents, you have everything needed to launch Phase 1 of your AI transformation:
-- ✅ Clear business case and ROI projections
-- ✅ Structured data model for Claude integrations
-- ✅ Measurable performance targets (24 KPIs)
-- ✅ Production-ready automation specifications (5 agents)
-- ✅ Human procedures that work with AI (4 SOPs)
-- ✅ Prioritized implementation roadmap (15 automations)
-- ✅ Practical getting-started guide
+### Single Interview
+- **Time**: 10-30 seconds
+- **Cost**: $0.01-0.03
+- **Success Rate**: 99.9%
+- **Entities**: ~40-60 entities across 17 types
 
-**Next Step**: Leadership approval meeting to greenlight Phase 1 and allocate Week 1 actions.
+### Batch (5 interviews)
+- **Time**: 2-4 minutes
+- **Cost**: $0.05-0.15
+- **Success Rate**: 80-100% (depends on rate limiting)
+- **Entities**: ~200-300 entities
 
-**Let's transform your operations with AI!** 🚀
+### Full Extraction (44 interviews)
+- **Time**: 15-20 minutes
+- **Cost**: $0.50-1.00
+- **Success Rate**: ⚠️ **60-80%** (rate limiting issues)
+- **Entities**: ~1,600-2,000 entities (20-30% duplicates)
 
 ---
 
-**Questions?** Refer to the [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) FAQ section or contact your steering committee.
+## Data Model
+
+### 17 Entity Types
+
+**v1.0 Entities (6)** - Working:
+1. **PainPoint** - Problems blocking work
+2. **Process** - How work gets done
+3. **System** - Tools/software used
+4. **KPI** - Success metrics
+5. **AutomationCandidate** - Automation opportunities
+6. **Inefficiency** - Wasteful steps
+
+**v2.0 Entities (11)** - Integrated:
+7. **CommunicationChannel** - WhatsApp, email, Teams
+8. **DecisionPoint** - Who decides what
+9. **DataFlow** - Data movement between systems
+10. **TemporalPattern** - When things happen
+11. **FailureMode** - What goes wrong
+12. **TeamStructure** - Org hierarchy
+13. **KnowledgeGap** - Training needs
+14. **SuccessPattern** - What works well
+15. **BudgetConstraint** - Budget limitations
+16. **ExternalDependency** - Third-party vendors
+17. **Enhanced v1.0** - System sentiment, AutomationCandidate scoring
+
+### Organizational Hierarchy
+
+All entities linked to: **company → business_unit → department**
+
+**Companies**:
+- Los Tajibos (hotel)
+- Comversa (construction)
+- Bolivian Foods (restaurants)
+
+---
+
+## Known Issues & Limitations
+
+### Critical Bugs (Block Production)
+1. ❌ **Rate limiting** - No exponential backoff
+2. ❌ **Database locking** - Parallel processing fails
+3. ❌ **Cost controls** - Missing estimation/confirmation
+4. ❌ **Memory management** - No cleanup
+5. ❌ **Error handling** - Inconsistent recovery
+
+### Design Limitations
+1. **Duplicate entities**: 20-30% of extracted data is duplicated
+   - "Excel" appears 25 times as separate entries
+   - "SAP" appears 12 times as separate entries
+   - **Solution**: Knowledge Graph consolidation (documented but not implemented)
+
+2. **No relationships**: Cannot query "Which departments coordinate?"
+   - **Solution**: Relationship discovery in Knowledge Graph (not implemented)
+
+3. **No patterns**: Cannot identify "What pain points affect most interviews?"
+   - **Solution**: Pattern recognition in Knowledge Graph (not implemented)
+
+### Performance Limitations
+1. **Sequential only**: Parallel processing has bugs
+2. **Rate limited**: Full extraction may fail
+3. **Memory intensive**: No streaming for large batches
+
+---
+
+## Success Metrics
+
+### Current Achievement
+- ✅ **Extraction accuracy**: 99.9% success rate
+- ✅ **Cost optimization**: $0.23 vs $1.50 target (85% reduction)
+- ✅ **Entity coverage**: All 17 types extracting
+- ✅ **Quality validation**: 80% automated validation working
+- ⚠️ **Production readiness**: 80% complete (5 bugs blocking)
+
+### Production Goals
+- 🎯 **Extraction success**: >95% for full 44 interviews
+- 🎯 **Quality confidence**: >85% high confidence entities
+- 🎯 **Cost per interview**: <$0.05
+- 🎯 **Processing time**: <15 minutes for 44 interviews
+- 🎯 **Duplicate rate**: <10% after Knowledge Graph consolidation
+
+---
+
+## Next Steps
+
+### Immediate (This Week)
+1. **Fix rate limiting bug** (highest priority)
+   - Add exponential backoff to `_call_gpt4()`
+   - Test with batch of 10 interviews
+   - Document in [DECISIONS.md](DECISIONS.md)
+
+2. **Fix database locking bug**
+   - Investigate SQLite WAL mode issues
+   - Test parallel processing with 5 workers
+   - Document in [DECISIONS.md](DECISIONS.md)
+
+3. **Add cost controls**
+   - Pre-extraction cost estimation
+   - User confirmation before expensive operations
+   - Document in [DECISIONS.md](DECISIONS.md)
+
+### Short-term (Next 2 Weeks)
+4. **Fix remaining 2 bugs** (memory, error handling)
+5. **Test full 44-interview extraction** (verify all bugs fixed)
+6. **Implement Knowledge Graph consolidation** (reduce duplicates)
+
+### Medium-term (Next Month)
+7. **Deploy to production** (after all bugs fixed)
+8. **Build AI agents** (use consolidated data)
+9. **Generate insights** (patterns, relationships, recommendations)
+
+---
+
+## Contributing
+
+### Before Making Changes
+
+1. **Read the docs**:
+   - [ARCHITECTURE.md](ARCHITECTURE.md) - Understand the system
+   - [DECISIONS.md](DECISIONS.md) - Understand WHY things are this way
+   - [RUNBOOK.md](RUNBOOK.md) - Know the bugs and procedures
+
+2. **Test your changes**:
+   - Always test with single interview first
+   - Then test with batch of 5 interviews
+   - Document any new patterns in [EXPERIMENTS.md](EXPERIMENTS.md)
+
+3. **Document your decisions**:
+   - Add new ADR to [DECISIONS.md](DECISIONS.md) for significant changes
+   - Update [EXPERIMENTS.md](EXPERIMENTS.md) if you tried something new
+   - Update [RUNBOOK.md](RUNBOOK.md) if you changed operations
+
+### Coding Standards
+
+See `.ai/CODING_STANDARDS.md` for unified coding standards that work across Cursor, Kiro, and Claude Code.
+
+---
+
+## Project History
+
+### Timeline
+- **Oct 22-23, 2025**: Initial extraction system (v1.0 - 6 entity types)
+- **Oct 24-25, 2025**: Added v2.0 entities (11 new types)
+- **Oct 26-28, 2025**: Built ValidationAgent, ExtractionMonitor, ensemble
+- **Oct 29-30, 2025**: Discovered bugs, began troubleshooting
+- **Nov 7, 2025**: QA review - rated 4.25/5.0 (80% production ready)
+- **Nov 8, 2025**: Truth audit - identified 5 critical bugs
+- **Nov 9, 2025**: Documentation consolidation, ADR creation
+
+### Key Lessons
+
+**What Worked**:
+- ✅ Starting simple (6 entity types) then expanding
+- ✅ Multi-model fallback chain (99.9% success)
+- ✅ Rule-based validation (80% quality at 0% cost)
+- ✅ Spanish-first processing (preserved context)
+
+**What Didn't**:
+- ❌ Building features before fixing bugs (created technical debt)
+- ❌ Ensemble validation (3-5x cost, not justified)
+- ❌ Parallel processing without proper testing (database locking)
+- ❌ Skipping cost controls (risky for production)
+
+**Pattern to Avoid**:
+> "Build Phase 1 → Discover bugs → Skip fixes → Build Phase 2"
+
+**Better Pattern**:
+> "Build Phase 1 → Test → Fix bugs → Then Phase 2"
+
+---
+
+## Support
+
+### Questions?
+1. Check [RUNBOOK.md](RUNBOOK.md) troubleshooting section
+2. Review [DECISIONS.md](DECISIONS.md) for context on decisions
+3. Read [ARCHITECTURE.md](ARCHITECTURE.md) for technical details
+4. Check [EXPERIMENTS.md](EXPERIMENTS.md) for similar attempts
+
+### Found a Bug?
+1. Check [ARCHITECTURE.md](ARCHITECTURE.md) Known Issues - is it documented?
+2. Check [RUNBOOK.md](RUNBOOK.md) Troubleshooting - known workaround?
+3. Document in [DECISIONS.md](DECISIONS.md) as new ADR if significant
+4. Create GitHub issue with reproduction steps
+
+### Have an Idea?
+1. Document as experiment in [EXPERIMENTS.md](EXPERIMENTS.md)
+2. Test with single interview first
+3. Measure impact (cost, time, quality)
+4. Document results before moving to production
+
+---
+
+## License
+
+[Add license information]
+
+---
+
+## Archived Documentation
+
+All previous documentation (81 files) has been archived to `docs/archive/2025-11/`.
+
+**Reason for consolidation**: Multiple conflicting documents, unclear source of truth, documentation vs reality gap.
+
+**Master documents** (this folder) are now the **single source of truth**.
+
+---
+
+**Last Updated**: November 9, 2025
+**Status**: 🟡 Development (80% complete, 5 critical bugs blocking production)
+**Next Milestone**: Fix critical bugs → Full extraction test → Knowledge Graph → Production
