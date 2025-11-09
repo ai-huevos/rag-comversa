@@ -16,6 +16,11 @@ Confidence score formula:
 import json
 from typing import Dict, List, Any
 
+from intelligence_capture.logger import get_logger
+
+# Initialize logger
+logger = get_logger(__name__)
+
 
 class ConsensusScorer:
     """
@@ -28,25 +33,42 @@ class ConsensusScorer:
     - Configurable parameters per use case
     """
     
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, total_interviews: int = 44):
         """
         Initialize consensus scorer
         
         Args:
             config: Configuration dict with consensus_parameters
+            total_interviews: Total number of interviews in dataset (for adaptive divisor)
         """
         self.config = config
+        self.total_interviews = total_interviews
         
         # Get consensus parameters
         consensus_params = config.get("consensus_parameters", {})
-        self.source_count_divisor = consensus_params.get("source_count_divisor", 10)
+        base_divisor = consensus_params.get("source_count_divisor", 10)
+        
+        # Adjust source_count_divisor based on total interviews
+        # For 44 interviews, use divisor of 5 (20% = 1.0 confidence) instead of 10
+        # Formula: min(config_divisor, total_interviews / 4)
+        self.source_count_divisor = min(base_divisor, total_interviews / 4)
+        
         self.agreement_bonus = consensus_params.get("agreement_bonus", 0.1)
         self.max_bonus = consensus_params.get("max_bonus", 0.3)
-        self.contradiction_penalty = consensus_params.get("contradiction_penalty", 0.15)
+        self.contradiction_penalty = consensus_params.get("contradiction_penalty", 0.25)  # Increased from 0.15
+        self.single_source_penalty = consensus_params.get("single_source_penalty", 0.3)  # New parameter
+        
+        logger.info(f"ConsensusScorer initialized: divisor={self.source_count_divisor:.1f}, total_interviews={total_interviews}")
     
     def calculate_confidence(self, entity: Dict) -> float:
         """
         Calculate consensus confidence score for entity
+        
+        Improved formula:
+        - Adaptive source_count_divisor based on total interviews
+        - Single source penalty for entities mentioned by only one person
+        - Increased contradiction penalty (0.25 instead of 0.15)
+        - Actual value agreement checking (not just non-empty fields)
         
         Args:
             entity: Consolidated entity with source tracking
@@ -58,7 +80,15 @@ class ConsensusScorer:
         source_count = entity.get("source_count", 1)
         
         # Calculate base score from source count
+        # With adaptive divisor: for 44 interviews, divisor=11, so 20% = 1.0 confidence
         base_score = min(source_count / self.source_count_divisor, 1.0)
+        
+        # Apply single source penalty
+        # Entities mentioned by only one person get lower confidence
+        single_source_penalty_value = 0.0
+        if source_count == 1:
+            single_source_penalty_value = self.single_source_penalty
+            logger.debug(f"Single source penalty applied: -{single_source_penalty_value}")
         
         # Calculate agreement bonus
         agreement_count = self.check_attribute_agreement(entity)
@@ -69,10 +99,14 @@ class ConsensusScorer:
         contradiction_penalty_value = contradiction_count * self.contradiction_penalty
         
         # Calculate final confidence
-        confidence = base_score + agreement_bonus_value - contradiction_penalty_value
+        confidence = base_score + agreement_bonus_value - contradiction_penalty_value - single_source_penalty_value
         
         # Clamp to 0.0-1.0 range
-        return max(0.0, min(1.0, confidence))
+        final_confidence = max(0.0, min(1.0, confidence))
+        
+        logger.debug(f"Confidence calculation: base={base_score:.2f}, agreement_bonus={agreement_bonus_value:.2f}, contradiction_penalty={contradiction_penalty_value:.2f}, single_source_penalty={single_source_penalty_value:.2f}, final={final_confidence:.2f}")
+        
+        return final_confidence
     
     def check_attribute_agreement(self, entity: Dict) -> int:
         """

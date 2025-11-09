@@ -16,6 +16,11 @@ from difflib import SequenceMatcher
 from datetime import datetime
 import json
 
+from intelligence_capture.logger import get_logger
+
+# Initialize logger
+logger = get_logger(__name__)
+
 
 class EmbeddingError(Exception):
     """Custom exception for embedding generation failures"""
@@ -154,7 +159,7 @@ class DuplicateDetector:
         fuzzy_candidates.sort(key=lambda x: x[2], reverse=True)
         top_fuzzy_candidates = fuzzy_candidates[:self.max_candidates * 2]  # Take 2x for safety
         
-        print(f"    Fuzzy filtering: {len(existing_entities)} → {len(top_fuzzy_candidates)} candidates")
+        logger.debug(f"Fuzzy filtering: {len(existing_entities)} → {len(top_fuzzy_candidates)} candidates")
         
         # STAGE 2: Semantic similarity for top candidates only (slow, API calls)
         final_candidates = []
@@ -163,7 +168,7 @@ class DuplicateDetector:
         for existing, existing_text, fuzzy_score in top_fuzzy_candidates:
             # If fuzzy score is very high (>= 0.95), skip semantic similarity
             if fuzzy_score >= skip_semantic_threshold:
-                print(f"    Skipping semantic for obvious duplicate (fuzzy={fuzzy_score:.2f})")
+                logger.debug(f"Skipping semantic for obvious duplicate (fuzzy={fuzzy_score:.2f})")
                 final_candidates.append((existing, fuzzy_score))
                 continue
             
@@ -182,7 +187,7 @@ class DuplicateDetector:
         final_candidates.sort(key=lambda x: x[1], reverse=True)
         result = final_candidates[:self.max_candidates]
         
-        print(f"    Final candidates: {len(result)} above threshold {threshold:.2f}")
+        logger.debug(f"Final candidates: {len(result)} above threshold {threshold:.2f}")
         return result
     
     def calculate_name_similarity(
@@ -307,12 +312,12 @@ class DuplicateDetector:
         except EmbeddingError as e:
             # Embedding generation failed after all retries
             # Fall back to fuzzy-only matching (return 0.0 for semantic component)
-            print(f"  ⚠️  Falling back to fuzzy-only matching due to embedding error")
+            logger.warning("Falling back to fuzzy-only matching due to embedding error")
             return 0.0
             
         except Exception as e:
             # Unexpected error
-            print(f"  ⚠️  Unexpected semantic similarity error: {e}")
+            logger.warning(f"Unexpected semantic similarity error: {e}")
             return 0.0
     
     def _calculate_combined_similarity(
@@ -355,26 +360,46 @@ class DuplicateDetector:
         """
         Extract text from entity for comparison
         
+        Improved logic:
+        - Combines name AND description for better semantic matching
+        - Truncates description to 200 chars to avoid overwhelming name
+        - Handles missing fields gracefully
+        
         Args:
             entity: Entity dict
             entity_type: Type of entity
             
         Returns:
-            Text to use for similarity comparison
+            Text to use for similarity comparison (name + truncated description)
         """
-        # Try common field names
+        # Extract name (try multiple field names)
+        name = ""
         if "name" in entity and entity["name"]:
-            return str(entity["name"])
-        elif "description" in entity and entity["description"]:
-            return str(entity["description"])
+            name = str(entity["name"]).strip()
         elif "title" in entity and entity["title"]:
-            return str(entity["title"])
+            name = str(entity["title"]).strip()
+        elif entity_type == "pain_points" and "type" in entity and entity["type"]:
+            name = str(entity["type"]).strip()
         
-        # Entity-specific fields
-        if entity_type == "pain_points" and "type" in entity:
-            return str(entity["type"])
+        # Extract description
+        description = ""
+        if "description" in entity and entity["description"]:
+            description = str(entity["description"]).strip()
         
-        return ""
+        # Combine name and description for better semantic matching
+        # Truncate description to 200 chars to avoid overwhelming name
+        if name and description:
+            # Combine: name is more important, description provides context
+            truncated_desc = description[:200]
+            return f"{name} {truncated_desc}"
+        elif name:
+            return name
+        elif description:
+            # If no name, use full description (up to 200 chars)
+            return description[:200]
+        else:
+            # No text available
+            return ""
     
     def _get_similarity_threshold(self, entity_type: str) -> float:
         """
@@ -432,7 +457,7 @@ class DuplicateDetector:
                 else:
                     self.db_misses += 1
             except Exception as e:
-                print(f"  ⚠️  Database embedding lookup error: {e}")
+                logger.debug(f"Database embedding lookup error: {e}")
                 self.db_misses += 1
         
         # Not in cache or database, need to generate via API
@@ -440,9 +465,7 @@ class DuplicateDetector:
         
         # Check circuit breaker
         if self.circuit_breaker_open:
-            print(f"  ⚠️  Circuit breaker OPEN - skipping embedding API call")
-            print(f"     Opened at: {self.circuit_breaker_opened_at}")
-            print(f"     Consecutive failures: {self.consecutive_failures}")
+            logger.warning(f"Circuit breaker OPEN - skipping embedding API call (opened at: {self.circuit_breaker_opened_at}, failures: {self.consecutive_failures})")
             return None
         
         # Retry loop with exponential backoff
@@ -467,7 +490,7 @@ class DuplicateDetector:
                     try:
                         self.db.store_entity_embedding(entity_type, entity_id, embedding)
                     except Exception as e:
-                        print(f"  ⚠️  Failed to store embedding in database: {e}")
+                        logger.debug(f"Failed to store embedding in database: {e}")
                 
                 return embedding
                 
@@ -479,19 +502,17 @@ class DuplicateDetector:
                 if self.consecutive_failures >= self.circuit_breaker_threshold:
                     self.circuit_breaker_open = True
                     self.circuit_breaker_opened_at = datetime.now().isoformat()
-                    print(f"  🔴 Circuit breaker OPENED after {self.consecutive_failures} consecutive failures")
-                    print(f"     Semantic similarity disabled - falling back to fuzzy-only matching")
+                    logger.error(f"Circuit breaker OPENED after {self.consecutive_failures} consecutive failures - semantic similarity disabled, falling back to fuzzy-only matching")
                     return None
                 
                 # If this is not the last attempt, wait with exponential backoff
                 if attempt < self.max_retries - 1:
                     wait_time = 2 ** attempt  # 1s, 2s, 4s
-                    print(f"  ⚠️  Embedding API error (attempt {attempt + 1}/{self.max_retries}): {e}")
-                    print(f"     Retrying in {wait_time}s...")
+                    logger.warning(f"Embedding API error (attempt {attempt + 1}/{self.max_retries}): {e} - Retrying in {wait_time}s...")
                     time.sleep(wait_time)
                 else:
                     # Last attempt failed
-                    print(f"  ❌ Embedding API failed after {self.max_retries} attempts: {e}")
+                    logger.error(f"Embedding API failed after {self.max_retries} attempts: {e}")
                     self._log_embedding_failure(text, str(e))
                     
                     # Raise exception on final failure
@@ -513,13 +534,7 @@ class DuplicateDetector:
         # Truncate text for logging
         text_preview = text[:100] + "..." if len(text) > 100 else text
         
-        print(f"  📝 Logging embedding failure:")
-        print(f"     Text: {text_preview}")
-        print(f"     Error: {error_message}")
-        print(f"     Timestamp: {datetime.now().isoformat()}")
-        print(f"     Consecutive failures: {self.consecutive_failures}")
-        
-        # TODO: Could write to a log file or database audit table here
+        logger.error(f"Embedding failure - Text: '{text_preview}', Error: {error_message}, Consecutive failures: {self.consecutive_failures}")
     
     def _cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
         """

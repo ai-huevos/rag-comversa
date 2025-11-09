@@ -18,6 +18,10 @@ from pathlib import Path
 from intelligence_capture.duplicate_detector import DuplicateDetector
 from intelligence_capture.entity_merger import EntityMerger
 from intelligence_capture.consensus_scorer import ConsensusScorer
+from intelligence_capture.logger import get_logger
+
+# Initialize logger
+logger = get_logger(__name__)
 
 
 class KnowledgeConsolidationAgent:
@@ -86,7 +90,7 @@ class KnowledgeConsolidationAgent:
         
         try:
             # Begin transaction for atomic consolidation
-            print("  🔒 Starting consolidation transaction...")
+            logger.info("Starting consolidation transaction")
             self.db.conn.execute("BEGIN TRANSACTION")
             
             # Process each entity type
@@ -95,7 +99,7 @@ class KnowledgeConsolidationAgent:
                     consolidated[entity_type] = []
                     continue
                 
-                print(f"\n  🔗 Consolidating {entity_type}...")
+                logger.info(f"Consolidating {entity_type} ({len(entity_list)} entities)")
                 consolidated[entity_type] = self._consolidate_entity_type(
                     entity_list,
                     entity_type,
@@ -104,7 +108,7 @@ class KnowledgeConsolidationAgent:
             
             # Commit transaction if all operations succeeded
             self.db.conn.commit()
-            print("  ✅ Consolidation transaction committed")
+            logger.info("Consolidation transaction committed successfully")
             
             # Update statistics
             self.stats["processing_time"] = time.time() - start_time
@@ -117,7 +121,7 @@ class KnowledgeConsolidationAgent:
         except Exception as e:
             # Rollback transaction on any error
             self.db.conn.rollback()
-            print(f"  ❌ Consolidation failed, transaction rolled back: {e}")
+            logger.error(f"Consolidation failed, transaction rolled back: {e}", exc_info=True)
             
             # Log the error for debugging
             self._log_consolidation_error(interview_id, str(e))
@@ -155,6 +159,8 @@ class KnowledgeConsolidationAgent:
                 best_match, similarity_score = similar_entities[0]
                 self.stats["duplicates_found"] += 1
                 
+                logger.debug(f"Duplicate found: '{entity.get('name', 'N/A')}' matches existing entity (similarity={similarity_score:.2f})")
+                
                 # Merge entities
                 merged_entity = self.merge_entities(
                     entity,
@@ -168,10 +174,12 @@ class KnowledgeConsolidationAgent:
                 # Check for contradictions
                 if merged_entity.get("has_contradictions", 0):
                     self.stats["contradictions_detected"] += 1
+                    logger.warning(f"Contradictions detected in merged entity: '{merged_entity.get('name', 'N/A')}'")
                 
                 consolidated_entities.append(merged_entity)
             else:
                 # No duplicates found, add as new entity
+                logger.debug(f"New entity added: '{entity.get('name', 'N/A')}'")
                 new_entity = self._prepare_new_entity(entity, interview_id)
                 consolidated_entities.append(new_entity)
         
@@ -290,7 +298,7 @@ class KnowledgeConsolidationAgent:
             return entities
             
         except Exception as e:
-            print(f"  ⚠️  Error fetching existing entities: {e}")
+            logger.warning(f"Error fetching existing entities for {entity_type}: {e}")
             return []
     
     def _prepare_new_entity(self, entity: Dict, interview_id: int) -> Dict:
@@ -356,20 +364,22 @@ class KnowledgeConsolidationAgent:
             self.db.conn.commit()
             
         except Exception as e:
-            print(f"  ⚠️  Error logging audit trail: {e}")
+            logger.warning(f"Error logging audit trail: {e}")
     
     def _print_consolidation_summary(self):
-        """Print consolidation statistics"""
-        print(f"\n  📊 Consolidation Summary:")
-        print(f"     Entities processed: {self.stats['entities_processed']}")
-        print(f"     Duplicates found: {self.stats['duplicates_found']}")
-        print(f"     Entities merged: {self.stats['entities_merged']}")
-        print(f"     Contradictions detected: {self.stats['contradictions_detected']}")
-        print(f"     Processing time: {self.stats['processing_time']:.2f}s")
+        """Log consolidation statistics"""
+        logger.info("=" * 60)
+        logger.info("Consolidation Summary:")
+        logger.info(f"  Entities processed: {self.stats['entities_processed']}")
+        logger.info(f"  Duplicates found: {self.stats['duplicates_found']}")
+        logger.info(f"  Entities merged: {self.stats['entities_merged']}")
+        logger.info(f"  Contradictions detected: {self.stats['contradictions_detected']}")
+        logger.info(f"  Processing time: {self.stats['processing_time']:.2f}s")
         
         if self.stats["entities_processed"] > 0:
             reduction = (self.stats["duplicates_found"] / self.stats["entities_processed"]) * 100
-            print(f"     Duplicate reduction: {reduction:.1f}%")
+            logger.info(f"  Duplicate reduction: {reduction:.1f}%")
+        logger.info("=" * 60)
     
     def get_statistics(self) -> Dict:
         """
@@ -416,5 +426,5 @@ class KnowledgeConsolidationAgent:
             # This is just for logging purposes
             
         except Exception as e:
-            # If logging fails, just print to console
-            print(f"  ⚠️  Could not log consolidation error: {e}")
+            # If logging fails, log to logger
+            logger.warning(f"Could not log consolidation error to database: {e}")
