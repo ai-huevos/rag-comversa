@@ -675,7 +675,7 @@ system0/
 │   ├── DECISIONS.md           # Architecture Decision Records
 │   ├── RUNBOOK.md             # Operations guide
 │   └── EXPERIMENTS.md         # Experiment log
-└── .ai/                       # AI assistant configuration
+└── .ai/                       # AI assistant configuration (see BOOTSTRAP.md for context files)
     └── CODING_STANDARDS.md    # This file
 ```
 

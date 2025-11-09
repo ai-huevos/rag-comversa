@@ -7,6 +7,7 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
 - **Current State Snapshot:** JSON transcript ingestion, 17 entity extraction, and consolidation specs exist, but there is no multi-format intake, OCR, pgvector, Neo4j graph, or agentic API. Data remains siloed in SQLite with 20–30% duplicates.
 - **Goals:** Add context-aware ingestion for PDFs/images/CSVs, stand up PostgreSQL + pgvector and Neo4j, wire ConsolidationSync into both stores, layer Pydantic AI agents + FastAPI, enforce Spanish-first quality, and institute checkpoints that satisfy Bolivian privacy plus the $500–$1,000 USD/month spend guardrail.
 - **Timeline:** Week 1 (Intake & Ingestion), Week 2 (Dual Storage & Embeddings), Week 3 (Agentic RAG + API), Week 4 (Quality, Spanish optimization, Performance, Governance), Week 5 (ConsolidationSync, automation, launch readiness).
+- **Execution Controls:** Every agent must load `CLAUDE.MD`, `.codex/manifest.yaml`, `.codex/agent_roles.yaml`, and this tasks file before starting work (see `.ai/BOOTSTRAP.md`).
 
 ---
 
