@@ -278,6 +278,166 @@ This document defines requirements for implementing a Knowledge Graph Consolidat
 
 5. THE System SHALL log all rollback operations with reason and timestamp for audit purposes
 
+### Requirement 16: Production Security Hardening
+
+**User Story:** As a Security Engineer, I want all SQL injection vulnerabilities eliminated and input validation enforced, so that the system is secure against malicious inputs.
+
+#### Acceptance Criteria
+
+1. THE System SHALL validate all entity_type parameters against a whitelist of valid entity types before using in SQL queries
+
+2. WHEN an invalid entity_type is provided, THE System SHALL raise a ValueError with a descriptive message
+
+3. THE System SHALL sanitize all user-provided entity data before database insertion to prevent SQL injection
+
+4. THE System SHALL store API keys only in environment variables and never log them in plain text
+
+5. THE System SHALL implement rate limiting for OpenAI API calls to prevent quota exhaustion
+
+### Requirement 17: Transaction Management and Data Integrity
+
+**User Story:** As a Database Administrator, I want all consolidation operations wrapped in transactions, so that database remains consistent even if operations fail mid-process.
+
+#### Acceptance Criteria
+
+1. WHEN the Consolidation Agent begins consolidation, THE System SHALL start a database transaction before any entity updates
+
+2. WHEN all consolidation operations complete successfully, THE System SHALL commit the transaction
+
+3. WHEN any consolidation operation fails, THE System SHALL rollback the transaction and restore database to previous state
+
+4. THE System SHALL log all transaction rollbacks with error details for debugging
+
+5. THE System SHALL verify database integrity after each consolidation batch (no orphaned records, valid foreign keys)
+
+### Requirement 18: API Failure Resilience
+
+**User Story:** As a System Operator, I want the system to handle OpenAI API failures gracefully with retries, so that temporary API issues don't cause consolidation failures.
+
+#### Acceptance Criteria
+
+1. WHEN an OpenAI API call fails, THE System SHALL retry up to 3 times with exponential backoff (2^attempt seconds)
+
+2. WHEN all retry attempts fail, THE System SHALL raise an EmbeddingError with details about the failure
+
+3. THE System SHALL log all API failures to the consolidation audit trail with timestamp and error message
+
+4. WHEN embedding generation fails for an entity, THE System SHALL fall back to fuzzy matching only (no semantic similarity)
+
+5. THE System SHALL implement a circuit breaker that disables semantic similarity after 10 consecutive API failures
+
+### Requirement 19: Performance Optimization - Embedding Storage
+
+**User Story:** As a Performance Engineer, I want embeddings pre-computed and stored in the database, so that consolidation completes in minutes instead of hours.
+
+#### Acceptance Criteria
+
+1. THE System SHALL add an embedding_vector column (BLOB) to all entity tables for storing pre-computed embeddings
+
+2. WHEN an entity is first inserted, THE System SHALL generate and store its embedding vector
+
+3. WHEN searching for duplicates, THE System SHALL use stored embeddings instead of generating new ones
+
+4. THE System SHALL implement a batch embedding generation script for existing entities without embeddings
+
+5. WHEN embeddings are stored, THE System SHALL reduce consolidation time from 8+ hours to under 5 minutes for 44 interviews
+
+### Requirement 20: Fuzzy-First Candidate Filtering
+
+**User Story:** As a Performance Engineer, I want fuzzy matching to filter candidates before semantic similarity, so that we reduce expensive API calls from 1000+ to 10 per entity.
+
+#### Acceptance Criteria
+
+1. WHEN searching for duplicates, THE System SHALL first use fuzzy matching to identify top 10 candidates
+
+2. WHEN fuzzy matching returns fewer than 10 candidates above threshold, THE System SHALL only compute semantic similarity for those candidates
+
+3. THE System SHALL skip semantic similarity calculation if fuzzy matching score >= 0.95 (obvious duplicate)
+
+4. THE System SHALL add rapidfuzz library to requirements.txt for 10-100x faster fuzzy matching
+
+5. WHEN fuzzy-first filtering is enabled, THE System SHALL reduce API calls by 90-95% compared to comparing against all entities
+
+### Requirement 21: Structured Logging Framework
+
+**User Story:** As a DevOps Engineer, I want structured logging with log levels and log files, so that I can debug issues and monitor system health in production.
+
+#### Acceptance Criteria
+
+1. THE System SHALL use Python's logging framework instead of print() statements for all output
+
+2. THE System SHALL configure log levels: DEBUG for detailed tracing, INFO for normal operations, WARNING for recoverable issues, ERROR for failures
+
+3. THE System SHALL write logs to both console and rotating log files in logs/ directory
+
+4. THE System SHALL include timestamp, log level, module name, and message in all log entries
+
+5. THE System SHALL log all consolidation decisions (merge, skip, contradiction) at INFO level with entity details
+
+### Requirement 22: Comprehensive Testing Suite
+
+**User Story:** As a QA Engineer, I want comprehensive unit and integration tests, so that I can verify system correctness and catch regressions.
+
+#### Acceptance Criteria
+
+1. THE System SHALL have unit tests for DuplicateDetector covering fuzzy matching, semantic similarity, and name normalization
+
+2. THE System SHALL have unit tests for EntityMerger covering description combination, contradiction detection, and source tracking
+
+3. THE System SHALL have unit tests for ConsensusScorer covering confidence calculation with various source counts and contradictions
+
+4. THE System SHALL have integration tests for end-to-end consolidation with real duplicate entities
+
+5. THE System SHALL have performance tests measuring consolidation time and memory usage with 1000+ entities
+
+### Requirement 23: Rollback Mechanism Implementation
+
+**User Story:** As a Data Quality Manager, I want to rollback incorrect consolidations, so that I can fix mistakes without losing data or manual intervention.
+
+#### Acceptance Criteria
+
+1. WHEN entities are merged, THE System SHALL store entity snapshots in consolidation_audit table before modification
+
+2. THE System SHALL provide a rollback_consolidation(audit_id, reason) function that restores original entities
+
+3. WHEN rollback is executed, THE System SHALL restore original entity data from snapshots
+
+4. WHEN rollback is executed, THE System SHALL update all relationships to point back to original entities
+
+5. THE System SHALL mark audit records with rollback_timestamp and rollback_reason after successful rollback
+
+### Requirement 24: Configuration Tuning for Production
+
+**User Story:** As a Data Scientist, I want similarity thresholds and consensus parameters tuned for 44 interviews, so that consolidation accuracy is optimized for our dataset size.
+
+#### Acceptance Criteria
+
+1. THE System SHALL lower similarity thresholds to 0.70-0.75 for pain_points and processes to catch more duplicates
+
+2. THE System SHALL adjust source_count_divisor to 5 (20% of 44 interviews = 1.0 confidence) instead of 10
+
+3. THE System SHALL add single_source_penalty of 0.3 to reduce confidence for entities mentioned by only one person
+
+4. THE System SHALL increase contradiction_penalty to 0.25 to more heavily penalize conflicting information
+
+5. THE System SHALL document all configuration parameters with rationale and tuning guidance
+
+### Requirement 25: Monitoring and Metrics Collection
+
+**User Story:** As a System Administrator, I want consolidation metrics collected and exported, so that I can monitor system health and identify issues.
+
+#### Acceptance Criteria
+
+1. THE System SHALL collect metrics: duplicates_by_type, avg_similarity_by_type, contradictions_by_type, processing_time_by_type
+
+2. THE System SHALL track API call metrics: total_calls, cache_hits, cache_misses, failed_calls
+
+3. THE System SHALL calculate quality metrics: duplicate_reduction_percentage, avg_confidence_score, contradiction_rate
+
+4. THE System SHALL export metrics to JSON file after each consolidation run
+
+5. THE System SHALL display summary metrics in console with color-coded status (green for good, yellow for warnings, red for errors)
+
 ## Success Criteria
 
 ### Data Quality
@@ -288,10 +448,17 @@ This document defines requirements for implementing a Knowledge Graph Consolidat
 - ✅ All relationships point to valid consolidated entities
 
 ### Performance
-- ✅ Consolidation completes in under 5 minutes for 44 interviews
+- ✅ Consolidation completes in under 5 minutes for 44 interviews (with optimizations)
 - ✅ Duplicate detection query time < 1 second per entity
 - ✅ Incremental consolidation < 10 seconds per new interview
 - ✅ Total extraction + consolidation time < 20 minutes
+- ✅ API calls reduced by 90-95% through fuzzy-first filtering and embedding caching
+
+### Security & Reliability
+- ✅ No SQL injection vulnerabilities (entity type whitelist enforced)
+- ✅ All consolidation operations wrapped in transactions
+- ✅ API failures handled with retry logic and circuit breaker
+- ✅ All sensitive data (API keys) stored in environment variables only
 
 ### Intelligence
 - ✅ Relationships discovered between entities (System → Pain Point, Process → System)
@@ -301,8 +468,10 @@ This document defines requirements for implementing a Knowledge Graph Consolidat
 - ✅ Can answer questions like "What systems cause the most pain?" with accurate counts
 
 ### Maintainability
-- ✅ Configurable similarity thresholds per entity type
+- ✅ Configurable similarity thresholds per entity type (tuned for 44 interviews)
 - ✅ Audit trail for all consolidation operations
-- ✅ Rollback capability for incorrect merges
-- ✅ Comprehensive consolidation reports
-- ✅ Clear logging of merge decisions with similarity scores
+- ✅ Rollback capability for incorrect merges (with entity snapshots)
+- ✅ Comprehensive consolidation reports with metrics
+- ✅ Structured logging with log levels and log files
+- ✅ Comprehensive test suite (unit, integration, performance tests)
+- ✅ Monitoring metrics exported to JSON for analysis

@@ -1,474 +1,189 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-# RAG-Comversa Project Context
-
-## Project Overview
-**Intelligence Extraction System** for Comversa - extracts structured business intelligence from 44 Spanish interview transcripts and stores it in a queryable SQLite database for AI agent use.
-
-- **Language:** All interviews are in Spanish - never translate
-- **Database:** SQLite with 17 entity types
-- **AI Models:** OpenAI (gpt-4o-mini primary) with 6-model fallback chain
-- **Companies:** Los Tajibos (hotel), Comversa (construction), Bolivian Foods (restaurants)
-- **Source Data:** 44 manager interviews in Spanish
+This file defines how Claude/Codex agents work inside this repository. Load it **together with** `.codex/manifest.yaml` and `.codex/agent_roles.yaml` before making changes.
 
 ---
 
-## Current State
+## 1. Project Overview
 
-### ✅ **Phases 1-4 COMPLETE** - Full System Implementation
+**RAG-Comversa** converts 44 Spanish manager interviews (and new multi-format documents) into structured intelligence used by agentic RAG services.
 
-**Phase 1: Core Integration** ✅
-1. ✅ Consolidated extraction logic - All 17 entity types
-2. ✅ Updated processor storage - Error handling per entity
-3. ✅ Quality validation - Always-on validation
-4. ✅ Progress tracking - Resume capability
-
-**Phase 2: Optimization** ✅
-5. ✅ ValidationAgent - Completeness checking
-6. ✅ ExtractionMonitor - Real-time dashboard
-7. ✅ Centralized configuration - extraction_config.json
-8. ✅ Batch operations - Transaction support
-
-**Phase 3: Testing & Validation** ✅
-9. ✅ Test scripts - Single and batch testing
-10. ✅ Validation script - Comprehensive checks
-11. ✅ Documentation - SETUP.md, guides
-12. ✅ Environment setup - .env.example
-
-**Phase 4: Parallel Processing & Rate Limiting** ✅
-13. ✅ WAL mode for parallel processing (no database locking)
-14. ✅ Rate limiting with exponential backoff
-15. ✅ Cost estimation before extraction
-16. ✅ Ensemble validation (disabled by default)
-
-**What's Working:**
-- ✅ All 17 entity types extracting
-- ✅ ValidationAgent (completeness checking)
-- ✅ ExtractionMonitor (real-time progress)
-- ✅ Quality validation (always on)
-- ✅ Progress tracking with resume
-- ✅ Parallel processing (WAL mode + rate limiter)
-- ✅ Rate limiting (no API errors)
-- ✅ Cost estimation (shows cost before extraction)
-- ✅ Ensemble disabled by default (fast, cheap mode)
-
-**Recent Fixes (2025-11-08):**
-- ✅ Fixed parallel processing with WAL mode
-- ✅ Added shared rate limiter
-- ✅ Tested with 5 interviews (4/5 succeeded)
-- ✅ Proved Knowledge Graph is essential (analyzed existing data)
-
-### 🎯 Current Phase: Knowledge Graph Consolidation (Week 1)
-
-**Status:** Spec created, ready to implement consolidation system
-
-**Problem Identified:**
-- 20-30% of extracted data is duplicated
-- 25 separate "Excel" entries, 12 separate "SAP" entries
-- Cannot answer questions like "What systems cause the most pain?"
-
-**Solution:**
-- Build Knowledge Graph Consolidation System
-- Merge duplicate entities with source tracking
-- Calculate consensus confidence scores
-- Discover relationships between entities
-- Identify recurring patterns
-
-**Spec Location:** `.kiro/specs/knowledge-graph-consolidation/`
+- **Language:** Spanish only – never translate interview content or responses.
+- **Current Datastore:** SQLite (17 entity tables) → migrating to PostgreSQL + pgvector + Neo4j.
+- **Models:** OpenAI gpt-4o-mini (primary), six-model fallback chain, Mistral Pixtral OCR.
+- **Companies:** Los Tajibos, Comversa, Bolivian Foods.
+- **Source Specs:**
+  - `.kiro/specs/rag-2.0-enhancement/{requirements,design,tasks}.md`
+  - `.kiro/specs/knowledge-graph-consolidation/{requirements,tasks}.md`
 
 ---
 
-## 17 Entity Types
+## 2. Current Focus & Timeline (RAG 2.0)
 
-### v1.0 Entities (6) - Currently Working
-1. PainPoint - Problems blocking work
-2. Process - How work gets done
-3. System - Tools/software used
-4. KPI - Success metrics
-5. AutomationCandidate - Automation opportunities
-6. Inefficiency - Wasteful steps
+| Horizon | Objectives | Key Artifacts |
+| --- | --- | --- |
+| **Week 1 – Intake & OCR** | Context registry, source connectors, ingestion queue, DocumentProcessor refresh, Mistral Pixtral OCR, Spanish chunking | `.kiro/specs/rag-2.0-enhancement/tasks.md` (tasks 0–5) |
+| **Week 2 – Dual Storage** | PostgreSQL+pgvector migrations, embedding pipeline with CostGuard, Neo4j builder | same tasks (6–9) |
+| **Week 3 – Agentic RAG & API** | Pydantic AI agent, vector/graph/hybrid tools, FastAPI endpoint, CLI | tasks 10–14 |
+| **Week 4 – Quality & Governance** | Retrieval evaluation harness, Spanish optimization, performance tuning, checkpoints & approvals | tasks 15–18 |
+| **Week 5 – Consolidation & Automation** | ConsolidationSync ↔ Postgres/Neo4j, ingestion workers, backlog alerts, runbooks & compliance evidence | tasks 19–21 + `.kiro/specs/knowledge-graph-consolidation/*` |
 
-### v2.0 Entities (11) - Need Integration
-7. CommunicationChannel - WhatsApp, email, Teams, etc.
-8. DecisionPoint - Who decides what, escalation rules
-9. DataFlow - Data movement between systems
-10. TemporalPattern - When things happen (daily, weekly, etc.)
-11. FailureMode - What goes wrong, workarounds
-12. TeamStructure - Org hierarchy, reporting lines
-13. KnowledgeGap - Training needs, missing skills
-14. SuccessPattern - What works well, best practices
-15. BudgetConstraint - Budget limitations affecting work
-16. ExternalDependency - Third-party vendors, external blockers
-17. Enhanced v1.0 - System with sentiment, AutomationCandidate with effort/impact scoring
+Always consult `.codex/manifest.yaml` for authoritative phase status before coding.
 
 ---
 
-## Key Files
+## 3. Guardrails & Compliance
 
-### Implementation
-- `intelligence_capture/extractor.py` - Main extraction orchestrator (needs update)
-- `intelligence_capture/extractors.py` - v2.0 specialized extractors (13 classes)
-- `intelligence_capture/processor.py` - Pipeline orchestrator (needs update)
-- `intelligence_capture/database.py` - Database operations
-- `intelligence_capture/config.py` - Configuration
+| Category | Rule |
+| --- | --- |
+| Language | Never translate interviews or agent responses. Enforce UTF-8 with `ensure_ascii=False`.
+| Privacy | All assets must be tagged with Context Registry metadata; no cross-org leakage.
+| Cost | Maintain $500–$1,000 USD monthly envelope. CostGuard throttles >$900 and stops >$1,000 without approval.
+| Checkpoints | Generate bundles for ingestion, OCR, consolidation, retrieval eval, and pre-prod agent runs under `reports/checkpoints/{org}/{stage}`. Log reviewer decisions in `model_reviews`.
+| Safety | No destructive Git or data commands unless explicitly requested. Respect existing uncommitted work.
+| Data Handling | Use sanitized fixtures for tests; do not ingest docs lacking consent metadata.
 
-### Specs & Docs
-- `.kiro/specs/extraction-completion/tasks.md` - Full task breakdown
-- `.kiro/specs/extraction-completion/requirements.md` - Requirements doc
-- `PHASE1_COMPLETE_SUMMARY.md` - What was built previously
-- `SESSION_COMPLETE_SUMMARY.md` - Previous session summary
-
-### Tests
-- `tests/test_*.py` - Unit tests for all extractors
+Guardrails duplicated in `.codex/manifest.yaml` for automated agents.
 
 ---
 
-## Core Architecture
+## 4. Multi-Agent Roles (see `.codex/agent_roles.yaml` for details)
 
-### Extraction Pipeline
+| Role | Mission | Primary Paths |
+| --- | --- | --- |
+| Orchestrator | Maintain specs/tasks, enforce guardrails, coordinate approvals | `.kiro/specs`, `.codex`, `docs/` |
+| Intake & Processing | Connectors, DocumentProcessor, OCR, Spanish chunker | `intelligence_capture/{connectors,document_processor,ocr,chunking}`, `scripts/watch_inbox.py` |
+| Storage & Graph | Postgres migrations, embeddings pipeline, Neo4j builder | `scripts/migrations/`, `intelligence_capture/{database,embeddings}`, `graph/` |
+| Agent & API | Pydantic AI agent, retrieval tools, FastAPI, CLI | `agent/`, `api/`, `prompts/`, `tests/test_agent*` |
+| Quality & Governance | Evaluation harness, Spanish optimization, CostGuard, checkpoints, approvals | `reports/`, `scripts/evaluate_retrieval.py`, `intelligence_capture/cost_guard.py`, `governance/` |
+| Consolidation & Automation | ConsolidationSync ↔ Postgres/Neo4j, ingestion workers, runbooks | `intelligence_capture/consolidation_agent.py`, `intelligence_capture/ingestion_worker.py`, `docs/RAG2_runbook.md` |
 
-```
-Interview JSON → IntelligenceExtractor → 17 Entity Types → SQLite → Knowledge Graph → AI Agents
-```
-
-**Flow:**
-1. `processor.py` (IntelligenceProcessor) orchestrates the pipeline
-2. `extractor.py` (IntelligenceExtractor) extracts 6 v1.0 entity types
-3. `extractors.py` (13 specialized extractors) extracts 11 v2.0 entity types
-4. `validation_agent.py` validates completeness and quality
-5. `database.py` (IntelligenceDB/EnhancedIntelligenceDB) stores entities
-6. `monitor.py` (ExtractionMonitor) tracks real-time progress
-7. Knowledge Graph Consolidation merges duplicates and discovers relationships
-
-### Key Components
-
-- **IntelligenceExtractor** (`extractor.py`): Orchestrates extraction via `extract_all()`, delegates to v2 extractors
-- **IntelligenceProcessor** (`processor.py`): Main pipeline with `process_interviews()` and resume capability
-- **ValidationAgent** (`validation_agent.py`): Checks completeness, encoding, placeholders
-- **ExtractionMonitor** (`monitor.py`): Real-time progress dashboard
-- **Rate Limiter** (`rate_limiter.py`): Exponential backoff for API calls with shared state
-- **IntelligenceDB** (`database.py`): Core schema; EnhancedIntelligenceDB adds v2.0 tables
+Each role has allowed/forbidden paths and approval rules in the YAML file—follow them strictly.
 
 ---
 
-## Development Commands
+## 5. Master Documentation
 
-### Setup & Configuration
+1. **docs/README.md** – documentation index.
+2. **docs/ARCHITECTURE.md** – system diagrams + data model.
+3. **docs/DECISIONS.md** – ADRs.
+4. **docs/RUNBOOK.md** – operational commands & troubleshooting.
+5. **docs/EXPERIMENTS.md** – LLM/architecture experiments.
+6. **docs/RAG2_runbook.md** – to capture Week 5 operational handover (in progress).
 
+Older docs live in `docs/archive/2025-11/` for reference only.
+
+---
+
+## 6. System Snapshot
+
+- **Extraction status:** All 17 entity types working with ValidationAgent, ExtractionMonitor, rate limiter, cost estimation.
+- **Critical issues:** WAL/parallelism needs retest, cost guard for new pipelines pending, entity consolidation not yet synced to Neo4j, ingestion automation incomplete.
+- **Consolidation:** Specs ready (`.kiro/specs/knowledge-graph-consolidation/*`), DuplicateDetector/EntityMerger/ConsensusScorer defined but integration with Postgres/Neo4j not complete.
+
+### 17 Entity Types
+- **v1.0 (6):** PainPoint, Process, System, KPI, AutomationCandidate, Inefficiency
+- **v2.0 (11):** CommunicationChannel, DecisionPoint, DataFlow, TemporalPattern, FailureMode, TeamStructure, KnowledgeGap, SuccessPattern, BudgetConstraint, ExternalDependency, Enhanced v1.0s
+
+---
+
+## 7. Key Architecture Patterns
+
+- **Spanish-First Processing (ADR-001):** never translate; rely on UTF-8, Spanish stopwords/stemming.
+- **Multi-Model Fallback (EXP-003):** `gpt-4o-mini → gpt-4o → gpt-3.5-turbo → o1-mini → o1-preview → claude-3.5-sonnet`.
+- **WAL Mode + Rate Limiter (ADR-007):** necessary for concurrent extraction; still under validation.
+- **Dual Storage (Design §2):** Document chunks + embeddings in PostgreSQL/pgvector; consolidated entities/relationships in Neo4j via Graffiti.
+- **Agentic RAG:** Pydantic AI orchestrator picks vector/graph/hybrid tools; FastAPI `/chat` + CLI.
+
+---
+
+## 8. Key Workflows & Commands
+
+### Environment Setup
 ```bash
-# Install dependencies
-pip install openai python-dotenv
-
-# Configure API key
 cp .env.example .env
-# Edit .env: OPENAI_API_KEY=sk-proj-your-key-here
-
-# Verify setup
-python -c "from intelligence_capture.config import OPENAI_API_KEY; print('✓ API key configured' if OPENAI_API_KEY else '✗ No API key')"
+pip install -r requirements.txt
 ```
 
-### Testing
-
+### Legacy Extraction / Consolidation (JSON transcripts)
 ```bash
-# Single interview test (~10 sec, ~$0.01)
 python scripts/test_single_interview.py
-
-# Batch test - 5 interviews (~2-3 min, ~$0.10)
 python scripts/test_batch_interviews.py --batch-size 5
-
-# Validate extraction results
-python scripts/validate_extraction.py --db data/test_batch.db
-
-# Generate comprehensive report
-python scripts/generate_comprehensive_report.py --format both
-```
-
-### Production Extraction
-
-```bash
-# Full extraction - 44 interviews (~15-20 min, ~$0.50-1.00)
+# Full run (after WAL/rate-limit validation)
 python intelligence_capture/run.py
-
-# Resume interrupted extraction
-python intelligence_capture/run.py --resume
-
-# Custom database path
-python intelligence_capture/run.py --db data/custom.db
 ```
 
-### Database Queries
-
+### RAG 2.0 Pipeline (in progress)
 ```bash
-# Open database
-sqlite3 intelligence.db
-
-# Example queries
-SELECT COUNT(*) FROM pain_points;
-SELECT * FROM pain_points WHERE company='Los Tajibos' AND severity='Critical';
-SELECT name, usage_count FROM systems ORDER BY usage_count DESC LIMIT 10;
+python intelligence_capture/ingestion_watcher.py
+python intelligence_capture/ingestion_worker.py --concurrency 4
+python intelligence_capture/embeddings/run_batch.py --batch-size 100
+psql $DATABASE_URL -f scripts/migrations/2025_01_01_pgvector.sql
+uvicorn api.server:app --reload
+python -m agent.cli --verbose
+python scripts/evaluate_retrieval.py
 ```
 
-### Running Tests
-
+### Quick DB Checks
 ```bash
-# Run all tests
-pytest tests/
-
-# Run specific test
-pytest tests/test_automation_candidate_extraction.py
-
-# Run tests with verbose output
-pytest -v tests/
+sqlite3 intelligence.db "SELECT COUNT(*) FROM pain_points;"
+psql $DATABASE_URL -c "SELECT COUNT(*) FROM document_chunks;"
 ```
 
 ---
 
-## Next Steps: Knowledge Graph Consolidation (Week 1)
+## 9. Testing & Quality Gates
 
-### Week 1 Goal: Build Consolidation System
-**Objective:** Merge duplicate entities and build consensus from multiple sources
+| Stage | Requirement |
+| --- | --- |
+| Parsers/OCR/Chunking | Unit tests with sanitized fixtures. No real client data in tests. |
+| Consolidation | Integration tests verifying mergers, consensus, rollback (`tests/test_consolidation_*.py`). |
+| Postgres/Neo4j | Migration dry-run + rollback plan; Cypher smoke tests. |
+| Agent/API | Contract tests for tools and FastAPI endpoints; CLI transcripts stored in `data/cli_sessions/`. |
+| Retrieval Quality | `scripts/evaluate_retrieval.py` → `reports/retrieval_evaluation.json` (Precision@5 ≥0.80, MRR ≥0.75). |
+| Governance | Checkpoint bundles archived; approvals recorded in `model_reviews`. No prod toggle without approval. |
 
-**Timeline:** 5 days
-- Day 1: Database schema + duplicate detector
-- Day 2: Entity merger + consensus scorer + consolidation agent
-- Day 3: Integration with processor + database migration
-- Day 4: Relationship discovery + pattern recognition
-- Day 5: Testing with 10 interviews + validation
-
-**Expected Results:**
-- Duplicate reduction: 80-95% (48 system entries → 3 consolidated)
-- Source tracking: All entities have mentioned_in_interviews
-- Consensus confidence: Average >= 0.75
-- Relationships: System → Pain Point, Process → System
-- Patterns: Recurring issues identified (30%+ of interviews)
-
-### How to Start
-```bash
-# 1. Review the spec
-cat .kiro/specs/knowledge-graph-consolidation/requirements.md
-cat .kiro/specs/knowledge-graph-consolidation/design.md
-cat .kiro/specs/knowledge-graph-consolidation/tasks.md
-
-# 2. Start with Task 1: Database Schema
-# Open tasks.md and click "Start task" next to Task 1
-```
-
-### After Week 1: Full Extraction
-Once consolidation is complete, run full 44-interview extraction:
-```bash
-# Run extraction with consolidation
-python intelligence_capture/run.py
-
-# Validate consolidation
-python scripts/validate_consolidation.py
-
-# Generate consolidation report
-python scripts/generate_consolidation_report.py
-```
-
-**Expected:**
-- Processing time: 15-20 minutes
-- Cost: ~$2.00-3.50
-- Consolidated, intelligent data ready for AI agents
+CI must run relevant tests before merge; Orchestrator/Governance agents gate releases.
 
 ---
 
-## Configuration
+## 10. Rules of Engagement
 
-### Main Config: `config/extraction_config.json`
+### Never
+1. Translate Spanish content.
+2. Skip tests or evaluations.
+3. Disable cost or checkpoint guardrails without sign-off.
+4. Introduce destructive Git commands.
+5. Process documents lacking registry consent metadata.
 
-```json
-{
-  "extraction": {
-    "model": "gpt-4o-mini",
-    "temperature": 0.1,
-    "max_retries": 3
-  },
-  "validation": {
-    "enable_validation_agent": true,
-    "enable_llm_validation": false  // Disable for speed
-  },
-  "ensemble": {
-    "enable_ensemble_review": false  // KEEP DISABLED - expensive
-  },
-  "monitoring": {
-    "enable_monitor": true,
-    "print_summary_every_n": 5
-  },
-  "performance": {
-    "parallel_processing": true  // Now working with WAL mode
-  }
-}
-```
-
-### Environment Variables: `.env`
-
-```ini
-OPENAI_API_KEY=sk-proj-your-key-here
-ANTHROPIC_API_KEY=sk-ant-api03-your-key-here  # Optional
-ENABLE_ENSEMBLE_REVIEW=false  # Keep disabled
-```
+### Always
+1. Use UTF-8 + `ensure_ascii=False`.
+2. Add type hints and transactions.
+3. Estimate/record costs before expensive jobs.
+4. Update specs/tasks when scope changes.
+5. Log activity and metrics in `reports/` (status, performance, checkpoints).
 
 ---
 
-## Critical Design Patterns
+## 11. Next Steps (from `.kiro/specs/rag-2.0-enhancement/tasks.md`)
 
-### LLM Fallback Chain
+1. Stand up Context Registry + connectors + ingestion queue (Tasks 0–2).
+2. Implement multi-format DocumentProcessor, OCR pipeline, Spanish chunking (Tasks 3–5).
+3. Apply PostgreSQL/pgvector migrations, embedding pipeline, Neo4j builder (Tasks 6–9).
+4. Build Pydantic agent, retrieval tools, FastAPI endpoints, CLI (Tasks 10–14).
+5. Ship evaluation harness, Spanish optimizations, CostGuard, checkpoint manager (Tasks 15–18).
+6. Complete ConsolidationSync, ingestion workers, runbooks, compliance evidence (Tasks 19–21 & consolidation spec).
 
-The system uses a 6-model fallback chain in `_call_gpt4()`:
-1. gpt-4o-mini (primary)
-2. gpt-4o
-3. gpt-3.5-turbo
-4. o1-mini
-5. o1-preview
-6. claude-3-5-sonnet-20241022
-
-Each model attempts with exponential backoff before falling to next.
-
-### WAL Mode & Parallel Processing
-
-SQLite WAL (Write-Ahead Logging) mode enables parallel processing:
-- Database created with `PRAGMA journal_mode=WAL` in `database.py`
-- Shared rate limiter prevents API throttling across workers
-- Processing time reduced from 15-20 min to ~5-8 min for 44 interviews
-
-### Resume Capability
-
-Progress tracking enables resuming interrupted extractions:
-- `data/extraction_progress.json` tracks completed interviews
-- `processor.py` checks progress and skips completed interviews
-- Use `--resume` flag to continue from last checkpoint
-
-### Organizational Hierarchy
-
-All entities linked to: company → business_unit → department
-- Defined in `config/companies.json`
-- Enforced by validation_agent.py
-- Critical for multi-company queries
-
-### Validation Strategy
-
-**Always-on validation** (validation_agent.py):
-- Completeness checks (min entities per interview)
-- Encoding validation (UTF-8, no mojibake)
-- Placeholder detection (no "N/A", "Unknown")
-- Quality thresholds configurable
-
-**Optional ensemble validation** (DISABLED by default):
-- Multi-model cross-validation
-- Expensive - only enable for critical quality needs
+Track progress using `.kiro/specs/*/tasks.md` and report status in `reports/agent_status/`.
 
 ---
 
-## File Organization
+## 12. References
 
-```
-system0/
-├── intelligence_capture/     # Main Python package
-│   ├── processor.py          # Pipeline orchestrator
-│   ├── extractor.py          # Main extraction (v1.0 + orchestration)
-│   ├── extractors.py         # v2.0 specialized extractors
-│   ├── database.py           # SQLite schema and operations
-│   ├── validation_agent.py   # Quality validation
-│   ├── monitor.py            # Real-time progress tracking
-│   ├── rate_limiter.py       # Shared rate limiter
-│   ├── parallel_processor.py # Parallel extraction with WAL
-│   └── run.py                # Entry point
-├── config/
-│   ├── extraction_config.json   # All extraction settings
-│   ├── companies.json           # Organizational hierarchy
-│   └── ceo_priorities.json      # CEO prioritized processes
-├── data/
-│   ├── intelligence.db          # Production database
-│   ├── interviews/analysis_output/all_interviews.json  # Source data
-│   └── extraction_progress.json # Resume tracking
-├── scripts/
-│   ├── test_single_interview.py    # Single interview test
-│   ├── test_batch_interviews.py    # Batch testing
-│   ├── validate_extraction.py      # Validation
-│   ├── test_parallel_fixes.py      # Test parallel processing
-│   └── generate_comprehensive_report.py  # Reporting
-├── .kiro/specs/
-│   ├── extraction-completion/      # Phase 1-4 specs
-│   └── knowledge-graph-consolidation/  # Week 1 consolidation spec
-└── tests/                    # Unit tests for all extractors
-```
+- `.codex/manifest.yaml` – initiatives, guardrails, checkpoints.
+- `.codex/agent_roles.yaml` – responsibilities & approvals.
+- `.kiro/specs/` – authoritative requirements, designs, tasks.
+- `docs/RAG2_runbook.md` – operational procedures (Week 5 deliverable).
 
-**Path conventions:**
-- Always run scripts from project root
-- Import paths from `intelligence_capture.config`
-- All databases go to `data/`
-- All reports go to `reports/`
-
----
-
-## Known Issues & Constraints
-
-### Features Now Working (Fixed)
-
-1. **Parallel processing** (`parallel_processing: true`)
-   - ✅ Fixed with WAL mode in database.py
-   - ✅ Shared rate limiter prevents conflicts
-   - ✅ 4/5 test interviews succeeded
-
-### DO NOT USE (Disabled Features)
-
-1. **Ensemble validation** (`ENABLE_ENSEMBLE_REVIEW=false`)
-   - Complex and expensive (3x cost, 3x time)
-   - Only enable if absolutely necessary for quality
-
-### Performance Characteristics
-
-- Single interview: ~10 seconds, ~$0.01
-- 44 interviews (parallel): ~5-8 minutes, ~$0.50-1.00
-- 44 interviews (sequential): ~15-20 minutes, ~$0.50-1.00
-- Rate limiting: Exponential backoff prevents API errors
-- Resume: Can restart from any point without re-processing
-
----
-
-## Testing Strategy
-
-**Always test before full extraction:**
-
-1. **Single interview** - Verify extraction logic works
-2. **Batch (5 interviews)** - Verify performance and quality
-3. **Validate results** - Check completeness and integrity
-4. **Full extraction (44)** - Production run
-
----
-
-## Important Notes
-
-1. **Spanish-first:** All content is in Spanish - extraction prompts expect Spanish, validation works on Spanish text
-2. **No translation:** Never translate interviews or extracted entities
-3. **Organizational hierarchy:** Always respect company → business_unit → department structure
-4. **Entity relationships:** All entities must reference valid interview_id
-5. **UTF-8 encoding:** Critical for Spanish text - check with validation_agent
-6. **Cost estimation:** System shows estimated cost and requests confirmation before extraction
-7. **WAL mode:** Database uses WAL mode for parallel processing - improves performance 2-3x
-8. **Duplicate entities:** 20-30% of extracted data is duplicated - knowledge graph consolidation addresses this
-
----
-
-## Git Workflow
-
-```bash
-# Always work on feature branches
-git checkout -b feature/your-feature-name
-
-# Commit after completing tasks
-git add .
-git commit -m "feat: descriptive message"
-
-# Push when ready
-git push -u origin feature/your-feature-name
-```
-
----
-
-**Last Updated:** 2025-11-08
-**Current Focus:** Knowledge Graph Consolidation System
-**Progress:** ✅ Phases 1-4 Complete | 🎯 Consolidation Spec Created (0/18 tasks)
+**Last Updated:** November 9, 2025  
+**Status:** 🟡 RAG 2.0 enhancement in progress (Week 1/5)

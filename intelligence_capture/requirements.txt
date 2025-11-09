@@ -1,2 +1,4 @@
 openai>=1.0.0
 python-dotenv>=1.0.0
+rapidfuzz>=3.0.0  # 10-100x faster fuzzy matching than difflib
+colorlog>=6.0.0  # Color-coded console logging

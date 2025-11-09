@@ -1,0 +1,103 @@
+version: 1
+agents:
+  orchestrator:
+    mission: "Mantener el plan maestro (.kiro/specs/*/tasks.md), secuenciar trabajo y validar dependencias antes de escribir código."
+    allowed_paths:
+      - ".kiro/specs"
+      - ".codex"
+      - "docs"
+    forbidden_actions:
+      - "Modificar código fuente o esquemas."
+      - "Ejecutar migraciones."
+    approvals_required:
+      - "Validar guardrails globales antes de iniciar fases."
+    handoff_artifacts:
+      - "Actualización de tasks.md"
+      - "Bitácora en reports/agent_status/orchestrator.json"
+
+  intake_processing:
+    mission: "Implementar conectores, DocumentProcessor, OCR y chunking español."
+    allowed_paths:
+      - "intelligence_capture/connectors"
+      - "intelligence_capture/document_processor.py"
+      - "intelligence_capture/ocr"
+      - "intelligence_capture/chunking"
+      - "scripts/watch_inbox.py"
+      - "data/documents"
+    forbidden_actions:
+      - "Modificar esquemas de base de datos."
+      - "Tocar agentes Pydantic o API."
+    approvals_required:
+      - "Uso de datos reales requiere metadatos del Context Registry."
+      - "Cambios que afecten límites de costos."
+    handoff_artifacts:
+      - "Reportes en reports/ingestion"
+      - "Pruebas unitarias + fixtures sanitizados."
+
+  storage_graph:
+    mission: "Diseñar PostgreSQL+pgvector, pipeline de embeddings y Neo4j builder."
+    allowed_paths:
+      - "scripts/migrations"
+      - "intelligence_capture/database.py"
+      - "intelligence_capture/embeddings"
+      - "graph"
+      - "config/database.*"
+    forbidden_actions:
+      - "Modificar agentes o endpoints API."
+      - "Cambiar lógica de consolidación sin coordinación."
+    approvals_required:
+      - "Toda migración necesita plan de rollback."
+      - "Índices/cambios que aumenten costo >10% requieren visto bueno del Governance agent."
+    handoff_artifacts:
+      - "Migraciones versionadas"
+      - "Documentación de conexiones y pools."
+
+  agent_api:
+    mission: "Construir orquestador Pydantic AI, herramientas de retrieval, FastAPI y CLI."
+    allowed_paths:
+      - "agent"
+      - "api"
+      - "prompts"
+      - "tests/test_agent*"
+    forbidden_actions:
+      - "Tocar migraciones o consolidación."
+      - "Modificar CostGuard sin coordinación."
+    approvals_required:
+      - "Activar endpoints públicos requiere checkpoints aprobados."
+    handoff_artifacts:
+      - "Contract tests, registros SSE, CLI transcripts."
+
+  quality_governance:
+    mission: "Evaluación de retrieval, optimización en español, performance, CostGuard y checkpoints."
+    allowed_paths:
+      - "reports"
+      - "scripts/evaluate_retrieval.py"
+      - "intelligence_capture/cost_guard.py"
+      - "governance"
+      - "tests/performance"
+    forbidden_actions:
+      - "Cambiar lógica de ingestión sin coordinación."
+    approvals_required:
+      - "Todas las promociones a producción."
+    handoff_artifacts:
+      - "reports/retrieval_evaluation.json"
+      - "model_reviews entries"
+      - "Checkpoint bundles."
+
+  consolidation_automation:
+    mission: "Sincronizar ConsolidationAgent con Postgres/Neo4j, workers end-to-end y runbooks."
+    allowed_paths:
+      - "intelligence_capture/consolidation_agent.py"
+      - "intelligence_capture/ingestion_worker.py"
+      - "scripts/sync_graph_consolidation.py"
+      - "docs/RAG2_runbook.md"
+      - "reports/checkpoints"
+    forbidden_actions:
+      - "Alterar tareas del Orchestrator."
+      - "Modificar agent prompts."
+    approvals_required:
+      - "Cambios que afecten ≤4 concurrencia o backlog alerts."
+    handoff_artifacts:
+      - "Ingestion reports"
+      - "Runbook updates"
+      - "Worker health metrics."
