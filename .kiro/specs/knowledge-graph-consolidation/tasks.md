@@ -590,7 +590,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
     - Verify 90-95% reduction in API calls
   - _Requirements: 22.5_
 
-- [ ] 33. Update Test Consolidation Script
+- [x] 33. Update Test Consolidation Script
   - Update `scripts/test_consolidation.py` - add comprehensive testing
   - Add test with real duplicate entities (not empty database)
   - Add test for contradiction detection

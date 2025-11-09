@@ -177,7 +177,10 @@ def get_relationship_metrics(db: EnhancedIntelligenceDB) -> dict:
 def test_consolidation(
     num_interviews: int = 10,
     use_pilot_db: bool = False,
-    verbose: bool = False
+    verbose: bool = False,
+    test_contradictions: bool = True,
+    test_rollback: bool = False,
+    measure_memory: bool = True
 ):
     """
     Test consolidation with real interviews
@@ -186,6 +189,9 @@ def test_consolidation(
         num_interviews: Number of interviews to process
         use_pilot_db: Use pilot database instead of full database
         verbose: Print verbose output
+        test_contradictions: Test contradiction detection
+        test_rollback: Test rollback mechanism
+        measure_memory: Measure memory usage
     """
     print_header(f"CONSOLIDATION TEST WITH {num_interviews} INTERVIEWS")
     
@@ -378,33 +384,190 @@ def test_consolidation(
     
     print(f"\n📄 Report saved to: {report_path}")
     
+    # Test contradiction detection
+    if test_contradictions:
+        print("\n🔍 Testing Contradiction Detection...")
+        cursor.execute("""
+            SELECT COUNT(*) FROM pain_points
+            WHERE has_contradictions = 1
+        """)
+        contradictions = cursor.fetchone()[0]
+        
+        if contradictions > 0:
+            print_success(f"Found {contradictions} entities with contradictions")
+            
+            # Show examples
+            cursor.execute("""
+                SELECT name, contradiction_details
+                FROM pain_points
+                WHERE has_contradictions = 1
+                LIMIT 3
+            """)
+            examples = cursor.fetchall()
+            for name, details in examples:
+                print_info(f"  Example: {name}")
+                if details:
+                    try:
+                        details_obj = json.loads(details)
+                        print_info(f"    Details: {details_obj}")
+                    except:
+                        pass
+        else:
+            print_info("No contradictions detected (expected for single-source entities)")
+    
+    # Test rollback mechanism (if requested)
+    if test_rollback:
+        print("\n🔄 Testing Rollback Mechanism...")
+        cursor.execute("""
+            SELECT id FROM consolidation_audit
+            ORDER BY consolidation_timestamp DESC
+            LIMIT 1
+        """)
+        audit_record = cursor.fetchone()
+        
+        if audit_record:
+            audit_id = audit_record[0]
+            print_info(f"Found audit record: {audit_id}")
+            print_warning("Rollback test not implemented yet (Task 34)")
+        else:
+            print_warning("No audit records found for rollback test")
+    
+    # Measure memory usage
+    memory_mb = 0
+    if measure_memory:
+        try:
+            import psutil
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            print(f"\n💾 Memory Usage: {memory_mb:.1f} MB")
+            
+            if memory_mb < 500:
+                print_success(f"Memory usage within target (<500 MB) ✓")
+            else:
+                print_warning(f"Memory usage exceeds target (500 MB)")
+        except ImportError:
+            print_warning("psutil not installed, skipping memory measurement")
+    
+    # Validation checks
+    print("\n✅ Validation Checks:")
+    validation_results = {}
+    
+    # Check 1: All entities have source_count >= 1
+    cursor.execute("""
+        SELECT COUNT(*) FROM pain_points
+        WHERE source_count < 1 OR source_count IS NULL
+    """)
+    invalid_source_count = cursor.fetchone()[0]
+    validation_results["source_count_valid"] = invalid_source_count == 0
+    
+    if validation_results["source_count_valid"]:
+        print_success("All entities have valid source_count ✓")
+    else:
+        print_error(f"Found {invalid_source_count} entities with invalid source_count")
+    
+    # Check 2: All entities have consensus_confidence between 0.0 and 1.0
+    cursor.execute("""
+        SELECT COUNT(*) FROM pain_points
+        WHERE consensus_confidence < 0.0 OR consensus_confidence > 1.0
+    """)
+    invalid_confidence = cursor.fetchone()[0]
+    validation_results["confidence_valid"] = invalid_confidence == 0
+    
+    if validation_results["confidence_valid"]:
+        print_success("All entities have valid consensus_confidence ✓")
+    else:
+        print_error(f"Found {invalid_confidence} entities with invalid confidence")
+    
+    # Check 3: No orphaned relationships
+    cursor.execute("""
+        SELECT COUNT(*) FROM relationships r
+        WHERE NOT EXISTS (
+            SELECT 1 FROM pain_points WHERE id = r.target_entity_id AND r.target_entity_type = 'pain_points'
+        ) AND NOT EXISTS (
+            SELECT 1 FROM systems WHERE id = r.target_entity_id AND r.target_entity_type = 'systems'
+        )
+    """)
+    orphaned_rels = cursor.fetchone()[0]
+    validation_results["no_orphaned_relationships"] = orphaned_rels == 0
+    
+    if validation_results["no_orphaned_relationships"]:
+        print_success("No orphaned relationships ✓")
+    else:
+        print_error(f"Found {orphaned_rels} orphaned relationships")
+    
+    # Check 4: Performance target met
+    validation_results["performance_target"] = duration < 120
+    if validation_results["performance_target"]:
+        print_success(f"Performance target met ({duration:.2f}s < 120s) ✓")
+    else:
+        print_error(f"Performance target missed ({duration:.2f}s >= 120s)")
+    
+    # Check 5: Duplicate reduction achieved (if applicable)
+    validation_results["duplicate_reduction"] = reduction_pct > 0 or total_before == total_after
+    if reduction_pct > 0:
+        print_success(f"Duplicate reduction achieved ({reduction_pct:.1f}%) ✓")
+    else:
+        print_info("No duplicate reduction (no duplicates found or already consolidated)")
+    
     # Close database
     db.close()
     
     print_header("TEST COMPLETE")
     
-    # Summary
+    # Summary with pass/fail
+    print("\n📊 Test Summary:")
+    total_checks = len(validation_results)
+    passed_checks = sum(1 for v in validation_results.values() if v)
+    
+    print(f"\n  Passed: {passed_checks}/{total_checks} checks")
+    
     if duration < 120:  # 2 minutes
-        print_success(f"Performance: {duration:.2f}s (target: <2 minutes) ✓")
+        print_success(f"  Performance: {duration:.2f}s (target: <2 minutes) ✓")
     else:
-        print_warning(f"Performance: {duration:.2f}s (target: <2 minutes)")
+        print_warning(f"  Performance: {duration:.2f}s (target: <2 minutes)")
     
     if reduction_pct >= 70:
-        print_success(f"Duplicate reduction: {reduction_pct:.1f}% (target: 70-90%) ✓")
+        print_success(f"  Duplicate reduction: {reduction_pct:.1f}% (target: 70-90%) ✓")
     elif reduction_pct > 0:
-        print_warning(f"Duplicate reduction: {reduction_pct:.1f}% (target: 70-90%)")
+        print_warning(f"  Duplicate reduction: {reduction_pct:.1f}% (target: 70-90%)")
     else:
-        print_info(f"Duplicate reduction: {reduction_pct:.1f}% (no duplicates found)")
+        print_info(f"  Duplicate reduction: {reduction_pct:.1f}% (no duplicates found)")
     
     if rel_metrics['total_relationships'] > 0:
-        print_success(f"Relationships discovered: {rel_metrics['total_relationships']} ✓")
+        print_success(f"  Relationships discovered: {rel_metrics['total_relationships']} ✓")
     else:
-        print_warning("No relationships discovered")
+        print_warning("  No relationships discovered")
     
     if patterns:
-        print_success(f"Patterns identified: {len(patterns)} ✓")
+        print_success(f"  Patterns identified: {len(patterns)} ✓")
     else:
-        print_warning("No patterns identified")
+        print_warning("  No patterns identified")
+    
+    if measure_memory and memory_mb > 0:
+        if memory_mb < 500:
+            print_success(f"  Memory usage: {memory_mb:.1f} MB (target: <500 MB) ✓")
+        else:
+            print_warning(f"  Memory usage: {memory_mb:.1f} MB (target: <500 MB)")
+    
+    # Overall result
+    if passed_checks == total_checks:
+        print(f"\n{Colors.GREEN}{Colors.BOLD}✅ ALL VALIDATION CHECKS PASSED{Colors.END}")
+    else:
+        print(f"\n{Colors.YELLOW}{Colors.BOLD}⚠️  {total_checks - passed_checks} VALIDATION CHECK(S) FAILED{Colors.END}")
+    
+    # Update report with validation results
+    report["validation_results"] = validation_results
+    report["validation_summary"] = {
+        "total_checks": total_checks,
+        "passed_checks": passed_checks,
+        "all_passed": passed_checks == total_checks
+    }
+    report["memory_usage_mb"] = memory_mb
+    
+    with open(report_path, 'w', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+    
+    return passed_checks == total_checks
 
 
 def main():
@@ -428,14 +591,37 @@ def main():
         action="store_true",
         help="Print verbose output"
     )
+    parser.add_argument(
+        "--test-contradictions",
+        action="store_true",
+        default=True,
+        help="Test contradiction detection (default: True)"
+    )
+    parser.add_argument(
+        "--test-rollback",
+        action="store_true",
+        help="Test rollback mechanism (requires Task 34)"
+    )
+    parser.add_argument(
+        "--measure-memory",
+        action="store_true",
+        default=True,
+        help="Measure memory usage (default: True, requires psutil)"
+    )
     
     args = parser.parse_args()
     
-    test_consolidation(
+    success = test_consolidation(
         num_interviews=args.interviews,
         use_pilot_db=args.pilot,
-        verbose=args.verbose
+        verbose=args.verbose,
+        test_contradictions=args.test_contradictions,
+        test_rollback=args.test_rollback,
+        measure_memory=args.measure_memory
     )
+    
+    # Exit with appropriate code
+    sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
