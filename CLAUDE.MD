@@ -32,6 +32,33 @@ Always consult `.codex/manifest.yaml` for authoritative phase status before codi
 
 ---
 
+## 2.5. Key Directory Structure
+
+```
+system0/
+├── intelligence_capture/     # Core extraction system
+│   ├── extractor.py         # 17 entity type extractors
+│   ├── processor.py         # Main pipeline orchestrator
+│   ├── consolidation_agent.py  # Entity deduplication
+│   ├── validation_agent.py  # Quality validation
+│   └── database.py          # SQLite schema (17 tables)
+├── tests/                    # Pytest test suite
+├── scripts/                  # Operational scripts
+│   ├── test_*.py           # Legacy test scripts
+│   ├── migrations/         # Database migrations
+│   └── evaluate_retrieval.py
+├── .kiro/specs/             # Requirements & task tracking
+│   ├── rag-2.0-enhancement/
+│   ├── knowledge-graph-consolidation/
+│   ├── extraction-completion/
+│   └── ontology-enhancement/
+├── data/                    # Interview transcripts & databases
+├── reports/                 # Analysis outputs & checkpoints
+└── docs/                    # Architecture & decisions
+```
+
+---
+
 ## 3. Guardrails & Compliance
 
 | Category | Rule |
@@ -111,7 +138,7 @@ Older docs live in `docs/archive/2025-11/` for reference only.
 ### Environment Setup
 ```bash
 cp .env.example .env
-pip install -r requirements.txt
+pip install -r intelligence_capture/requirements.txt
 ```
 
 ### Legacy Extraction / Consolidation (JSON transcripts)
@@ -139,6 +166,65 @@ sqlite3 intelligence.db "SELECT COUNT(*) FROM pain_points;"
 psql $DATABASE_URL -c "SELECT COUNT(*) FROM document_chunks;"
 ```
 
+### Testing
+
+#### Run All Tests
+```bash
+pytest tests/ -v
+```
+
+#### Run Specific Test File
+```bash
+pytest tests/test_consolidation_agent.py -v
+```
+
+#### Run Single Test Function
+```bash
+pytest tests/test_duplicate_detector.py::TestDuplicateDetector::test_exact_match -v
+```
+
+#### Run Tests with Coverage
+```bash
+pytest tests/ --cov=intelligence_capture --cov-report=html
+```
+
+#### Common Test Scripts (Legacy)
+```bash
+# Single interview extraction test
+python scripts/test_single_interview.py
+
+# Batch interview tests
+python scripts/test_batch_interviews.py --batch-size 5
+
+# Consolidation system test
+python scripts/test_consolidation.py
+```
+
+### Database Operations
+
+#### Switch Between Databases
+```bash
+# Legacy SQLite (current)
+export DB_TYPE=sqlite
+sqlite3 data/full_intelligence.db
+
+# PostgreSQL (RAG 2.0)
+export DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+psql $DATABASE_URL
+```
+
+#### Common Schema Checks
+```bash
+# List all tables
+sqlite3 intelligence.db ".tables"
+
+# Show table schema
+sqlite3 intelligence.db ".schema pain_points"
+
+# Check consolidation status
+sqlite3 intelligence.db "SELECT entity_type, COUNT(*) FROM consolidated_entities GROUP BY entity_type;"
+```
+
 ---
 
 ## 9. Testing & Quality Gates
@@ -153,6 +239,29 @@ psql $DATABASE_URL -c "SELECT COUNT(*) FROM document_chunks;"
 | Governance | Checkpoint bundles archived; approvals recorded in `model_reviews`. No prod toggle without approval. |
 
 CI must run relevant tests before merge; Orchestrator/Governance agents gate releases.
+
+---
+
+## 9.5. Development Workflow
+
+### Starting New Work
+1. `git checkout development && git pull`
+2. `git checkout -b feat/your-feature`
+3. Check `.kiro/specs/*/tasks.md` for current priorities
+4. Review relevant agent role in `.codex/agent_roles.yaml`
+
+### Before Committing
+1. Run relevant tests: `pytest tests/test_your_feature.py -v`
+2. Check code follows `.ai/CODING_STANDARDS.md`
+3. Update task status in `.kiro/specs/*/tasks.md`
+4. Generate checkpoint if required (see Guardrails §3)
+
+### Code Review Checklist
+- [ ] Spanish content not translated (`ensure_ascii=False` in JSON)
+- [ ] Type hints on all function signatures
+- [ ] UTF-8 encoding explicit in file operations
+- [ ] Tests pass with sanitized fixtures (no real client data)
+- [ ] Cost estimate logged if using LLM APIs
 
 ---
 
@@ -192,6 +301,7 @@ Track progress using `.kiro/specs/*/tasks.md` and report status in `reports/agen
 - `.codex/manifest.yaml` – initiatives, guardrails, checkpoints.
 - `.codex/agent_roles.yaml` – responsibilities & approvals.
 - `.kiro/specs/` – authoritative requirements, designs, tasks.
+- **`.ai/CODING_STANDARDS.md`** – **Python coding standards (Spanish-first, UTF-8, type hints, docstrings)**
 - `docs/RAG2_runbook.md` – operational procedures (Week 5 deliverable).
 
 **Last Updated:** November 9, 2025  

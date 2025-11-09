@@ -98,8 +98,10 @@ class IntelligenceProcessor:
                 openai_api_key=os.getenv("OPENAI_API_KEY")
             )
             validation_mode = "with LLM validation" if enable_llm_validation else "rule-based only"
+            print(f"🔍 ValidationAgent enabled: {validation_mode}")
         else:
             self.validation_agent = None
+            print("ℹ️  ValidationAgent disabled")
         
         # Initialize consolidation agent if enabled
         enable_consolidation = config.get("consolidation", {}).get("enabled", False)
@@ -121,10 +123,6 @@ class IntelligenceProcessor:
         else:
             self.consolidation_agent = None
             print("ℹ️  Knowledge Graph consolidation disabled")
-            print(f"🔍 ValidationAgent enabled: {validation_mode}")
-        else:
-            self.validation_agent = None
-            print("ℹ️  ValidationAgent disabled")
 
         # Monitor will be initialized when processing starts
         self.monitor = None
