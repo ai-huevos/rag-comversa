@@ -48,7 +48,24 @@ Document Sources → Document Processor → Chunking → Dual Storage → Agenti
 - **API Framework**: FastAPI (agent API endpoint)
 - **Document Processing**: PyPDF2, python-docx, Pillow, pytesseract
 
+## Related Documents
+
+- **Business Validation Objectives**: `docs/business_validation_objectives.md`
+- **System Agent Prompt & Context Packs**: `prompts/system_agent_prompt.md`
+
 ## Requirements
+
+### R0: Multi-Organization Context Registry
+
+**User Story**: As a Program Director, I want every asset tagged by organization and business context so that extracted intelligence can validate offers without cross-company leakage.
+
+#### Acceptance Criteria
+
+1. **R0.1** THE System SHALL maintain a `context_registry` table/service storing `org_id`, `business_unit`, `department`, `priority_tier`, and contact owners sourced from CONVERSA CLOUD.md.
+2. **R0.2** WHEN any document, transcript, or API payload enters the pipeline, THE System SHALL attach `org_id`, `business_context`, `source_type`, `source_format`, and consent metadata derived from the registry.
+3. **R0.3** THE System SHALL expose registry lookups to prompts/agents so retrieval can select the correct namespace before issuing queries.
+4. **R0.4** THE System SHALL enforce per-organization access controls for vector DB, knowledge graph, and checkpoints, preventing data from one client being surfaced to another.
+5. **R0.5** THE System SHALL support onboarding new organizations in <1 business day by adding entries to the registry without schema changes.
 
 ### R1: Multi-Format Document Ingestion Pipeline
 
@@ -69,6 +86,12 @@ Document Sources → Document Processor → Chunking → Dual Storage → Agenti
 6. **R1.6** THE System SHALL store original documents in `data/documents/originals/` with unique IDs and metadata in `documents` table
 
 7. **R1.7** THE System SHALL handle documents up to 50MB with appropriate error messages for oversized files
+
+8. **R1.8** WHEN a user uploads a CSV (24KB–24MB+), THE System SHALL parse with schema inference, preserve headers, detect delimiters, and capture numeric vs categorical column types in chunk metadata.
+
+9. **R1.9** WHEN a user uploads an XLSX file, THE System SHALL process multi-sheet workbooks, convert tables to markdown-like chunks, and maintain cell formatting for KPIs or financial statements.
+
+10. **R1.10** WHEN a WhatsApp conversation export (TXT/JSON) is provided, THE System SHALL parse timestamps, participant names, and message direction, linking media references to stored artifacts for downstream retrieval.
 
 ### R2: Mistral OCR Integration for Spanish Documents
 
@@ -204,6 +227,12 @@ Document Sources → Document Processor → Chunking → Dual Storage → Agenti
 6. **R7.6** THE System SHALL generate ingestion reports showing: documents processed, chunks created, entities extracted, relationships discovered
 
 7. **R7.7** THE System SHALL complete full ingestion pipeline for a 10-page PDF in under 2 minutes
+
+8. **R7.8** THE System SHALL publish ingestion events to a durable queue (`ingestion_events`) so additional workers can be added without modifying producers.
+
+9. **R7.9** THE System SHALL capture throughput metrics and demonstrate a scaling plan that moves from 10 documents/week to at least 10 documents/day within 90 days of deployment.
+
+10. **R7.10** THE System SHALL surface backlog alerts when upload volume exceeds available worker capacity for more than 24 hours.
 
 ### R8: Hybrid Search Combining Vector + Graph
 
@@ -369,6 +398,24 @@ Document Sources → Document Processor → Chunking → Dual Storage → Agenti
 
 7. **R15.7** THE System SHALL provide Spanish error messages and validation feedback
 
+### R16: Review Checkpoints & Model Governance
+
+**User Story**: As a Compliance Lead, I want checkpointed reviews of model outputs, so that executive teams can trust RAG insights before they influence the offer.
+
+#### Acceptance Criteria
+
+1. **R16.1** THE System SHALL capture checkpoints after ingestion, OCR, entity consolidation, retrieval evaluation, and pre-production agent responses, storing artifacts in `reports/checkpoints/{org_id}/{stage}/`.
+
+2. **R16.2** THE System SHALL maintain a `model_reviews` table recording reviewer, decision (approve/reject), notes, and linked checkpoint IDs.
+
+3. **R16.3** THE System SHALL block promotion of new models, prompts, or organizations until the latest checkpoints receive approval from designated owners (e.g., Patricia, Samuel, Armando, or delegates).
+
+4. **R16.4** THE System SHALL expose `/review/checkpoint?id=<uuid>` and CLI commands to retrieve checkpoint bundles for human QA.
+
+5. **R16.5** WHEN a checkpoint regresses (metric drop vs. R13 baseline), THE System SHALL automatically roll back to the last approved configuration and notify operators.
+
+6. **R16.6** THE System SHALL retain checkpoint history for at least 12 months to satisfy Bolivian Habeas Data response timelines.
+
 ## Success Criteria
 
 ### Functionality
@@ -398,6 +445,10 @@ Document Sources → Document Processor → Chunking → Dual Storage → Agenti
 - ✅ Agentic RAG integrates with existing extraction pipeline
 - ✅ FastAPI endpoint production-ready with auth and rate limiting
 - ✅ CLI supports interactive development and testing
+
+### Sustainability
+- ✅ Combined LLM/OCR/embedding spend stays between $500–$1,000 USD per month at current ingestion targets
+- ✅ Checkpoint approvals and retention meet Bolivian privacy obligations (Constitution Art. 21, Law 164, ATT guidance)
 - ✅ Comprehensive evaluation framework validates quality
 
 ## Implementation Phases
