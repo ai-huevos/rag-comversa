@@ -16,6 +16,8 @@
 | Full extraction (44) | `python intelligence_capture/run.py` | 20 min | $0.50-1.00 |
 | Validate results | `python scripts/validate_extraction.py` | 1 min | Free |
 | Generate report | `python scripts/generate_comprehensive_report.py` | 1 min | Free |
+| **Test consolidation (NEW)** | `python scripts/test_consolidation_with_interviews.py --interviews 10` | 1 min | Free |
+| **Consolidation dashboard (NEW)** | `python scripts/generate_consolidation_report.py` | 30s | Free |
 
 ---
 
@@ -523,6 +525,38 @@ ls -lh data/intelligence_backup_*.db
 **Impact**: Quality issues not prevented
 **Workaround**: Run validation script after extraction
 **Status**: ❌ Not fixed
+
+---
+
+## Knowledge Graph Consolidation (NEW)
+
+### Test Consolidation
+```bash
+# Test with 10 interviews
+python scripts/test_consolidation_with_interviews.py --interviews 10
+
+# Verbose output
+python scripts/test_consolidation_with_interviews.py --interviews 10 --verbose
+```
+
+### Validate Consolidation
+```bash
+# Run validation checks
+python scripts/validate_consolidation.py
+
+# Custom database
+python scripts/validate_consolidation.py --db-path data/pilot_intelligence.db
+```
+
+### Generate Dashboard
+```bash
+# Generate HTML dashboard
+python scripts/generate_consolidation_report.py
+
+# Opens in browser: reports/consolidation_dashboard_TIMESTAMP.html
+```
+
+**See**: `.kiro/specs/knowledge-graph-consolidation/tasks.md` for implementation status
 
 ---
 

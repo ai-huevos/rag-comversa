@@ -209,15 +209,62 @@ Overall Progress:
 
 ---
 
-### 6. Database (`intelligence_capture/database.py`)
+### 6. Knowledge Graph Consolidation (NEW - Phases 1-6 Complete)
+
+**Purpose**: Merge duplicate entities, discover relationships, identify patterns
+
+**Status**: ✅ Core system production-ready (50% complete - 26/52 tasks)
+
+**Components**:
+- `consolidation_agent.py` - Main orchestrator
+- `duplicate_detector.py` - Fuzzy + semantic matching
+- `entity_merger.py` - Merge logic with source tracking
+- `consensus_scorer.py` - Confidence calculation
+- `relationship_discoverer.py` - System→Pain, Process→System relationships
+- `pattern_recognizer.py` - Recurring patterns, problematic systems
+
+**Flow**:
+```python
+# After extraction
+entities = extractor.extract_all(interview)
+
+# Consolidate
+consolidated = consolidation_agent.consolidate_entities(entities, interview_id)
+# - Finds duplicates (fuzzy 70% + semantic 30%)
+# - Merges entities (tracks sources, detects contradictions)
+# - Calculates confidence (based on source agreement)
+# - Discovers relationships (co-occurrence in interviews)
+# - Identifies patterns (recurring issues, problematic systems)
+
+# Store consolidated entities
+database.insert(consolidated)
+```
+
+**Key Features**:
+- Duplicate detection: 0.85 similarity threshold (configurable per entity type)
+- Source tracking: `mentioned_in_interviews`, `source_count`
+- Consensus scoring: Base score + agreement bonus - contradiction penalty
+- Relationships: 4 types (causes, uses, measures, addresses)
+- Patterns: Recurring pains (3+ mentions), problematic systems (5+ mentions)
+
+**Pending**: PostgreSQL/Neo4j sync (Week 5), production hardening (Phases 7-12)
+
+**See**: `.kiro/specs/knowledge-graph-consolidation/` for full specs
+
+---
+
+### 7. Database (`intelligence_capture/database.py`)
 
 **Purpose**: SQLite storage with WAL mode
 
-**Schema**: 17 entity type tables + metadata
+**Schema**: 17 entity type tables + metadata + consolidation fields
 
 **Key Tables**:
 - `interviews` - Interview metadata
 - `pain_points` - Business problems
+- `relationships` - Entity connections (NEW)
+- `patterns` - Recurring issues (NEW)
+- `consolidation_audit` - Merge audit trail (NEW)
 - `processes` - Workflows
 - `systems` - Tools/software
 - `kpis` - Success metrics
