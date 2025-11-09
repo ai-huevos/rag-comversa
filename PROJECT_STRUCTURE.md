@@ -46,6 +46,7 @@ system0/
 │   ├── ARCHITECTURE.md           # System architecture
 │   ├── DECISIONS.md              # Architecture Decision Records (ADRs)
 │   ├── RUNBOOK.md                # Operations guide
+│   ├── CONSOLIDATION_RUNBOOK.md  # Consolidation operations runbook (NEW)
 │   ├── KNOWLEDGE_GRAPH_CONSOLIDATION.md # Consolidation guide (NEW)
 │   ├── ENSEMBLE_QUICKSTART.md    # Quick start for ensemble validation
 │   ├── ENSEMBLE_VALIDATION.md    # Full ensemble validation docs

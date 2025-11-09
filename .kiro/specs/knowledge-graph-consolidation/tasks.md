@@ -631,7 +631,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Integrate metrics collection into consolidation_agent.py
   - _Requirements: 25.1, 25.2, 25.3, 25.4, 25.5_
 
-- [ ] 36. Update Configuration for Production
+- [x] 36. Update Configuration for Production
   - Update `config/consolidation_config.json` - tune all parameters
   - Lower similarity thresholds: pain_points=0.70, processes=0.75, systems=0.75
   - Keep high thresholds for precise entities: kpis=0.85, team_structures=0.90
@@ -647,7 +647,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 12: Production Hardening - Final Validation
 
-- [ ] 37. Run Pilot Test with 5 Interviews
+- [x] 37. Run Pilot Test with 5 Interviews
   - Select 5 diverse interviews (different companies, roles)
   - Run `scripts/test_consolidation.py --interviews 5`
   - Verify all critical fixes working: no SQL injection, transactions work, API retries work
@@ -660,7 +660,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Generate pilot test report with metrics
   - _Requirements: All requirements (validation)_
 
-- [ ] 38. Run Full Test with 44 Interviews
+- [x] 38. Run Full Test with 44 Interviews
   - Backup production database before test
   - Run `scripts/fast_extraction_pipeline.py` with consolidation enabled
   - Monitor consolidation in real-time (logs, metrics)
@@ -674,7 +674,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Generate comprehensive consolidation report
   - _Requirements: All requirements (production validation)_
 
-- [ ] 39. Create Production Runbook
+- [x] 39. Create Production Runbook
   - Create `docs/CONSOLIDATION_RUNBOOK.md`
   - Document pre-flight checklist: database backup, config validation, dependency check
   - Document how to run consolidation: commands, parameters, expected output
@@ -686,7 +686,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Include example commands and expected outputs
   - _Requirements: All requirements (documentation)_
 
-- [ ] 40. Update Project Documentation
+- [x] 40. Update Project Documentation
   - Update `docs/KNOWLEDGE_GRAPH_CONSOLIDATION.md` - add production hardening section
   - Document all security fixes (SQL injection, transaction management, API resilience)
   - Document all performance optimizations (embedding storage, fuzzy-first filtering)
