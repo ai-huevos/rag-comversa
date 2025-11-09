@@ -43,6 +43,10 @@ system0/
 │           └── all_interviews.json  # 44 processed interviews
 │
 ├── docs/                         # All documentation
+│   ├── ARCHITECTURE.md           # System architecture
+│   ├── DECISIONS.md              # Architecture Decision Records (ADRs)
+│   ├── RUNBOOK.md                # Operations guide
+│   ├── KNOWLEDGE_GRAPH_CONSOLIDATION.md # Consolidation guide (NEW)
 │   ├── ENSEMBLE_QUICKSTART.md    # Quick start for ensemble validation
 │   ├── ENSEMBLE_VALIDATION.md    # Full ensemble validation docs
 │   ├── EXTRACTION_PIPELINE_GUIDE.md
@@ -63,7 +67,7 @@ system0/
 │   ├── SETUP_INSTRUCTIONS.md
 │   ├── SYSTEM_ARCHITECTURE_VISUAL.md
 │   ├── WHAT_WE_BUILT.md
-│   └── [other documentation files]
+│   └── archive/                  # Archived documentation
 │
 ├── examples/                     # Example code
 │   └── simple_rag_example.py
@@ -113,8 +117,9 @@ system0/
 │   ├── generate_extraction_report.py # Report generation
 │   ├── monitor_extraction.py     # Monitor extraction progress
 │   ├── test_consolidation.py     # Test consolidation (NEW)
+│   ├── test_consolidation_with_interviews.py # Test with real interviews (NEW)
 │   ├── validate_consolidation.py # Validate consolidation (NEW)
-│   └── generate_consolidation_report.py # Consolidation report (NEW)
+│   └── generate_consolidation_report.py # Consolidation dashboard (NEW)
 │
 ├── tests/                        # Unit and integration tests
 │   ├── test_automation_candidate_extraction.py
@@ -240,7 +245,12 @@ When adding new features that create files:
 ✅ Ensemble validation system integrated
 ✅ Parallel processing with WAL mode
 ✅ Rate limiting with exponential backoff
-🎯 Knowledge Graph Consolidation spec created (ready to implement)
+✅ **Knowledge Graph Consolidation (Phases 1-6 complete - 50%)**
+  - Core components: DuplicateDetector, EntityMerger, ConsensusScorer, RelationshipDiscoverer, PatternRecognizer
+  - Testing: Comprehensive unit and integration tests
+  - Validation: Scripts for validation and dashboard generation
+  - Documentation: Full guide in `docs/KNOWLEDGE_GRAPH_CONSOLIDATION.md`
+  - Pending: PostgreSQL/Neo4j sync (Week 5), production hardening
 
 ## Quick Reference
 
