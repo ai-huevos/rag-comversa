@@ -1,20 +1,81 @@
 # Implementation Plan: Knowledge Graph Consolidation System
 
+## 🎯 Current Status & Next Steps
+
+**Last Updated**: 2025-11-09  
+**Overall Progress**: 23/52 tasks complete (44%) - Phases 1-3, 7-10 DONE  
+**Current Focus**: RAG 2.0 Enhancement (Week 1/5) - Consolidation ready for Week 5 integration
+
+### 🏆 Major Achievements
+- **96x Performance Improvement**: Consolidation time reduced from 8+ hours to <5 minutes
+- **95% Cost Reduction**: API calls reduced from 1000+ to <50 per entity via fuzzy-first filtering + embedding cache
+- **Production-Ready Core**: Security hardening, transaction management, API resilience complete
+- **Comprehensive Testing**: Unit tests, integration tests with real data
+- **Code Quality**: Structured logging, improved contradiction detection, consensus scoring
+
+### Completed ✅ (23 tasks)
+- **Phase 1**: Foundation & Schema (tasks 0-3) ✅ COMPLETE
+- **Phase 2**: Core Components (tasks 4-7) ✅ COMPLETE
+- **Phase 3**: Database Integration (tasks 8-9) ✅ COMPLETE
+- **Phase 7**: Critical Security Fixes (tasks 19-21) ✅ COMPLETE
+- **Phase 8**: Performance Optimization (tasks 22-25) ✅ COMPLETE
+  - **Achievement**: 96x speedup, 95% cost reduction
+- **Phase 9**: Code Quality (tasks 26-29) ✅ COMPLETE
+- **Phase 10**: Testing & Validation (tasks 30-31) ✅ COMPLETE
+
+### In Progress 🟡 (0 tasks)
+- **RAG 2.0 Week 1**: Context Registry, DocumentProcessor, OCR, Spanish chunking
+
+### Pending ⏸️ (29 tasks)
+- **Phase 4**: Relationship Discovery & Pattern Recognition (tasks 10-12)
+- **Phase 5**: Testing & Validation (tasks 13-16)
+- **Phase 6**: Reporting & Documentation (tasks 17-18)
+- **Phase 10**: Performance Tests (task 32)
+- **Phase 11**: Rollback & Monitoring (tasks 34-36)
+- **Phase 12**: Final Validation (tasks 37-40)
+- **Phase 13**: RAG 2.0 Integration (tasks 41-48) - NEW, scheduled for Week 5
+- **Phase 14**: Production Deployment (tasks 49-52) - NEW, scheduled for Week 5+
+
+### Critical Path Forward 🚀
+
+**Option 1: Complete SQLite Consolidation Now (Recommended for immediate value)**
+1. **Week 1 (Now)**: Complete Phases 3-6 (tasks 8-18) - Integration, relationships, testing
+2. **Week 2**: Complete Phases 7-9 (tasks 19-29) - Security, performance, code quality  
+3. **Week 3**: Complete Phases 10-12 (tasks 30-40) - Testing, rollback, validation
+4. **Week 5 (RAG 2.0)**: Implement ConsolidationSync to PostgreSQL/Neo4j
+
+**Option 2: Wait for RAG 2.0 Week 5 (Aligned with overall timeline)**
+1. **Weeks 1-4**: Focus on RAG 2.0 intake, storage, agent, quality
+2. **Week 5**: Complete all consolidation phases + PostgreSQL/Neo4j sync together
+3. **Risk**: Delayed business intelligence value, no duplicate reduction for 4 weeks
+
+**Recommendation**: **Option 1** - Complete SQLite consolidation now to deliver immediate value (duplicate reduction, consensus scoring, relationship discovery), then sync to PostgreSQL/Neo4j in Week 5.
+
+---
+
 ## Overview
 
 This implementation plan breaks down the Knowledge Graph Consolidation System into discrete, actionable coding tasks. Each task builds incrementally on previous work, with the goal of transforming fragmented entity data (25x Excel, 12x SAP) into consolidated, consensus-driven intelligence (1x Excel with 25 sources, 1x SAP with 12 sources).
 
-**Current State Analysis:**
-- ✅ Database schema exists with v1.0 and v2.0 entity tables
-- ✅ Extraction pipeline fully functional
-- ✅ Ensemble validation system in place
-- ❌ No consolidation-specific columns (mentioned_in_interviews, source_count, etc.)
-- ❌ No consolidation components (DuplicateDetector, EntityMerger, etc.)
-- ❌ No consolidation configuration file
-- ❌ No relationship or pattern tables
+**Current State Analysis (Updated 2025-11-09):**
+- ✅ Database schema with consolidation fields (Phase 1 complete)
+- ✅ Core consolidation components implemented and tested (Phase 2 complete)
+- ✅ Database integration with processor (Phase 3 complete)
+- ✅ Production security hardening complete (Phase 7 complete)
+- ✅ Performance optimization complete - 96x speedup, 95% cost reduction (Phase 8 complete)
+- ✅ Code quality improvements complete (Phase 9 complete)
+- ✅ Comprehensive test suite (Phase 10 complete)
+- 🟡 Relationship discovery and pattern recognition components exist but not fully tested (Phase 4 pending)
+- 🟡 Validation scripts and reporting incomplete (Phase 5-6 pending)
+- 🟡 Rollback mechanism and monitoring not implemented (Phase 11 pending)
+- 🟡 Final production validation not run (Phase 12 pending)
+- ❌ RAG 2.0 integration pending (Phase 13, Week 5 of RAG 2.0 timeline)
+- ❌ Production deployment pending (Phase 14, Week 5+ of RAG 2.0 timeline)
 
-**Timeline**: 5 days
-**Goal**: Reduce duplicate entities by 80-95% and enable accurate business intelligence queries
+**Timeline**: Aligned with RAG 2.0 Week 5 (Consolidation & Automation)
+**Goal**: Reduce duplicate entities by 80-95%, sync to PostgreSQL+Neo4j, enable accurate business intelligence queries
+
+**Context**: This spec is part of the larger RAG 2.0 Enhancement initiative. Consolidation will be fully integrated in Week 5 when ConsolidationSync bridges SQLite → PostgreSQL/Neo4j.
 
 ---
 
@@ -41,7 +102,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
     - Migration strategy for consolidation
   - _Requirements: SOLID principles, maintainability, single source of truth_
 
-- [ ] 1. Create Database Schema for Consolidation
+- [x] 1. Create Database Schema for Consolidation
   - Add consolidation migration method to `intelligence_capture/database.py`
   - Create migration script at `intelligence_capture/migrations/add_consolidation_fields.py`
   - Add columns to all entity tables: `mentioned_in_interviews` (TEXT/JSON), `source_count` (INTEGER DEFAULT 1), `consensus_confidence` (REAL DEFAULT 1.0), `is_consolidated` (BOOLEAN DEFAULT false), `has_contradictions` (BOOLEAN DEFAULT false), `contradiction_details` (TEXT/JSON), `merged_entity_ids` (TEXT/JSON), `first_mentioned_date` (TEXT), `last_mentioned_date` (TEXT), `consolidated_at` (TIMESTAMP)
@@ -52,7 +113,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add indexes on entity name columns for fast duplicate detection
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 2. Create Consolidation Configuration
+- [x] 2. Create Consolidation Configuration
   - Create `config/consolidation_config.json` with similarity thresholds per entity type
   - Define thresholds: 0.85 default, 0.80 for pain_points/patterns, 0.90 for KPIs
   - Configure semantic vs name similarity weights (0.3 semantic, 0.7 name)
@@ -61,7 +122,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add max_candidates limit (10) for performance
   - _Requirements: 14.1, 14.2, 14.3, 14.4_
 
-- [ ] 3. Run Database Migration
+- [x] 3. Run Database Migration
   - Execute migration script to add consolidation columns
   - Backup existing database before migration
   - Run ALTER TABLE statements for all entity tables
@@ -75,7 +136,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 2: Core Consolidation Components
 
-- [ ] 4. Create DuplicateDetector Component
+- [x] 4. Create DuplicateDetector Component
   - Create `intelligence_capture/duplicate_detector.py`
   - Implement `DuplicateDetector` class with `__init__(config: Dict)`
   - Implement `find_duplicates(entity, entity_type, existing_entities)` - returns list of (entity, similarity_score) tuples
@@ -87,7 +148,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Return top 10 candidates sorted by similarity score
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [ ] 5. Create EntityMerger Component
+- [x] 5. Create EntityMerger Component
   - Create `intelligence_capture/entity_merger.py`
   - Implement `EntityMerger` class with `merge(new_entity, existing_entity, interview_id)` method
   - Implement `combine_descriptions(desc1, desc2)` - concatenates unique sentences, removes duplicates
@@ -98,7 +159,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Set is_consolidated = true on merged entity
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4, 3.5, 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 6. Create ConsensusScorer Component
+- [x] 6. Create ConsensusScorer Component
   - Create `intelligence_capture/consensus_scorer.py`
   - Implement `ConsensusScorer` class with `__init__(config: Dict)`
   - Implement `calculate_confidence(entity)` - returns float 0.0-1.0
@@ -110,7 +171,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Set needs_review = true if confidence < 0.6
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 7. Create KnowledgeConsolidationAgent
+- [x] 7. Create KnowledgeConsolidationAgent
   - Create `intelligence_capture/consolidation_agent.py`
   - Implement `KnowledgeConsolidationAgent` class with `__init__(db: IntelligenceDB, config: Dict)`
   - Initialize DuplicateDetector, EntityMerger, ConsensusScorer components
@@ -127,7 +188,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 3: Database Integration
 
-- [ ] 8. Update Database Storage Methods
+- [x] 8. Update Database Storage Methods
   - Modify `intelligence_capture/database.py`
   - Update all `insert_*` methods to check if entity already exists
   - If entity exists and is_consolidated = true, call `update_consolidated_entity()` instead of insert
@@ -138,7 +199,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add `get_entities_by_type(entity_type, limit=None)` for duplicate detection queries
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 9. Integrate Consolidation into Processor
+- [x] 9. Integrate Consolidation into Processor
   - Modify `intelligence_capture/processor.py`
   - Import KnowledgeConsolidationAgent
   - Initialize consolidation_agent in `__init__` if config.consolidation.enabled = true
@@ -276,7 +337,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 7: Production Hardening - Critical Security Fixes
 
-- [ ] 19. Fix SQL Injection Vulnerability
+- [x] 19. Fix SQL Injection Vulnerability
   - Add VALID_ENTITY_TYPES constant to `intelligence_capture/database.py` with all 17 entity types
   - Update `update_consolidated_entity()` method to validate entity_type against whitelist before SQL query
   - Raise ValueError with descriptive message if invalid entity_type provided
@@ -284,7 +345,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add unit tests for entity type validation (test valid types pass, invalid types raise ValueError)
   - _Requirements: 16.1, 16.2, 16.3_
 
-- [ ] 20. Implement Transaction Management
+- [x] 20. Implement Transaction Management
   - Update `intelligence_capture/consolidation_agent.py` - wrap `consolidate_entities()` in transaction
   - Add `self.db.conn.execute("BEGIN TRANSACTION")` at start of consolidation
   - Add `self.db.conn.commit()` after successful consolidation
@@ -294,7 +355,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Test transaction rollback with simulated failures
   - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
-- [ ] 21. Implement API Failure Resilience
+- [x] 21. Implement API Failure Resilience
   - Update `intelligence_capture/duplicate_detector.py` - add retry logic to `_get_embedding()`
   - Implement exponential backoff: sleep(2 ** attempt) for attempts 0, 1, 2
   - Add max_retries parameter (default 3) to `_get_embedding()`
@@ -309,7 +370,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 8: Production Hardening - Performance Optimization
 
-- [ ] 22. Add Embedding Storage to Database Schema
+- [x] 22. Add Embedding Storage to Database Schema
   - Update `intelligence_capture/migrations/add_consolidation_fields.py`
   - Add `embedding_vector BLOB` column to all 17 entity tables
   - Create index on embedding_vector for faster lookups (if supported by SQLite)
@@ -318,7 +379,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Run migration to add embedding_vector columns
   - _Requirements: 19.1, 19.2_
 
-- [ ] 23. Implement Embedding Pre-computation and Storage
+- [x] 23. Implement Embedding Pre-computation and Storage
   - Update `intelligence_capture/duplicate_detector.py` - store embeddings when generated
   - Modify `_get_embedding()` to check database for existing embedding before API call
   - If embedding exists in database, return it (cache hit)
@@ -329,7 +390,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Log cache hit rate (hits / total requests) for monitoring
   - _Requirements: 19.3, 19.4, 19.5_
 
-- [ ] 24. Implement Fuzzy-First Candidate Filtering
+- [x] 24. Implement Fuzzy-First Candidate Filtering
   - Update `intelligence_capture/duplicate_detector.py` - modify `find_duplicates()` algorithm
   - Stage 1: Use fuzzy matching to get top 10 candidates above threshold
   - Stage 2: Only compute semantic similarity for those 10 candidates (not all entities)
@@ -340,7 +401,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Verify 90-95% reduction in API calls compared to naive approach
   - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5_
 
-- [ ] 25. Optimize Database Queries with Indexes
+- [x] 25. Optimize Database Queries with Indexes
   - Update `intelligence_capture/migrations/add_consolidation_fields.py`
   - Add index on name column for all entity tables: `CREATE INDEX idx_{entity_type}_name ON {entity_type}(name)`
   - Add index on source_count for pattern queries: `CREATE INDEX idx_{entity_type}_source_count ON {entity_type}(source_count)`
@@ -354,7 +415,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 9: Production Hardening - Code Quality
 
-- [ ] 26. Implement Structured Logging Framework
+- [x] 26. Implement Structured Logging Framework
   - Create `intelligence_capture/logger.py` - configure Python logging framework
   - Set up rotating file handler: logs/consolidation.log with 10MB max size, 5 backups
   - Set up console handler with color-coded output (colorlog library)
@@ -369,7 +430,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add ERROR level logging for failures (transaction rollback, API failure)
   - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5_
 
-- [ ] 27. Improve Contradiction Detection Logic
+- [x] 27. Improve Contradiction Detection Logic
   - Update `intelligence_capture/entity_merger.py` - fix `detect_contradictions()` method
   - Check ALL attributes (union of both entities), not just common ones
   - Handle missing values correctly: new info vs no info vs contradiction
@@ -380,7 +441,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add unit tests for contradiction detection with various scenarios
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 28. Improve Entity Text Extraction
+- [x] 28. Improve Entity Text Extraction
   - Update `intelligence_capture/duplicate_detector.py` - fix `_get_entity_text()` method
   - Combine name AND description for better semantic matching (not just name)
   - Truncate description to 200 chars to avoid overwhelming name
@@ -389,7 +450,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add unit tests for text extraction with various entity structures
   - _Requirements: 1.4, 1.5_
 
-- [ ] 29. Fix Consensus Scoring Formula
+- [x] 29. Fix Consensus Scoring Formula
   - Update `intelligence_capture/consensus_scorer.py` - fix `calculate_confidence()` method
   - Adjust source_count_divisor based on total interviews: `min(config_divisor, total_interviews / 4)`
   - For 44 interviews, use divisor of 5 (20% = 1.0 confidence) instead of 10
@@ -404,7 +465,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
 
 ## Phase 10: Production Hardening - Testing & Validation
 
-- [ ] 30. Create Comprehensive Unit Test Suite
+- [x] 30. Create Comprehensive Unit Test Suite
   - Create `tests/test_duplicate_detector.py`
     - Test fuzzy matching with various similarity levels (0.5, 0.75, 0.85, 0.95)
     - Test name normalization for each entity type (systems, pain_points, processes)
@@ -429,7 +490,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
     - Test audit trail creation
   - _Requirements: 22.1, 22.2, 22.3_
 
-- [ ] 31. Create Integration Tests with Real Data
+- [x] 31. Create Integration Tests with Real Data
   - Create `tests/test_consolidation_integration.py`
   - Test case 1: Duplicate detection with real duplicates
     - Create entities: "Excel", "excel", "MS Excel", "Microsoft Excel"
@@ -633,3 +694,241 @@ After completing all tasks, the system should achieve:
 **Phase 12**: Tasks 37-40 (Final Validation) - NEW
 
 **Total**: 41 tasks (19 original + 22 production hardening)
+
+---
+
+## Phase 13: RAG 2.0 Integration (Week 5)
+
+**Context**: This phase aligns with RAG 2.0 Enhancement Week 5 (Consolidation & Automation). It bridges the SQLite consolidation system with the new PostgreSQL+pgvector and Neo4j infrastructure.
+
+- [ ] 41. Design ConsolidationSync Architecture
+  - Review RAG 2.0 PostgreSQL schema (document_chunks, embeddings tables)
+  - Review Neo4j schema (Graffiti entity/relationship model)
+  - Design bidirectional sync: SQLite ↔ PostgreSQL ↔ Neo4j
+  - Define sync triggers: on entity consolidation, on relationship discovery, on pattern recognition
+  - Design conflict resolution: SQLite as source of truth, PostgreSQL for vector search, Neo4j for graph queries
+  - Document sync frequency: real-time vs batch (recommend batch every 5 minutes)
+  - Create architecture diagram showing data flow
+  - _Requirements: RAG 2.0 tasks 19-21, consolidation requirements 1-25_
+
+- [ ] 42. Implement ConsolidationSync to PostgreSQL
+  - Create `intelligence_capture/consolidation_sync.py`
+  - Implement `ConsolidationSync` class with `__init__(sqlite_db, postgres_conn, neo4j_driver)`
+  - Implement `sync_consolidated_entities()` - copies consolidated entities from SQLite to PostgreSQL
+  - Map SQLite entity tables to PostgreSQL document_chunks table
+  - Generate embeddings for consolidated entities and store in pgvector
+  - Implement `sync_relationships()` - copies relationships to PostgreSQL relationship table
+  - Implement `sync_patterns()` - copies patterns to PostgreSQL patterns table
+  - Add incremental sync: only sync entities modified since last sync (use consolidated_at timestamp)
+  - Add transaction support: rollback PostgreSQL if sync fails mid-process
+  - Log all sync operations with entity counts and timing
+  - _Requirements: RAG 2.0 design §2, consolidation requirements 3.1-3.5_
+
+- [ ] 43. Implement ConsolidationSync to Neo4j
+  - Update `intelligence_capture/consolidation_sync.py`
+  - Implement `sync_to_neo4j()` - creates Neo4j nodes for consolidated entities
+  - Map entity types to Neo4j node labels: System, PainPoint, Process, KPI, etc.
+  - Set node properties: name, description, source_count, consensus_confidence, mentioned_in_interviews
+  - Implement `sync_relationships_to_neo4j()` - creates Neo4j relationships
+  - Map relationship types: CAUSES, USES, AFFECTS, DEPENDS_ON
+  - Set relationship properties: strength, mentioned_in_interviews
+  - Use Graffiti library for Neo4j operations (per RAG 2.0 design)
+  - Add Cypher query optimization: batch node/relationship creation
+  - Implement conflict resolution: merge nodes if already exist, update properties
+  - _Requirements: RAG 2.0 design §2.3, consolidation requirements 6.1-6.5_
+
+- [ ] 44. Create Ingestion Worker for Consolidation
+  - Create `intelligence_capture/ingestion_worker.py` (if not exists from RAG 2.0 tasks 3-5)
+  - Add consolidation mode: `--mode consolidation`
+  - Watch for new interviews in ingestion queue
+  - On new interview: extract → consolidate → sync to PostgreSQL/Neo4j
+  - Implement concurrency: process multiple interviews in parallel (default 4 workers)
+  - Add CostGuard integration: estimate cost before processing, throttle if >$900/month
+  - Add checkpoint creation: bundle consolidated entities for governance review
+  - Log all ingestion operations to `reports/ingestion_status.json`
+  - _Requirements: RAG 2.0 tasks 19-21, consolidation requirements 9.1-9.5_
+
+- [ ] 45. Create Consolidation Backlog Alert System
+  - Update `intelligence_capture/ingestion_worker.py`
+  - Implement `check_consolidation_backlog()` - counts unconsolidated entities
+  - Query SQLite for entities with is_consolidated = false
+  - Calculate backlog metrics: total_unconsolidated, oldest_unconsolidated_date, estimated_processing_time
+  - Send alert if backlog > 100 entities or oldest > 7 days
+  - Alert channels: log file, console, email (if configured)
+  - Generate backlog report: `reports/consolidation_backlog.json`
+  - Include recommendations: increase worker concurrency, adjust similarity thresholds
+  - _Requirements: RAG 2.0 task 21, consolidation requirements 10.1-10.5_
+
+- [ ] 46. Create Consolidation Runbook for RAG 2.0
+  - Create `docs/RAG2_CONSOLIDATION_RUNBOOK.md`
+  - Document end-to-end flow: Interview → Extraction → Consolidation → PostgreSQL → Neo4j
+  - Document how to start ingestion worker: `python intelligence_capture/ingestion_worker.py --mode consolidation --concurrency 4`
+  - Document how to monitor sync status: check `reports/ingestion_status.json`, query PostgreSQL/Neo4j
+  - Document how to handle sync failures: check logs, rollback PostgreSQL, retry sync
+  - Document how to query consolidated data: SQL examples for PostgreSQL, Cypher examples for Neo4j
+  - Document how to validate sync: compare entity counts SQLite vs PostgreSQL vs Neo4j
+  - Include troubleshooting guide: common errors, resolution steps
+  - Include performance tuning: batch size, concurrency, sync frequency
+  - _Requirements: RAG 2.0 task 21, consolidation requirements 25.1-25.5_
+
+- [ ] 47. Create Compliance Evidence for Consolidation
+  - Create `governance/consolidation_compliance.md`
+  - Document privacy compliance: Context Registry metadata preserved in sync
+  - Document cost compliance: CostGuard enforced, monthly budget tracked
+  - Document quality compliance: checkpoint bundles created, governance reviews logged
+  - Document security compliance: no cross-org leakage, consent metadata validated
+  - Document audit trail: consolidation_audit table, sync logs, rollback capability
+  - Include evidence artifacts: checkpoint bundles, review logs, cost reports
+  - Include approval records: governance sign-offs, production promotion approvals
+  - _Requirements: RAG 2.0 guardrails, consolidation requirements 15.1-15.5_
+
+- [ ] 48. Test End-to-End RAG 2.0 Consolidation Flow
+  - Create `tests/test_rag2_consolidation_integration.py`
+  - Test case 1: Extract interview → Consolidate → Sync to PostgreSQL
+    - Verify entity in SQLite with is_consolidated = true
+    - Verify entity in PostgreSQL document_chunks table
+    - Verify embedding in pgvector
+  - Test case 2: Consolidate → Sync to Neo4j
+    - Verify Neo4j node created with correct label and properties
+    - Verify relationships created in Neo4j
+  - Test case 3: Query consolidated data from PostgreSQL
+    - Test vector similarity search for consolidated entities
+    - Verify results include source_count and consensus_confidence
+  - Test case 4: Query consolidated data from Neo4j
+    - Test Cypher query for System → PainPoint relationships
+    - Verify relationship strength and mentioned_in_interviews
+  - Test case 5: Ingestion worker with consolidation mode
+    - Start worker, add interview to queue, verify end-to-end processing
+  - _Requirements: RAG 2.0 tasks 15-18, consolidation requirements 22.1-22.5_
+
+---
+
+## Phase 14: Production Deployment & Handoff
+
+**Context**: Final phase to deploy consolidated system to production and hand off to operations team.
+
+- [ ] 49. Create Production Deployment Checklist
+  - Create `docs/CONSOLIDATION_DEPLOYMENT_CHECKLIST.md`
+  - Pre-deployment checks:
+    - [ ] All tests passing (unit, integration, performance)
+    - [ ] Database backups created (SQLite, PostgreSQL, Neo4j)
+    - [ ] Configuration validated (consolidation_config.json, RAG 2.0 configs)
+    - [ ] CostGuard limits configured ($900 throttle, $1000 stop)
+    - [ ] Checkpoint approvals obtained from governance
+    - [ ] Runbooks reviewed and approved
+  - Deployment steps:
+    - [ ] Deploy ConsolidationSync to production
+    - [ ] Start ingestion worker with consolidation mode
+    - [ ] Monitor first 10 interviews for errors
+    - [ ] Validate sync to PostgreSQL and Neo4j
+    - [ ] Run consolidation validation script
+  - Post-deployment validation:
+    - [ ] Verify duplicate reduction (80-95%)
+    - [ ] Verify average consensus_confidence >= 0.75
+    - [ ] Verify relationships discovered
+    - [ ] Verify patterns identified
+    - [ ] Verify sync to PostgreSQL/Neo4j working
+  - Rollback plan:
+    - [ ] Stop ingestion worker
+    - [ ] Rollback PostgreSQL/Neo4j to pre-deployment state
+    - [ ] Restore SQLite from backup
+    - [ ] Document rollback reason and lessons learned
+  - _Requirements: All consolidation requirements, RAG 2.0 guardrails_
+
+- [ ] 50. Conduct Production Validation with 44 Interviews
+  - Run full extraction + consolidation + sync pipeline on all 44 interviews
+  - Monitor in real-time: logs, metrics, cost, performance
+  - Measure consolidation time (target: <5 minutes)
+  - Measure sync time to PostgreSQL (target: <2 minutes)
+  - Measure sync time to Neo4j (target: <3 minutes)
+  - Verify duplicate reduction: systems (48 → 3), pain_points (expect 70-90% reduction)
+  - Verify average consensus_confidence >= 0.75
+  - Verify relationships discovered (expect 100+ relationships)
+  - Verify patterns identified (expect 10+ recurring patterns)
+  - Verify PostgreSQL entity count matches SQLite consolidated count
+  - Verify Neo4j node count matches SQLite consolidated count
+  - Generate comprehensive production validation report
+  - _Requirements: All consolidation requirements, RAG 2.0 requirements_
+
+- [ ] 51. Create Operations Handoff Package
+  - Create `docs/CONSOLIDATION_OPERATIONS_HANDOFF.md`
+  - Include system overview: architecture, components, data flow
+  - Include operational procedures: start/stop, monitoring, troubleshooting
+  - Include runbooks: RAG2_CONSOLIDATION_RUNBOOK.md, CONSOLIDATION_RUNBOOK.md
+  - Include monitoring dashboards: metrics to track, alert thresholds
+  - Include escalation procedures: who to contact for what issues
+  - Include maintenance procedures: database backups, log rotation, cost monitoring
+  - Include disaster recovery: backup/restore procedures, rollback steps
+  - Conduct handoff meeting with operations team
+  - Obtain sign-off from operations team lead
+  - _Requirements: All consolidation requirements, RAG 2.0 task 21_
+
+- [ ] 52. Update Project Documentation for Consolidation
+  - Update `CLAUDE.MD` - mark consolidation as production-ready, update system snapshot
+  - Update `docs/ARCHITECTURE.md` - add consolidation architecture diagram, update data flow
+  - Update `docs/DECISIONS.md` - add ADR for consolidation approach, sync strategy
+  - Update `docs/RUNBOOK.md` - add consolidation operations section
+  - Update `PROJECT_STRUCTURE.md` - add consolidation files and directories
+  - Create `docs/CONSOLIDATION_FINAL_REPORT.md` - comprehensive summary:
+    - Project goals and success criteria
+    - Implementation timeline and effort
+    - Before/after metrics (duplicate reduction, consensus scores, relationships)
+    - Lessons learned and recommendations
+    - Future enhancements (advanced pattern recognition, ML-based duplicate detection)
+  - Archive old consolidation docs to `docs/archive/2025-11/`
+  - _Requirements: All consolidation requirements_
+
+---
+
+## Updated Task Execution Order
+
+**Phase 1**: Tasks 0-3 (Foundation & Schema) - ✅ COMPLETED
+**Phase 2**: Tasks 4-7 (Core Components) - ✅ COMPLETED
+**Phase 3**: Tasks 8-9 (Database Integration) - ✅ COMPLETED
+**Phase 4**: Tasks 10-12 (Relationships & Patterns) - ⏸️ PENDING (components exist, needs testing)
+**Phase 5**: Tasks 13-16 (Testing & Validation) - ⏸️ PENDING
+**Phase 6**: Tasks 17-18 (Reporting & Documentation) - ⏸️ PENDING
+**Phase 7**: Tasks 19-21 (Critical Security Fixes) - ✅ COMPLETED
+**Phase 8**: Tasks 22-25 (Performance Optimization) - ✅ COMPLETED (96x speedup achieved)
+**Phase 9**: Tasks 26-29 (Code Quality) - ✅ COMPLETED
+**Phase 10**: Tasks 30-33 (Testing & Validation) - 🟡 PARTIAL (30-31 done, 32-33 pending)
+**Phase 11**: Tasks 34-36 (Rollback & Monitoring) - ⏸️ PENDING
+**Phase 12**: Tasks 37-40 (Final Validation) - ⏸️ PENDING
+**Phase 13**: Tasks 41-48 (RAG 2.0 Integration) - 📋 NEW - Week 5
+**Phase 14**: Tasks 49-52 (Production Deployment) - 📋 NEW - Week 5+
+
+**Total**: 52 tasks | **Completed**: 23 (44%) | **Pending**: 29 (56%)
+
+---
+
+## Recommended Execution Strategy
+
+### Current Status: 44% Complete (23/52 tasks)
+**✅ DONE**: Phases 1-3, 7-10 (core consolidation + production hardening)  
+**⏸️ REMAINING**: Phases 4-6, 11-12 (relationships, validation, rollback) + Phases 13-14 (RAG 2.0 integration)
+
+### Strategy A: Complete Remaining SQLite Work Now (1-2 weeks)
+**Week 1**: Complete Phases 4-6 (tasks 10-18) - Relationships, patterns, testing, reporting  
+**Week 2**: Complete Phases 11-12 (tasks 32-40) - Performance tests, rollback, final validation  
+**Week 5 (RAG 2.0)**: Phases 13-14 (tasks 41-52) - PostgreSQL/Neo4j sync, deployment  
+
+**Pros**: Full SQLite consolidation ready, immediate business value, validated before RAG 2.0  
+**Cons**: Parallel work with RAG 2.0 Weeks 1-2
+
+### Strategy B: Wait for RAG 2.0 Week 5 (4 weeks)
+**Weeks 1-4**: Focus exclusively on RAG 2.0 intake, storage, agent, quality  
+**Week 5**: Complete remaining consolidation (tasks 10-18, 32-52) + RAG 2.0 integration together  
+
+**Pros**: Aligned timeline, no context switching, single integration effort  
+**Cons**: Delayed business value, untested consolidation logic until Week 5
+
+### Strategy C: Minimal Completion Now (Recommended)
+**Week 1 (Now)**: Complete Phase 4 (tasks 10-12) - Relationship discovery, pattern recognition  
+**Week 1-2**: Complete Phase 5-6 (tasks 13-18) - Validation scripts, reporting  
+**Weeks 2-4**: Focus on RAG 2.0 Weeks 2-4  
+**Week 5 (RAG 2.0)**: Complete Phases 11-14 (tasks 32-52) - Rollback, monitoring, RAG 2.0 integration, deployment  
+
+**Pros**: Validates full consolidation pipeline, minimal parallel work, ready for RAG 2.0  
+**Cons**: Some context switching, rollback/monitoring deferred
+
+**Recommendation**: **Strategy C** - Complete Phases 4-6 now (11 tasks) to validate end-to-end consolidation, then focus on RAG 2.0. Complete production deployment in Week 5.
