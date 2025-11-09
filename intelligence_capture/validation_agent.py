@@ -326,10 +326,146 @@ Answer with YES or NO only."""
 
         return summary
 
+    def validate_consistency(self, entities: Dict[str, List[Dict]]) -> List[Dict[str, Any]]:
+        """
+        Validate consistency across entity relationships
+        Checks if entity references point to existing entities
+
+        Args:
+            entities: Dictionary of extracted entities
+
+        Returns:
+            List of consistency issues found
+        """
+        issues = []
+
+        # Build lookup indexes for faster searching
+        system_names = {s.get("name", "").lower() for s in entities.get("systems", [])}
+        system_names.update({s.get("system_name", "").lower() for s in entities.get("systems_v2", [])})
+
+        process_names = {p.get("name", "").lower() for p in entities.get("processes", [])}
+        process_names.update({p.get("process_name", "").lower() for p in entities.get("processes_v2", [])})
+
+        # Check 1: Pain points referencing non-existent systems
+        for pain_point in entities.get("pain_points", []):
+            related_systems = pain_point.get("related_systems", [])
+            if isinstance(related_systems, list):
+                for system_name in related_systems:
+                    if system_name and system_name.lower() not in system_names:
+                        issues.append({
+                            "type": "missing_reference",
+                            "entity_type": "pain_point",
+                            "entity_name": pain_point.get("name", "Unknown"),
+                            "issue": f"References non-existent system: {system_name}",
+                            "severity": "warning"
+                        })
+
+        # Check 2: Automation candidates referencing non-existent processes
+        for automation in entities.get("automation_candidates", []):
+            process_name = automation.get("process_name", "")
+            if process_name and process_name.lower() not in process_names:
+                issues.append({
+                    "type": "missing_reference",
+                    "entity_type": "automation_candidate",
+                    "entity_name": automation.get("name", "Unknown"),
+                    "issue": f"References non-existent process: {process_name}",
+                    "severity": "warning"
+                })
+
+        # Check 3: Data flows referencing non-existent systems
+        for flow in entities.get("data_flows", []):
+            source = flow.get("source_system", "")
+            target = flow.get("target_system", "")
+
+            if source and source.lower() not in system_names:
+                issues.append({
+                    "type": "missing_reference",
+                    "entity_type": "data_flow",
+                    "entity_name": flow.get("data_type", "Unknown flow"),
+                    "issue": f"Source system not found: {source}",
+                    "severity": "warning"
+                })
+
+            if target and target.lower() not in system_names:
+                issues.append({
+                    "type": "missing_reference",
+                    "entity_type": "data_flow",
+                    "entity_name": flow.get("data_type", "Unknown flow"),
+                    "issue": f"Target system not found: {target}",
+                    "severity": "warning"
+                })
+
+        return issues
+
+    def detect_hallucinations(
+        self,
+        entities: Dict[str, List[Dict]],
+        interview_text: str,
+        threshold: float = 0.5
+    ) -> List[Dict[str, Any]]:
+        """
+        Detect potential hallucinations by checking if entity details
+        have support in the source interview text
+
+        Args:
+            entities: Extracted entities
+            interview_text: Original interview text
+            threshold: Minimum keyword overlap ratio (0.0-1.0)
+
+        Returns:
+            List of potential hallucination issues
+        """
+        issues = []
+        interview_lower = interview_text.lower()
+
+        # Check critical entity types for hallucination
+        critical_types = ["pain_points", "systems", "processes", "automation_candidates"]
+
+        for entity_type in critical_types:
+            for entity in entities.get(entity_type, []):
+                name = entity.get("name", "")
+                description = entity.get("description", "")
+
+                if not name and not description:
+                    continue
+
+                # Extract keywords from entity (split and filter)
+                keywords = []
+                if name:
+                    keywords.extend([w.strip().lower() for w in name.split() if len(w) > 3])
+                if description:
+                    keywords.extend([w.strip().lower() for w in description.split() if len(w) > 3])
+
+                # Remove duplicates and common words
+                common_words = {"the", "this", "that", "with", "from", "have", "been", "will", "what", "when", "where"}
+                keywords = [k for k in set(keywords) if k not in common_words]
+
+                if not keywords:
+                    continue
+
+                # Count how many keywords appear in interview
+                matches = sum(1 for keyword in keywords if keyword in interview_lower)
+                overlap_ratio = matches / len(keywords) if keywords else 0.0
+
+                # Flag as potential hallucination if overlap is too low
+                if overlap_ratio < threshold:
+                    issues.append({
+                        "type": "potential_hallucination",
+                        "entity_type": entity_type,
+                        "entity_name": name or "Unknown",
+                        "issue": f"Low text support: {int(overlap_ratio*100)}% keywords found in interview",
+                        "severity": "warning" if overlap_ratio > 0.2 else "error",
+                        "overlap_ratio": overlap_ratio
+                    })
+
+        return issues
+
     def print_validation_report(
         self,
         completeness_results: Dict[str, CompletenessResult],
-        quality_results: Dict[str, List[ValidationResult]]
+        quality_results: Dict[str, List[ValidationResult]],
+        consistency_issues: List[Dict] = None,
+        hallucination_issues: List[Dict] = None
     ):
         """Print human-readable validation report"""
 
@@ -355,5 +491,34 @@ Answer with YES or NO only."""
         print(f"  Invalid: {summary['quality']['invalid_entities']}")
         print(f"  Errors: {summary['quality']['total_errors']}")
         print(f"  Warnings: {summary['quality']['total_warnings']}")
+
+        if consistency_issues is not None:
+            print(f"\n🔗 Consistency Check:")
+            print(f"  Total issues: {len(consistency_issues)}")
+            if consistency_issues:
+                errors = [i for i in consistency_issues if i.get("severity") == "error"]
+                warnings = [i for i in consistency_issues if i.get("severity") == "warning"]
+                print(f"  Errors: {len(errors)}")
+                print(f"  Warnings: {len(warnings)}")
+
+                if errors:
+                    print(f"\n  Critical consistency issues:")
+                    for issue in errors[:5]:  # Show first 5
+                        print(f"    - {issue['entity_type']}: {issue['issue']}")
+
+        if hallucination_issues is not None:
+            print(f"\n🎭 Hallucination Detection:")
+            print(f"  Total potential hallucinations: {len(hallucination_issues)}")
+            if hallucination_issues:
+                errors = [i for i in hallucination_issues if i.get("severity") == "error"]
+                warnings = [i for i in hallucination_issues if i.get("severity") == "warning"]
+                print(f"  High confidence: {len(errors)}")
+                print(f"  Low confidence: {len(warnings)}")
+
+                if errors:
+                    print(f"\n  High confidence hallucinations:")
+                    for issue in errors[:3]:  # Show first 3
+                        print(f"    - {issue['entity_type']}: {issue['entity_name']}")
+                        print(f"      {issue['issue']}")
 
         print(f"\n{'='*70}")
