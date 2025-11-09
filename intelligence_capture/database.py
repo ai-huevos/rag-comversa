@@ -1349,24 +1349,48 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         """)
         
         # Entity name indexes for duplicate detection (if not already exist)
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_pain_points_description 
-            ON pain_points(description)
-        """)
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_processes_name 
-            ON processes(name)
-        """)
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_systems_name_consolidated 
-            ON systems(name)
-        """)
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_kpis_name 
-            ON kpis(name)
-        """)
+        print("  Creating entity name indexes for duplicate detection...")
+        for table in entity_tables:
+            # Check if table exists
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                (table,)
+            )
+            if not cursor.fetchone():
+                continue
+            
+            # Create name index (for fuzzy matching)
+            cursor.execute(f"""
+                CREATE INDEX IF NOT EXISTS idx_{table}_name 
+                ON {table}(name)
+            """)
+            
+            # Create source_count index (for pattern queries)
+            cursor.execute(f"""
+                CREATE INDEX IF NOT EXISTS idx_{table}_source_count 
+                ON {table}(source_count)
+            """)
+            
+            # Create consensus_confidence index (for quality filtering)
+            cursor.execute(f"""
+                CREATE INDEX IF NOT EXISTS idx_{table}_confidence 
+                ON {table}(consensus_confidence)
+            """)
+            
+            # Create is_consolidated index (for consolidation queries)
+            cursor.execute(f"""
+                CREATE INDEX IF NOT EXISTS idx_{table}_consolidated 
+                ON {table}(is_consolidated)
+            """)
+            
+            # Create composite index for common query pattern
+            cursor.execute(f"""
+                CREATE INDEX IF NOT EXISTS idx_{table}_consolidated_confidence 
+                ON {table}(is_consolidated, consensus_confidence)
+            """)
         
-        print("  ✓ Created all indexes")
+        print("  ✓ Created all entity indexes")
+        print("  ✓ Created all consolidation indexes")
         
         self.conn.commit()
         print("\n✅ Knowledge Graph consolidation schema added successfully")
