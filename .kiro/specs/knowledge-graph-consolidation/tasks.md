@@ -573,7 +573,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
     - Verify database rolled back to consistent state
   - _Requirements: 22.4_
 
-- [ ] 32. Create Performance Tests
+- [x] 32. Create Performance Tests
   - Create `tests/test_consolidation_performance.py`
   - Test case 1: Consolidation time with 1000 entities
     - Generate 1000 test entities with 10% duplicates
