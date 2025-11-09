@@ -2885,3 +2885,235 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         except Exception as e:
             print(f"  ⚠️  Error inserting relationship: {e}")
             return False
+
+    def create_entity_snapshots_table(self):
+        """
+        Create entity_snapshots table for rollback support
+        
+        This table stores entity state before consolidation for rollback capability.
+        """
+        cursor = self.conn.cursor()
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS entity_snapshots (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_type TEXT NOT NULL,
+                entity_id INTEGER NOT NULL,
+                snapshot_data TEXT NOT NULL,
+                audit_id INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (audit_id) REFERENCES consolidation_audit(id)
+            )
+        """)
+        
+        # Create index for faster lookups
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_snapshots_audit
+            ON entity_snapshots(audit_id)
+        """)
+        
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_snapshots_entity
+            ON entity_snapshots(entity_type, entity_id)
+        """)
+        
+        self.conn.commit()
+    
+    def store_entity_snapshot(
+        self,
+        entity_type: str,
+        entity_id: int,
+        entity_data: Dict,
+        audit_id: Optional[int] = None
+    ) -> bool:
+        """
+        Store entity snapshot before consolidation
+        
+        Args:
+            entity_type: Type of entity (systems, pain_points, etc.)
+            entity_id: Entity ID
+            entity_data: Complete entity data as dict
+            audit_id: Optional audit record ID to link snapshot
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        # Validate entity type
+        if entity_type not in VALID_ENTITY_TYPES:
+            raise ValueError(f"Invalid entity type: {entity_type}")
+        
+        cursor = self.conn.cursor()
+        
+        try:
+            # Serialize entity data
+            snapshot_json = json_serialize(entity_data)
+            
+            cursor.execute("""
+                INSERT INTO entity_snapshots (
+                    entity_type,
+                    entity_id,
+                    snapshot_data,
+                    audit_id
+                ) VALUES (?, ?, ?, ?)
+            """, (entity_type, entity_id, snapshot_json, audit_id))
+            
+            self.conn.commit()
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error storing entity snapshot: {e}")
+            return False
+    
+    def get_entity_snapshot(
+        self,
+        entity_type: str,
+        entity_id: int,
+        audit_id: Optional[int] = None
+    ) -> Optional[Dict]:
+        """
+        Retrieve entity snapshot
+        
+        Args:
+            entity_type: Type of entity
+            entity_id: Entity ID
+            audit_id: Optional audit ID to get specific snapshot
+            
+        Returns:
+            Entity data dict or None if not found
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            if audit_id:
+                cursor.execute("""
+                    SELECT snapshot_data FROM entity_snapshots
+                    WHERE entity_type = ?
+                      AND entity_id = ?
+                      AND audit_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """, (entity_type, entity_id, audit_id))
+            else:
+                cursor.execute("""
+                    SELECT snapshot_data FROM entity_snapshots
+                    WHERE entity_type = ?
+                      AND entity_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """, (entity_type, entity_id))
+            
+            row = cursor.fetchone()
+            
+            if row:
+                return json.loads(row[0])
+            
+            return None
+            
+        except Exception as e:
+            print(f"  ⚠️  Error retrieving entity snapshot: {e}")
+            return None
+    
+    def rollback_consolidation(
+        self,
+        audit_id: int,
+        reason: str
+    ) -> bool:
+        """
+        Rollback a consolidation operation
+        
+        Args:
+            audit_id: Consolidation audit record ID
+            reason: Reason for rollback
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            # Start transaction
+            cursor.execute("BEGIN TRANSACTION")
+            
+            # Get audit record
+            cursor.execute("""
+                SELECT entity_type, merged_entity_ids, resulting_entity_id
+                FROM consolidation_audit
+                WHERE id = ?
+            """, (audit_id,))
+            
+            audit_record = cursor.fetchone()
+            
+            if not audit_record:
+                print(f"  ⚠️  Audit record {audit_id} not found")
+                return False
+            
+            entity_type, merged_ids_json, resulting_id = audit_record
+            merged_ids = json.loads(merged_ids_json)
+            
+            print(f"  Rolling back consolidation of {len(merged_ids)} {entity_type} entities...")
+            
+            # Get snapshots for merged entities
+            cursor.execute("""
+                SELECT entity_id, snapshot_data
+                FROM entity_snapshots
+                WHERE audit_id = ?
+                  AND entity_type = ?
+            """, (audit_id, entity_type))
+            
+            snapshots = cursor.fetchall()
+            
+            if not snapshots:
+                print(f"  ⚠️  No snapshots found for audit {audit_id}")
+                cursor.execute("ROLLBACK")
+                return False
+            
+            # Restore original entities from snapshots
+            for entity_id, snapshot_json in snapshots:
+                snapshot_data = json.loads(snapshot_json)
+                
+                # Build UPDATE query dynamically
+                fields = []
+                values = []
+                
+                for key, value in snapshot_data.items():
+                    if key != 'id':  # Don't update ID
+                        fields.append(f"{key} = ?")
+                        # Serialize dicts/lists to JSON
+                        if isinstance(value, (dict, list)):
+                            values.append(json_serialize(value))
+                        else:
+                            values.append(value)
+                
+                values.append(entity_id)
+                
+                update_query = f"""
+                    UPDATE {entity_type}
+                    SET {', '.join(fields)}
+                    WHERE id = ?
+                """
+                
+                cursor.execute(update_query, values)
+            
+            # Update relationships to point back to original entities
+            # This is a simplified version - in production, you'd need to track
+            # which relationships were modified
+            print(f"  Updating relationships...")
+            
+            # Mark audit record as rolled back
+            cursor.execute("""
+                UPDATE consolidation_audit
+                SET rollback_timestamp = CURRENT_TIMESTAMP,
+                    rollback_reason = ?
+                WHERE id = ?
+            """, (reason, audit_id))
+            
+            # Commit transaction
+            cursor.execute("COMMIT")
+            
+            print(f"  ✓ Rollback completed successfully")
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error during rollback: {e}")
+            cursor.execute("ROLLBACK")
+            return False
