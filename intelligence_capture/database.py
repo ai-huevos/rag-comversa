@@ -2806,3 +2806,82 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         except Exception as e:
             print(f"  ⚠️  Error fetching entities without embeddings: {e}")
             return []
+
+    def insert_relationship(self, relationship: Dict) -> bool:
+        """
+        Insert a relationship between entities
+        
+        Args:
+            relationship: Dict with relationship data
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            # Check if relationship already exists
+            cursor.execute("""
+                SELECT id, mentioned_in_interviews FROM relationships
+                WHERE source_entity_id = ?
+                  AND source_entity_type = ?
+                  AND relationship_type = ?
+                  AND target_entity_id = ?
+                  AND target_entity_type = ?
+            """, (
+                relationship.get("source_entity_id"),
+                relationship.get("source_entity_type"),
+                relationship.get("relationship_type"),
+                relationship.get("target_entity_id"),
+                relationship.get("target_entity_type")
+            ))
+            
+            existing = cursor.fetchone()
+            
+            if existing:
+                # Update existing relationship - add interview to mentioned_in_interviews
+                rel_id, mentioned_json = existing
+                mentioned = json.loads(mentioned_json) if mentioned_json else []
+                
+                # Parse new interview IDs
+                new_interviews = json.loads(relationship.get("mentioned_in_interviews", "[]"))
+                
+                # Add new interviews if not already present
+                for interview_id in new_interviews:
+                    if interview_id not in mentioned:
+                        mentioned.append(interview_id)
+                
+                cursor.execute("""
+                    UPDATE relationships
+                    SET mentioned_in_interviews = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                """, (json_serialize(mentioned), rel_id))
+            else:
+                # Insert new relationship
+                cursor.execute("""
+                    INSERT INTO relationships (
+                        source_entity_id,
+                        source_entity_type,
+                        relationship_type,
+                        target_entity_id,
+                        target_entity_type,
+                        strength,
+                        mentioned_in_interviews
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    relationship.get("source_entity_id"),
+                    relationship.get("source_entity_type"),
+                    relationship.get("relationship_type"),
+                    relationship.get("target_entity_id"),
+                    relationship.get("target_entity_type"),
+                    relationship.get("strength", 1.0),
+                    relationship.get("mentioned_in_interviews", "[]")
+                ))
+            
+            self.conn.commit()
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error inserting relationship: {e}")
+            return False

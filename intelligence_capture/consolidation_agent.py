@@ -18,6 +18,7 @@ from pathlib import Path
 from intelligence_capture.duplicate_detector import DuplicateDetector
 from intelligence_capture.entity_merger import EntityMerger
 from intelligence_capture.consensus_scorer import ConsensusScorer
+from intelligence_capture.relationship_discoverer import RelationshipDiscoverer
 from intelligence_capture.logger import get_logger
 
 # Initialize logger
@@ -52,6 +53,7 @@ class KnowledgeConsolidationAgent:
         self.duplicate_detector = DuplicateDetector(config, openai_api_key, db)
         self.entity_merger = EntityMerger()
         self.consensus_scorer = ConsensusScorer(config)
+        self.relationship_discoverer = RelationshipDiscoverer(db)
         
         # Statistics
         self.stats = {
@@ -59,6 +61,7 @@ class KnowledgeConsolidationAgent:
             "duplicates_found": 0,
             "entities_merged": 0,
             "contradictions_detected": 0,
+            "relationships_discovered": 0,
             "processing_time": 0.0
         }
     
@@ -105,6 +108,19 @@ class KnowledgeConsolidationAgent:
                     entity_type,
                     interview_id
                 )
+            
+            # Discover relationships between consolidated entities
+            logger.info("Discovering relationships between entities")
+            relationships = self.relationship_discoverer.discover_relationships(
+                consolidated,
+                interview_id
+            )
+            
+            # Store relationships in database
+            for relationship in relationships:
+                self.db.insert_relationship(relationship)
+            
+            self.stats["relationships_discovered"] = len(relationships)
             
             # Commit transaction if all operations succeeded
             self.db.conn.commit()
@@ -374,6 +390,7 @@ class KnowledgeConsolidationAgent:
         logger.info(f"  Duplicates found: {self.stats['duplicates_found']}")
         logger.info(f"  Entities merged: {self.stats['entities_merged']}")
         logger.info(f"  Contradictions detected: {self.stats['contradictions_detected']}")
+        logger.info(f"  Relationships discovered: {self.stats['relationships_discovered']}")
         logger.info(f"  Processing time: {self.stats['processing_time']:.2f}s")
         
         if self.stats["entities_processed"] > 0:

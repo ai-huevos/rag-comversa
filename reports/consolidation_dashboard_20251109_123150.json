@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-11-09T12:31:50.058899",
+  "database": "/Users/tatooine/Documents/Development/Comversa/system0/data/full_intelligence.db",
+  "entity_counts": {
+    "pain_points": {
+      "before": 126,
+      "after": 126,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "processes": {
+      "before": 15,
+      "after": 15,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "systems": {
+      "before": 162,
+      "after": 162,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "kpis": {
+      "before": 8,
+      "after": 8,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "automation_candidates": {
+      "before": 138,
+      "after": 138,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "inefficiencies": {
+      "before": 8,
+      "after": 8,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    }
+  },
+  "top_entities": {},
+  "confidence_distribution": {
+    "0.0-0.2": 0,
+    "0.2-0.4": 0,
+    "0.4-0.6": 0,
+    "0.6-0.8": 0,
+    "0.8-1.0": 457
+  },
+  "relationships": [],
+  "patterns": [
+    {
+      "type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 2,
+      "frequency": 0.568,
+      "source_count": 25,
+      "high_priority": true,
+      "description": "Problematic system: Excel"
+    },
+    {
+      "type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 32,
+      "frequency": 0.273,
+      "source_count": 12,
+      "high_priority": false,
+      "description": "Problematic system: SAP"
+    },
+    {
+      "type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 4,
+      "frequency": 0.159,
+      "source_count": 7,
+      "high_priority": false,
+      "description": "Problematic system: WhatsApp"
+    },
+    {
+      "type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 9,
+      "frequency": 0.136,
+      "source_count": 6,
+      "high_priority": false,
+      "description": "Problematic system: Opera"
+    }
+  ],
+  "contradictions": [],
+  "summary": {
+    "total_before": 457,
+    "total_after": 457,
+    "total_reduction": 0,
+    "total_relationships": 0,
+    "total_patterns": 4,
+    "high_priority_patterns": 1,
+    "total_contradictions": 0
+  }
+}
