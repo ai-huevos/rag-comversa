@@ -873,6 +873,187 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         self.conn.commit()
         print("✅ Ensemble review fields added successfully")
     
+    def add_consolidation_schema(self):
+        """
+        Add Knowledge Graph consolidation tracking fields to all entity tables
+        and create new tables for relationships, audit trail, and patterns.
+        
+        This enables:
+        - Duplicate entity detection and merging
+        - Source tracking across interviews
+        - Consensus confidence scoring
+        - Relationship discovery between entities
+        - Pattern recognition across interviews
+        """
+        print("\n🔗 Adding Knowledge Graph consolidation schema...")
+        
+        # All entity tables that need consolidation tracking
+        entity_tables = [
+            "pain_points",
+            "processes",
+            "systems",
+            "kpis",
+            "automation_candidates",
+            "inefficiencies",
+            "communication_channels",
+            "decision_points",
+            "data_flows",
+            "temporal_patterns",
+            "failure_modes",
+            "team_structures",
+            "knowledge_gaps",
+            "success_patterns",
+            "budget_constraints",
+            "external_dependencies",
+            "interviews"  # Also track consolidation for interviews
+        ]
+        
+        # Consolidation tracking fields
+        consolidation_fields = [
+            ("mentioned_in_interviews", "TEXT"),                    # JSON array of interview IDs
+            ("source_count", "INTEGER DEFAULT 1"),                  # Number of interviews mentioning this
+            ("consensus_confidence", "REAL DEFAULT 1.0"),           # Confidence score 0.0-1.0
+            ("is_consolidated", "INTEGER DEFAULT 0"),               # Boolean: has been merged
+            ("has_contradictions", "INTEGER DEFAULT 0"),            # Boolean: conflicting data found
+            ("contradiction_details", "TEXT"),                      # JSON: details of contradictions
+            ("merged_entity_ids", "TEXT"),                          # JSON: IDs of entities merged into this
+            ("first_mentioned_date", "TEXT"),                       # First interview date
+            ("last_mentioned_date", "TEXT"),                        # Most recent interview date
+            ("consolidated_at", "TIMESTAMP"),                       # When consolidation happened
+        ]
+        
+        # Add consolidation fields to all entity tables
+        for table in entity_tables:
+            # Check if table exists
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                (table,)
+            )
+            if not cursor.fetchone():
+                print(f"  ⊘ Table {table} doesn't exist, skipping")
+                continue
+            
+            print(f"  Adding consolidation fields to {table}...")
+            for field_name, field_type in consolidation_fields:
+                self._add_column_if_not_exists(table, field_name, field_type)
+        
+        # Create relationships table
+        print("\n  Creating relationships table...")
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS relationships (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_entity_id INTEGER NOT NULL,
+                source_entity_type TEXT NOT NULL,
+                relationship_type TEXT NOT NULL,
+                target_entity_id INTEGER NOT NULL,
+                target_entity_type TEXT NOT NULL,
+                strength REAL DEFAULT 0.8,
+                mentioned_in_interviews TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        print("  ✓ Created relationships table")
+        
+        # Create consolidation_audit table
+        print("  Creating consolidation_audit table...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS consolidation_audit (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_type TEXT NOT NULL,
+                merged_entity_ids TEXT NOT NULL,
+                resulting_entity_id INTEGER NOT NULL,
+                similarity_score REAL NOT NULL,
+                consolidation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                rollback_timestamp TIMESTAMP,
+                rollback_reason TEXT
+            )
+        """)
+        print("  ✓ Created consolidation_audit table")
+        
+        # Create patterns table
+        print("  Creating patterns table...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS patterns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                pattern_type TEXT NOT NULL,
+                entity_type TEXT NOT NULL,
+                entity_id INTEGER NOT NULL,
+                pattern_frequency REAL NOT NULL,
+                source_count INTEGER NOT NULL,
+                high_priority INTEGER DEFAULT 0,
+                description TEXT,
+                detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        print("  ✓ Created patterns table")
+        
+        # Create indexes for performance
+        print("\n  Creating indexes for consolidation queries...")
+        
+        # Relationship indexes
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_relationships_source 
+            ON relationships(source_entity_id, source_entity_type)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_relationships_target 
+            ON relationships(target_entity_id, target_entity_type)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_relationships_type 
+            ON relationships(relationship_type)
+        """)
+        
+        # Audit indexes
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_audit_entity_type 
+            ON consolidation_audit(entity_type)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_audit_timestamp 
+            ON consolidation_audit(consolidation_timestamp)
+        """)
+        
+        # Pattern indexes
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_patterns_type 
+            ON patterns(pattern_type)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_patterns_priority 
+            ON patterns(high_priority)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_patterns_entity 
+            ON patterns(entity_type, entity_id)
+        """)
+        
+        # Entity name indexes for duplicate detection (if not already exist)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_pain_points_description 
+            ON pain_points(description)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_processes_name 
+            ON processes(name)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_systems_name_consolidated 
+            ON systems(name)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_kpis_name 
+            ON kpis(name)
+        """)
+        
+        print("  ✓ Created all indexes")
+        
+        self.conn.commit()
+        print("\n✅ Knowledge Graph consolidation schema added successfully")
+    
     def _create_communication_channels_table(self):
         """Create communication_channels table"""
         cursor = self.conn.cursor()

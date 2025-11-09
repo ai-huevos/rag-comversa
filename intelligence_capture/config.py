@@ -218,3 +218,135 @@ except Exception as e:
     print(f"⚠️  Config validation failed: {e}")
     print(f"   Continuing with defaults")
     EXTRACTION_CONFIG = None
+
+
+# Consolidation Configuration Loader
+def load_consolidation_config(config_path: Path = None) -> dict:
+    """
+    Load consolidation configuration from JSON file
+
+    Args:
+        config_path: Path to config file (default: PROJECT_ROOT/config/consolidation_config.json)
+
+    Returns:
+        Dictionary with consolidation configuration settings
+    """
+    import json
+
+    # Default config path
+    if config_path is None:
+        config_path = PROJECT_ROOT / "config" / "consolidation_config.json"
+
+    # Default configuration (fallback)
+    default_config = {
+        "similarity_thresholds": {
+            "pain_points": 0.80,
+            "processes": 0.85,
+            "systems": 0.85,
+            "kpis": 0.90,
+            "automation_candidates": 0.85,
+            "inefficiencies": 0.80,
+            "communication_channels": 0.85,
+            "decision_points": 0.85,
+            "data_flows": 0.85,
+            "temporal_patterns": 0.80,
+            "failure_modes": 0.80,
+            "team_structures": 0.85,
+            "knowledge_gaps": 0.80,
+            "success_patterns": 0.80,
+            "budget_constraints": 0.85,
+            "external_dependencies": 0.85,
+            "default": 0.85
+        },
+        "similarity_weights": {
+            "semantic_weight": 0.3,
+            "name_weight": 0.7
+        },
+        "consensus_parameters": {
+            "source_count_divisor": 10,
+            "agreement_bonus": 0.1,
+            "max_bonus": 0.3,
+            "contradiction_penalty": 0.15
+        },
+        "pattern_thresholds": {
+            "recurring_pain_threshold": 3,
+            "problematic_system_threshold": 5,
+            "high_priority_frequency": 0.30
+        },
+        "performance": {
+            "max_candidates": 10,
+            "batch_size": 100,
+            "enable_caching": True
+        }
+    }
+
+    # Try to load from file
+    if config_path.exists():
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                file_config = json.load(f)
+
+            # Merge with defaults (file config takes precedence)
+            def deep_merge(base, override):
+                """Deep merge two dictionaries"""
+                result = base.copy()
+                for key, value in override.items():
+                    if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                        result[key] = deep_merge(result[key], value)
+                    else:
+                        result[key] = value
+                return result
+
+            config = deep_merge(default_config, file_config)
+            print(f"✓ Loaded consolidation config from: {config_path}")
+            return config
+
+        except Exception as e:
+            print(f"⚠️  Failed to load consolidation config from {config_path}: {e}")
+            print(f"   Using default configuration")
+            return default_config
+    else:
+        print(f"ℹ️  Consolidation config file not found: {config_path}")
+        print(f"   Using default configuration")
+        return default_config
+
+
+def validate_consolidation_config(config: dict) -> bool:
+    """
+    Validate consolidation configuration
+
+    Args:
+        config: Configuration dictionary
+
+    Returns:
+        True if valid, raises ValueError if invalid
+    """
+    required_sections = [
+        "similarity_thresholds",
+        "similarity_weights",
+        "consensus_parameters",
+        "pattern_thresholds",
+        "performance"
+    ]
+
+    for section in required_sections:
+        if section not in config:
+            raise ValueError(f"Missing required config section: {section}")
+
+    # Validate similarity thresholds (0.0-1.0)
+    for entity_type, threshold in config["similarity_thresholds"].items():
+        if not 0.0 <= threshold <= 1.0:
+            raise ValueError(f"Similarity threshold for {entity_type} must be between 0.0 and 1.0")
+
+    # Validate weights sum to 1.0
+    weights = config["similarity_weights"]
+    weight_sum = weights.get("semantic_weight", 0) + weights.get("name_weight", 0)
+    if not 0.99 <= weight_sum <= 1.01:  # Allow small floating point errors
+        raise ValueError(f"Similarity weights must sum to 1.0 (got {weight_sum})")
+
+    # Validate consensus parameters
+    consensus = config["consensus_parameters"]
+    if consensus.get("source_count_divisor", 10) <= 0:
+        raise ValueError("source_count_divisor must be positive")
+
+    return True
