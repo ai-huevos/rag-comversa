@@ -19,6 +19,7 @@ from intelligence_capture.duplicate_detector import DuplicateDetector
 from intelligence_capture.entity_merger import EntityMerger
 from intelligence_capture.consensus_scorer import ConsensusScorer
 from intelligence_capture.relationship_discoverer import RelationshipDiscoverer
+from intelligence_capture.metrics import ConsolidationMetrics
 from intelligence_capture.logger import get_logger
 
 # Initialize logger
@@ -54,6 +55,9 @@ class KnowledgeConsolidationAgent:
         self.entity_merger = EntityMerger()
         self.consensus_scorer = ConsensusScorer(config)
         self.relationship_discoverer = RelationshipDiscoverer(db)
+        
+        # Initialize metrics collection
+        self.metrics = ConsolidationMetrics()
         
         # Statistics
         self.stats = {
@@ -175,6 +179,10 @@ class KnowledgeConsolidationAgent:
                 best_match, similarity_score = similar_entities[0]
                 self.stats["duplicates_found"] += 1
                 
+                # Track metrics
+                self.metrics.track_duplicate_found(entity_type, similarity_score)
+                self.metrics.track_entity_merged()
+                
                 logger.debug(f"Duplicate found: '{entity.get('name', 'N/A')}' matches existing entity (similarity={similarity_score:.2f})")
                 
                 # Merge entities
@@ -190,6 +198,7 @@ class KnowledgeConsolidationAgent:
                 # Check for contradictions
                 if merged_entity.get("has_contradictions", 0):
                     self.stats["contradictions_detected"] += 1
+                    self.metrics.track_contradiction(entity_type)
                     logger.warning(f"Contradictions detected in merged entity: '{merged_entity.get('name', 'N/A')}'")
                 
                 consolidated_entities.append(merged_entity)
@@ -197,6 +206,7 @@ class KnowledgeConsolidationAgent:
                 # No duplicates found, add as new entity
                 logger.debug(f"New entity added: '{entity.get('name', 'N/A')}'")
                 new_entity = self._prepare_new_entity(entity, interview_id)
+                self.metrics.track_entity_created()
                 consolidated_entities.append(new_entity)
         
         return consolidated_entities
@@ -406,6 +416,15 @@ class KnowledgeConsolidationAgent:
             Dict with consolidation metrics
         """
         return self.stats.copy()
+    
+    def get_metrics(self) -> ConsolidationMetrics:
+        """
+        Get metrics collection object
+        
+        Returns:
+            ConsolidationMetrics instance with all tracked metrics
+        """
+        return self.metrics
     
     def _log_consolidation_error(self, interview_id: int, error_message: str):
         """

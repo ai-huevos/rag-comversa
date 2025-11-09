@@ -618,7 +618,7 @@ This implementation plan breaks down the Knowledge Graph Consolidation System in
   - Add unit tests for rollback functionality
   - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
 
-- [ ] 35. Implement Metrics Collection
+- [x] 35. Implement Metrics Collection
   - Create `intelligence_capture/metrics.py` - ConsolidationMetrics class
   - Track duplicates_by_type: count of duplicates found per entity type
   - Track avg_similarity_by_type: average similarity score per entity type
