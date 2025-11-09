@@ -2019,3 +2019,258 @@ class EnhancedIntelligenceDB(IntelligenceDB):
         """Insert or update an enhanced system entity"""
         # For systems, we use insert_or_update_enhanced_system
         self.insert_or_update_enhanced_system(system, company)
+    
+    # ========================================================================
+    # Consolidation Methods (Task 8)
+    # ========================================================================
+    
+    def get_entities_by_type(
+        self,
+        entity_type: str,
+        limit: Optional[int] = None,
+        only_consolidated: bool = False
+    ) -> List[Dict]:
+        """
+        Get entities of a specific type for duplicate detection
+        
+        Args:
+            entity_type: Type of entity (systems, pain_points, etc.)
+            limit: Optional limit on number of entities
+            only_consolidated: If True, only return consolidated entities
+            
+        Returns:
+            List of entity dicts
+        """
+        cursor = self.conn.cursor()
+        
+        # Build query
+        query = f"SELECT * FROM {entity_type}"
+        
+        if only_consolidated:
+            query += " WHERE is_consolidated = 1"
+        
+        if limit:
+            query += f" LIMIT {limit}"
+        
+        try:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            
+            # Convert to list of dicts
+            entities = []
+            for row in rows:
+                entity = dict(row)
+                entities.append(entity)
+            
+            return entities
+            
+        except Exception as e:
+            print(f"  ⚠️  Error fetching entities: {e}")
+            return []
+    
+    def update_consolidated_entity(
+        self,
+        entity_type: str,
+        entity_id: int,
+        updated_data: Dict,
+        interview_id: int
+    ) -> bool:
+        """
+        Update a consolidated entity with new data from another interview
+        
+        Args:
+            entity_type: Type of entity
+            entity_id: ID of entity to update
+            updated_data: Dict with updated fields
+            interview_id: Source interview ID
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            # Build UPDATE statement dynamically
+            set_clauses = []
+            values = []
+            
+            for key, value in updated_data.items():
+                # Skip id field
+                if key == "id":
+                    continue
+                
+                set_clauses.append(f"{key} = ?")
+                
+                # Handle JSON serialization
+                if isinstance(value, (list, dict)):
+                    values.append(json_serialize(value))
+                else:
+                    values.append(value)
+            
+            if not set_clauses:
+                return True  # Nothing to update
+            
+            # Add entity_id to values
+            values.append(entity_id)
+            
+            # Execute update
+            query = f"""
+                UPDATE {entity_type}
+                SET {', '.join(set_clauses)}
+                WHERE id = ?
+            """
+            
+            cursor.execute(query, values)
+            self.conn.commit()
+            
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error updating consolidated entity: {e}")
+            return False
+    
+    def insert_relationship(self, relationship: Dict) -> bool:
+        """
+        Insert a relationship between entities
+        
+        Args:
+            relationship: Dict with relationship data
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute("""
+                INSERT INTO relationships (
+                    source_entity_id,
+                    source_entity_type,
+                    relationship_type,
+                    target_entity_id,
+                    target_entity_type,
+                    strength,
+                    mentioned_in_interviews,
+                    created_at,
+                    updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                relationship.get("source_entity_id"),
+                relationship.get("source_entity_type"),
+                relationship.get("relationship_type"),
+                relationship.get("target_entity_id"),
+                relationship.get("target_entity_type"),
+                relationship.get("strength", 0.8),
+                json_serialize(relationship.get("mentioned_in_interviews", [])),
+                datetime.now().isoformat(),
+                datetime.now().isoformat()
+            ))
+            
+            self.conn.commit()
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error inserting relationship: {e}")
+            return False
+    
+    def insert_consolidation_audit(self, audit_record: Dict) -> bool:
+        """
+        Insert a consolidation audit record
+        
+        Args:
+            audit_record: Dict with audit data
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute("""
+                INSERT INTO consolidation_audit (
+                    entity_type,
+                    merged_entity_ids,
+                    resulting_entity_id,
+                    similarity_score,
+                    consolidation_timestamp
+                ) VALUES (?, ?, ?, ?, ?)
+            """, (
+                audit_record.get("entity_type"),
+                json_serialize(audit_record.get("merged_entity_ids", [])),
+                audit_record.get("resulting_entity_id"),
+                audit_record.get("similarity_score"),
+                datetime.now().isoformat()
+            ))
+            
+            self.conn.commit()
+            return True
+            
+        except Exception as e:
+            print(f"  ⚠️  Error inserting audit record: {e}")
+            return False
+    
+    def check_entity_exists(
+        self,
+        entity_type: str,
+        entity_id: int
+    ) -> bool:
+        """
+        Check if an entity exists in the database
+        
+        Args:
+            entity_type: Type of entity
+            entity_id: ID of entity
+            
+        Returns:
+            True if exists, False otherwise
+        """
+        cursor = self.conn.cursor()
+        
+        try:
+            cursor.execute(
+                f"SELECT id FROM {entity_type} WHERE id = ?",
+                (entity_id,)
+            )
+            return cursor.fetchone() is not None
+            
+        except Exception as e:
+            print(f"  ⚠️  Error checking entity existence: {e}")
+            return False
+    
+    def insert_or_update_entity(
+        self,
+        entity_type: str,
+        entity: Dict,
+        interview_id: int
+    ) -> int:
+        """
+        Insert new entity or update existing consolidated entity
+        
+        This is the main entry point for consolidation-aware storage.
+        Checks if entity is a duplicate and either:
+        - Updates existing consolidated entity
+        - Inserts new entity
+        
+        Args:
+            entity_type: Type of entity
+            entity: Entity data
+            interview_id: Source interview ID
+            
+        Returns:
+            Entity ID (new or existing)
+        """
+        # Check if this entity has been marked for consolidation
+        if entity.get("is_consolidated") and entity.get("id"):
+            # Update existing consolidated entity
+            success = self.update_consolidated_entity(
+                entity_type,
+                entity["id"],
+                entity,
+                interview_id
+            )
+            return entity["id"] if success else None
+        
+        # Otherwise, insert as new entity
+        # Use existing insert methods based on entity type
+        # This will be called by the consolidation agent
+        return None  # Handled by specific insert methods

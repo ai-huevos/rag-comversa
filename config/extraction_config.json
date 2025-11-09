@@ -77,5 +77,10 @@
     "parallel_processing": false,
     "max_workers": 4,
     "enable_caching": false
+  },
+  "consolidation": {
+    "enabled": false,
+    "use_semantic_similarity": true,
+    "log_merge_decisions": true
   }
 }

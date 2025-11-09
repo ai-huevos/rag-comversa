@@ -98,6 +98,29 @@ class IntelligenceProcessor:
                 openai_api_key=os.getenv("OPENAI_API_KEY")
             )
             validation_mode = "with LLM validation" if enable_llm_validation else "rule-based only"
+        else:
+            self.validation_agent = None
+        
+        # Initialize consolidation agent if enabled
+        enable_consolidation = config.get("consolidation", {}).get("enabled", False)
+        if enable_consolidation:
+            try:
+                from .consolidation_agent import KnowledgeConsolidationAgent
+                from .config import load_consolidation_config
+                
+                consolidation_config = load_consolidation_config()
+                self.consolidation_agent = KnowledgeConsolidationAgent(
+                    db=self.db,
+                    config=consolidation_config,
+                    openai_api_key=os.getenv("OPENAI_API_KEY")
+                )
+                print("🔗 Knowledge Graph consolidation enabled")
+            except Exception as e:
+                print(f"⚠️  Failed to initialize consolidation: {e}")
+                self.consolidation_agent = None
+        else:
+            self.consolidation_agent = None
+            print("ℹ️  Knowledge Graph consolidation disabled")
             print(f"🔍 ValidationAgent enabled: {validation_mode}")
         else:
             self.validation_agent = None
@@ -229,6 +252,24 @@ class IntelligenceProcessor:
                 print(f"  ⚠️  Quality validation failed: {str(e)}")
                 print(f"     Continuing with storage...")
 
+        # CONSOLIDATION: Merge duplicates if enabled
+        if self.consolidation_agent:
+            print("  🔗 Running consolidation...")
+            try:
+                entities = self.consolidation_agent.consolidate_entities(
+                    entities,
+                    interview_id
+                )
+                
+                # Get consolidation stats
+                stats = self.consolidation_agent.get_statistics()
+                if stats["duplicates_found"] > 0:
+                    print(f"  ✓ Consolidated {stats['duplicates_found']} duplicates")
+                
+            except Exception as e:
+                print(f"  ⚠️  Consolidation failed: {str(e)}")
+                print(f"     Continuing with original entities...")
+        
         # Extract business_unit for v2.0 entities (with fallback)
         business_unit = meta.get("business_unit", meta.get("department", "Unknown"))
 
