@@ -567,3 +567,1376 @@
 2025-11-09 09:50:22 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
 2025-11-09 09:50:22 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
 2025-11-09 09:50:22 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:16:31 - intelligence_capture.relationship_discoverer - INFO - Discovered 4 relationships in interview 1
+2025-11-09 12:16:40 - intelligence_capture.pattern_recognizer - INFO - Identified 2 patterns (2 high-priority)
+2025-11-09 12:16:40 - intelligence_capture.pattern_recognizer - WARNING - No interviews found, cannot identify patterns
+2025-11-09 12:19:53 - intelligence_capture.relationship_discoverer - INFO - Discovered 4 relationships in interview 1
+2025-11-09 12:20:48 - intelligence_capture.pattern_recognizer - INFO - Identified 2 patterns (2 high-priority)
+2025-11-09 12:20:48 - intelligence_capture.pattern_recognizer - WARNING - No interviews found, cannot identify patterns
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (2 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - WARNING - Error fetching existing entities for systems: Database error
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - WARNING - Error fetching existing entities for systems: Database error
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:21:45 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:21:45 - intelligence_capture.relationship_discoverer - INFO - Discovered 4 relationships in interview 1
+2025-11-09 12:21:45 - intelligence_capture.pattern_recognizer - INFO - Identified 2 patterns (2 high-priority)
+2025-11-09 12:21:45 - intelligence_capture.pattern_recognizer - WARNING - No interviews found, cannot identify patterns
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 3
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 4
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (3 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 3
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (3 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 6
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (3 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 9
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 3
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 2
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 3
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 4
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1 entities)
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 5
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:24:51 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 7
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 11
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 17
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 24
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 29
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 34
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 40
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 46
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 52
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 57
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:28:43 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:28:43 - intelligence_capture.pattern_recognizer - INFO - Identified 4 patterns (1 high-priority)
+2025-11-09 12:59:36 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (1000 entities)
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 1000
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.03s
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 12:59:36 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=10.0, total_interviews=44
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 7
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 11
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 17
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 24
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 29
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:04:13 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:04:13 - intelligence_capture.pattern_recognizer - INFO - Identified 4 patterns (1 high-priority)
+2025-11-09 13:26:31 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=5.0, total_interviews=44
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Consolidating systems (5 entities)
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 8
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:26:31 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=5.0, total_interviews=44
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 7
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 11
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 17
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 24
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 29
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:04 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:04 - intelligence_capture.pattern_recognizer - INFO - Identified 4 patterns (1 high-priority)
+2025-11-09 13:27:35 - intelligence_capture.consensus_scorer - INFO - ConsensusScorer initialized: divisor=5.0, total_interviews=44
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 7
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 11
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 17
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 24
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 29
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 34
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 40
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 46
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 52
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 57
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (5 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 66
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 72
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 79
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 1 relationships in interview 16
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 85
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 1
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 90
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 95
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 98
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 100
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (16 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating processes (15 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating kpis (8 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (15 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating inefficiencies (8 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 4 relationships in interview 1
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 162
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 4
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 168
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 174
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (5 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 182
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 186
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 191
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 197
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 2 relationships in interview 30
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 204
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 2
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 1 relationships in interview 42
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 210
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 1
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (5 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 218
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 225
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 231
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (1 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 236
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 1 relationships in interview 39
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 242
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 1
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 244
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (1 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 247
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 249
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 255
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 260
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 1 relationships in interview 9
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 266
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 1
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 270
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (2 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 274
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 281
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.relationship_discoverer - INFO - Discovered 2 relationships in interview 43
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 288
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 2
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Starting consolidation transaction
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating pain_points (4 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidating automation_candidates (3 entities)
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Discovering relationships between entities
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation transaction committed successfully
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - Consolidation Summary:
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities processed: 295
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicates found: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Entities merged: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Contradictions detected: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Relationships discovered: 0
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Processing time: 0.00s
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO -   Duplicate reduction: 0.0%
+2025-11-09 13:27:35 - intelligence_capture.consolidation_agent - INFO - ============================================================
+2025-11-09 13:27:35 - intelligence_capture.pattern_recognizer - INFO - Identified 4 patterns (1 high-priority)
