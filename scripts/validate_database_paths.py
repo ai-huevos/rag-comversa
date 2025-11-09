@@ -79,6 +79,10 @@ class DatabasePathValidator:
                             if 'config.py' in str(file_path):
                                 continue
                             
+                            # Check if it's in validate_database_paths.py (allowed - these are regex patterns)
+                            if 'validate_database_paths.py' in str(file_path):
+                                continue
+                            
                             # Check if it's importing from config
                             if 'from intelligence_capture.config import' in line:
                                 continue
@@ -100,8 +104,16 @@ class DatabasePathValidator:
             self.warnings.append("⚠️  scripts/ directory not found")
             return
         
+        # Skip utility/documentation scripts that don't need database path management
+        skip_scripts = [
+            '__init__.py',
+            'validate_database_paths.py',
+            'ensure_utf8_everywhere.py',  # Documentation script
+            'fix_spanish_encoding.py',  # One-off utility script
+        ]
+        
         scripts = list(script_dir.glob("*.py"))
-        scripts = [s for s in scripts if s.name not in ['__init__.py', 'validate_database_paths.py']]
+        scripts = [s for s in scripts if s.name not in skip_scripts]
         
         for script in scripts:
             try:
