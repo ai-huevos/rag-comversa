@@ -2,13 +2,19 @@
 """
 Monitor extraction pipeline progress
 """
+import sys
 import json
 import time
+import argparse
 from pathlib import Path
 from datetime import datetime
 
-PROGRESS_FILE = Path("data/extraction_progress.json")
-DB_PATH = Path("data/full_intelligence.db")
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from intelligence_capture.config import DB_PATH, PROJECT_ROOT
+
+PROGRESS_FILE = PROJECT_ROOT / "data" / "extraction_progress.json"
 
 def monitor():
     """Monitor extraction progress"""

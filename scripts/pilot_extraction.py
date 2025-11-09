@@ -4,10 +4,15 @@ Pilot Extraction Script
 Processes 5-10 interviews to validate extractors before full run
 """
 import os
+import sys
 import json
+import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Load environment variables
 load_dotenv()
@@ -17,6 +22,7 @@ if not os.getenv("OPENAI_API_KEY"):
     exit(1)
 
 from intelligence_capture.database import EnhancedIntelligenceDB
+from intelligence_capture.config import PILOT_DB_PATH, INTERVIEWS_FILE
 from intelligence_capture.extractors import (
     CommunicationChannelExtractor,
     DecisionPointExtractor,
@@ -27,37 +33,49 @@ from intelligence_capture.extractors import (
 
 # Configuration
 PILOT_SIZE = 5  # Number of interviews to process
-DB_PATH = Path("data/pilot_intelligence.db")
-INTERVIEWS_PATH = Path("data/interviews/analysis_output/all_interviews.json")
 
 def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Pilot extraction with 5-10 interviews')
+    parser.add_argument('--db-path', type=Path, default=PILOT_DB_PATH,
+                       help=f'Database path (default: {PILOT_DB_PATH})')
+    parser.add_argument('--interviews', type=Path, default=INTERVIEWS_FILE,
+                       help=f'Interviews JSON file (default: {INTERVIEWS_FILE})')
+    parser.add_argument('--size', type=int, default=PILOT_SIZE,
+                       help=f'Number of interviews to process (default: {PILOT_SIZE})')
+    args = parser.parse_args()
+    
+    db_path = args.db_path
+    interviews_path = args.interviews
+    pilot_size = args.size
+    
     print("=" * 70)
     print("🚀 PILOT EXTRACTION - Phase 1 Entities")
     print("=" * 70)
-    print(f"\nProcessing: {PILOT_SIZE} interviews")
-    print(f"Database: {DB_PATH}")
+    print(f"\nProcessing: {pilot_size} interviews")
+    print(f"Database: {db_path}")
     print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
     # Load interviews
-    if not INTERVIEWS_PATH.exists():
-        print(f"❌ Interviews not found at {INTERVIEWS_PATH}")
+    if not interviews_path.exists():
+        print(f"❌ Interviews not found at {interviews_path}")
         return
     
-    with open(INTERVIEWS_PATH, 'r', encoding='utf-8') as f:
+    with open(interviews_path, 'r', encoding='utf-8') as f:
         all_interviews = json.load(f)
     
     print(f"✅ Loaded {len(all_interviews)} total interviews")
     
     # Select pilot interviews (first N)
-    pilot_interviews = all_interviews[:PILOT_SIZE]
+    pilot_interviews = all_interviews[:pilot_size]
     print(f"📋 Selected {len(pilot_interviews)} for pilot:\n")
     for i, interview in enumerate(pilot_interviews, 1):
         print(f"  {i}. {interview['meta'].get('role', 'Unknown')} - {interview['meta'].get('company', 'Unknown')}")
     
     # Initialize database
     print(f"\n🗄️  Initializing database...")
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    db = EnhancedIntelligenceDB(DB_PATH)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    db = EnhancedIntelligenceDB(db_path)
     db.connect()
     db.init_v2_schema()
     
@@ -144,7 +162,7 @@ def main():
             print(f"  • {key}: {value}")
     
     print(f"\n✅ Pilot extraction complete!")
-    print(f"📁 Database saved to: {DB_PATH}")
+    print(f"📁 Database saved to: {db_path}")
     print(f"\nNext steps:")
     print(f"  1. Review extracted entities in database")
     print(f"  2. Check extraction quality and confidence scores")

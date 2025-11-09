@@ -3,14 +3,20 @@
 Generate Comprehensive Extraction Report
 Creates detailed analytics and visualizations from extracted data
 """
+import sys
 import json
 import sqlite3
+import argparse
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List
 from collections import defaultdict
 
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from intelligence_capture.database import EnhancedIntelligenceDB
+from intelligence_capture.config import DB_PATH, REPORTS_DIR
 from intelligence_capture.ceo_validator import CEOAssumptionValidator
 from intelligence_capture.cross_company_analyzer import CrossCompanyAnalyzer
 from intelligence_capture.hierarchy_discoverer import HierarchyDiscoverer
@@ -439,28 +445,34 @@ class ExtractionReportGenerator:
 
 def main():
     """Main entry point"""
-    db_path = Path("data/full_intelligence.db")
-    output_path = Path("reports/comprehensive_extraction_report.json")
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Generate comprehensive extraction report')
+    parser.add_argument('--db-path', type=Path, default=DB_PATH,
+                       help=f'Database path (default: {DB_PATH})')
+    parser.add_argument('--output', type=Path, 
+                       default=REPORTS_DIR / "comprehensive_extraction_report.json",
+                       help='Output report path')
+    args = parser.parse_args()
     
-    if not db_path.exists():
-        print(f"❌ Database not found: {db_path}")
+    if not args.db_path.exists():
+        print(f"❌ Database not found: {args.db_path}")
         print(f"   Run full_extraction_pipeline.py first")
         exit(1)
     
-    print(f"📂 Database: {db_path}")
-    print(f"📄 Output: {output_path}\n")
+    print(f"📂 Database: {args.db_path}")
+    print(f"📄 Output: {args.output}\n")
     
     # Generate report
-    generator = ExtractionReportGenerator(db_path)
+    generator = ExtractionReportGenerator(args.db_path)
     report = generator.generate()
     
     # Save and print
-    generator.save_report(output_path)
+    generator.save_report(args.output)
     generator.print_summary()
     
     print(f"\n✅ Comprehensive extraction report complete!")
     print(f"\nNext steps:")
-    print(f"  1. Review report: {output_path}")
+    print(f"  1. Review report: {args.output}")
     print(f"  2. Check quality metrics and entities needing review")
     print(f"  3. Validate CEO assumptions and cross-company insights")
 

@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def main():
     from intelligence_capture.parallel_processor import ParallelProcessor
+    from intelligence_capture.config import PROJECT_ROOT
     
     print("🧪 Testing Parallel Processing Fixes")
     print("="*70)
@@ -22,7 +23,7 @@ def main():
     print("="*70)
 
     # Create test database
-    db_test = Path("data/test_parallel_5.db")
+    db_test = PROJECT_ROOT / "data" / "test_parallel_5.db"
     if db_test.exists():
         db_test.unlink()
         print(f"✓ Cleaned up old test database")

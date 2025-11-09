@@ -12,6 +12,7 @@ import time
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from intelligence_capture.processor import IntelligenceProcessor
+from intelligence_capture.config import PROJECT_ROOT
 
 print("🧪 Testing Sequential Processing with Fixes")
 print("="*70)
@@ -20,13 +21,13 @@ print("Test: 5 interviews (sequential)")
 print("="*70)
 
 # Create test database
-db_test = Path("data/test_sequential_5.db")
+db_test = PROJECT_ROOT / "data" / "test_sequential_5.db"
 if db_test.exists():
     db_test.unlink()
     print(f"✓ Cleaned up old test database")
 
 # Load first 5 interviews
-interviews_file = Path("data/interviews/analysis_output/all_interviews.json")
+interviews_file = PROJECT_ROOT / "data" / "interviews" / "analysis_output" / "all_interviews.json"
 print(f"\n📂 Loading interviews from: {interviews_file}")
 
 with open(interviews_file, 'r', encoding='utf-8') as f:
@@ -37,7 +38,7 @@ test_interviews = all_interviews[:5]
 print(f"✓ Loaded {len(test_interviews)} interviews for testing")
 
 # Write to temp file
-temp_file = Path("data/temp_test_5_seq.json")
+temp_file = PROJECT_ROOT / "data" / "temp_test_5_seq.json"
 with open(temp_file, 'w', encoding='utf-8') as f:
     json.dump(test_interviews, f, ensure_ascii=False, indent=2)
 

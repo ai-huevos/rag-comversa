@@ -4,12 +4,17 @@ Full Extraction Pipeline
 Processes ALL 44 interviews with all extractors (v1.0 + v2.0 entities)
 """
 import os
+import sys
 import json
 import time
+import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
 from typing import Dict, List, Optional
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Load environment variables
 load_dotenv()
@@ -19,6 +24,7 @@ if not os.getenv("OPENAI_API_KEY"):
     exit(1)
 
 from intelligence_capture.database import EnhancedIntelligenceDB
+from intelligence_capture.config import DB_PATH, INTERVIEWS_FILE, PROJECT_ROOT
 from intelligence_capture.extractors import (
     CommunicationChannelExtractor,
     DecisionPointExtractor,
@@ -36,14 +42,12 @@ from intelligence_capture.extractors import (
 )
 
 # Configuration
-DB_PATH = Path("data/full_intelligence.db")
-INTERVIEWS_PATH = Path("data/interviews/analysis_output/all_interviews.json")
 BATCH_SIZE = 5  # Process 5 interviews at a time
 RETRY_ATTEMPTS = 3
 RETRY_DELAY = 5  # seconds
 
 # Progress tracking
-PROGRESS_FILE = Path("data/extraction_progress.json")
+PROGRESS_FILE = PROJECT_ROOT / "data" / "extraction_progress.json"
 
 
 class ExtractionPipeline:
@@ -346,12 +350,20 @@ class ExtractionPipeline:
 
 def main():
     """Main entry point"""
-    pipeline = ExtractionPipeline(DB_PATH, INTERVIEWS_PATH)
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Full extraction pipeline for all interviews')
+    parser.add_argument('--db-path', type=Path, default=DB_PATH,
+                       help=f'Database path (default: {DB_PATH})')
+    parser.add_argument('--interviews', type=Path, default=INTERVIEWS_FILE,
+                       help=f'Interviews JSON file (default: {INTERVIEWS_FILE})')
+    args = parser.parse_args()
+    
+    pipeline = ExtractionPipeline(args.db_path, args.interviews)
     
     try:
         pipeline.run()
         print(f"\n✅ Full extraction pipeline complete!")
-        print(f"📁 Database: {DB_PATH}")
+        print(f"📁 Database: {args.db_path}")
         print(f"\nNext steps:")
         print(f"  1. Review extraction report in reports/full_extraction_report.json")
         print(f"  2. Run quality validation (Task 15)")

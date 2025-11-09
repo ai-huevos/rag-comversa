@@ -10,8 +10,14 @@ from dotenv import load_dotenv
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "interviews" / "analysis_output"
-DB_PATH = PROJECT_ROOT / "data" / "full_intelligence.db"  # Main production database (44 interviews)
 INTERVIEWS_FILE = DATA_DIR / "all_interviews.json"
+
+# Database Paths - Single Source of Truth
+# Use these constants instead of hardcoding paths in scripts
+DB_PATH = PROJECT_ROOT / "data" / "full_intelligence.db"  # Main production database (44 interviews)
+PILOT_DB_PATH = PROJECT_ROOT / "data" / "pilot_intelligence.db"  # Testing database (5-10 interviews)
+FAST_DB_PATH = PROJECT_ROOT / "data" / "fast_intelligence.db"  # Fast extraction (core entities only)
+TEST_DB_PATH = PROJECT_ROOT / "data" / "test_intelligence.db"  # Unit tests (temporary, auto-cleaned)
 
 # Output directories
 REPORTS_DIR = PROJECT_ROOT / "reports"

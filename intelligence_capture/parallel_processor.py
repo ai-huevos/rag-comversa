@@ -266,7 +266,8 @@ def compare_sequential_vs_parallel(
 
     # Test sequential
     print("🐌 Running sequential processing...")
-    db_sequential = Path("data/test_sequential.db")
+    from .config import PROJECT_ROOT
+    db_sequential = PROJECT_ROOT / "data" / "test_sequential.db"
     if db_sequential.exists():
         db_sequential.unlink()
 
@@ -282,7 +283,7 @@ def compare_sequential_vs_parallel(
 
     # Test parallel
     print(f"\n🚀 Running parallel processing...")
-    db_parallel = Path("data/test_parallel.db")
+    db_parallel = PROJECT_ROOT / "data" / "test_parallel.db"
     if db_parallel.exists():
         db_parallel.unlink()
 
