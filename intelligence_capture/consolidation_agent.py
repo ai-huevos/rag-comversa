@@ -45,7 +45,7 @@ class KnowledgeConsolidationAgent:
         self.config = config
         
         # Initialize components
-        self.duplicate_detector = DuplicateDetector(config, openai_api_key)
+        self.duplicate_detector = DuplicateDetector(config, openai_api_key, db)
         self.entity_merger = EntityMerger()
         self.consensus_scorer = ConsensusScorer(config)
         
@@ -66,38 +66,64 @@ class KnowledgeConsolidationAgent:
         """
         Consolidate newly extracted entities with existing database
         
+        All operations are wrapped in a database transaction to ensure atomicity.
+        If any error occurs, all changes are rolled back to maintain data integrity.
+        
         Args:
             entities: Dict of entity_type -> list of entities
             interview_id: Source interview ID
             
         Returns:
             Dict of entity_type -> list of consolidated entities
+            
+        Raises:
+            Exception: If consolidation fails (after rollback)
         """
         import time
         start_time = time.time()
         
         consolidated = {}
         
-        # Process each entity type
-        for entity_type, entity_list in entities.items():
-            if not entity_list:
-                consolidated[entity_type] = []
-                continue
+        try:
+            # Begin transaction for atomic consolidation
+            print("  🔒 Starting consolidation transaction...")
+            self.db.conn.execute("BEGIN TRANSACTION")
             
-            print(f"\n  🔗 Consolidating {entity_type}...")
-            consolidated[entity_type] = self._consolidate_entity_type(
-                entity_list,
-                entity_type,
-                interview_id
-            )
-        
-        # Update statistics
-        self.stats["processing_time"] = time.time() - start_time
-        
-        # Print summary
-        self._print_consolidation_summary()
-        
-        return consolidated
+            # Process each entity type
+            for entity_type, entity_list in entities.items():
+                if not entity_list:
+                    consolidated[entity_type] = []
+                    continue
+                
+                print(f"\n  🔗 Consolidating {entity_type}...")
+                consolidated[entity_type] = self._consolidate_entity_type(
+                    entity_list,
+                    entity_type,
+                    interview_id
+                )
+            
+            # Commit transaction if all operations succeeded
+            self.db.conn.commit()
+            print("  ✅ Consolidation transaction committed")
+            
+            # Update statistics
+            self.stats["processing_time"] = time.time() - start_time
+            
+            # Print summary
+            self._print_consolidation_summary()
+            
+            return consolidated
+            
+        except Exception as e:
+            # Rollback transaction on any error
+            self.db.conn.rollback()
+            print(f"  ❌ Consolidation failed, transaction rolled back: {e}")
+            
+            # Log the error for debugging
+            self._log_consolidation_error(interview_id, str(e))
+            
+            # Re-raise the exception
+            raise
     
     def _consolidate_entity_type(
         self,
@@ -353,3 +379,42 @@ class KnowledgeConsolidationAgent:
             Dict with consolidation metrics
         """
         return self.stats.copy()
+    
+    def _log_consolidation_error(self, interview_id: int, error_message: str):
+        """
+        Log consolidation error for debugging
+        
+        Args:
+            interview_id: Interview ID that failed
+            error_message: Error message
+        """
+        try:
+            # Log to consolidation_audit table with special marker
+            cursor = self.db.conn.cursor()
+            
+            cursor.execute("""
+                INSERT INTO consolidation_audit (
+                    entity_type,
+                    merged_entity_ids,
+                    resulting_entity_id,
+                    similarity_score,
+                    consolidation_timestamp,
+                    rollback_timestamp,
+                    rollback_reason
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                "ERROR",
+                json.dumps([interview_id], ensure_ascii=False),
+                -1,
+                0.0,
+                datetime.now().isoformat(),
+                datetime.now().isoformat(),
+                error_message
+            ))
+            
+            # Note: We don't commit here because we're in a failed transaction
+            # This is just for logging purposes
+            
+        except Exception as e:
+            # If logging fails, just print to console
+            print(f"  ⚠️  Could not log consolidation error: {e}")

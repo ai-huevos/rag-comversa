@@ -10,9 +10,16 @@ Identifies similar entities using:
 Supports configurable similarity thresholds per entity type.
 """
 import re
+import time
 from typing import Dict, List, Tuple, Optional
 from difflib import SequenceMatcher
+from datetime import datetime
 import json
+
+
+class EmbeddingError(Exception):
+    """Custom exception for embedding generation failures"""
+    pass
 
 # Optional: Use rapidfuzz for better performance (fallback to difflib)
 try:
@@ -40,13 +47,14 @@ class DuplicateDetector:
     - Combined fuzzy + semantic similarity scoring
     """
     
-    def __init__(self, config: Dict, openai_api_key: Optional[str] = None):
+    def __init__(self, config: Dict, openai_api_key: Optional[str] = None, db=None):
         """
         Initialize duplicate detector
         
         Args:
             config: Configuration dict with similarity_thresholds and similarity_weights
             openai_api_key: Optional OpenAI API key for semantic similarity
+            db: Optional database instance for persistent embedding storage
         """
         self.config = config
         self.similarity_thresholds = config.get("similarity_thresholds", {})
@@ -58,9 +66,28 @@ class DuplicateDetector:
         # Performance settings
         self.max_candidates = config.get("performance", {}).get("max_candidates", 10)
         self.enable_caching = config.get("performance", {}).get("enable_caching", True)
+        self.use_db_storage = config.get("performance", {}).get("use_db_storage", True)
         
-        # Embedding cache
+        # Retry and circuit breaker settings
+        self.max_retries = config.get("retry", {}).get("max_retries", 3)
+        self.circuit_breaker_threshold = config.get("retry", {}).get("circuit_breaker_threshold", 10)
+        
+        # Circuit breaker state
+        self.consecutive_failures = 0
+        self.circuit_breaker_open = False
+        self.circuit_breaker_opened_at = None
+        
+        # Embedding cache (in-memory for current session)
         self.embedding_cache = {} if self.enable_caching else None
+        
+        # Database for persistent embedding storage
+        self.db = db
+        
+        # Statistics
+        self.cache_hits = 0
+        self.cache_misses = 0
+        self.db_hits = 0
+        self.db_misses = 0
         
         # Initialize OpenAI client if available
         self.openai_client = None
@@ -205,29 +232,47 @@ class DuplicateDetector:
         """
         Calculate semantic similarity using OpenAI embeddings + cosine similarity
         
+        Falls back to 0.0 if:
+        - OpenAI client not available
+        - Circuit breaker is open
+        - Embedding generation fails after retries
+        
         Args:
             text1: First text
             text2: Second text
             
         Returns:
-            Similarity score (0.0-1.0), or 0.0 if OpenAI not available
+            Similarity score (0.0-1.0), or 0.0 if unavailable/failed
         """
         if not self.openai_client or not text1 or not text2:
             return 0.0
         
+        # Check circuit breaker
+        if self.circuit_breaker_open:
+            return 0.0
+        
         try:
-            # Get embeddings (with caching)
+            # Get embeddings (with caching and retry logic)
             emb1 = self._get_embedding(text1)
             emb2 = self._get_embedding(text2)
             
+            # If either embedding is None (cache miss + API failure), return 0.0
+            # This triggers fallback to fuzzy-only matching
             if emb1 is None or emb2 is None:
                 return 0.0
             
             # Calculate cosine similarity
             return self._cosine_similarity(emb1, emb2)
             
+        except EmbeddingError as e:
+            # Embedding generation failed after all retries
+            # Fall back to fuzzy-only matching (return 0.0 for semantic component)
+            print(f"  ⚠️  Falling back to fuzzy-only matching due to embedding error")
+            return 0.0
+            
         except Exception as e:
-            print(f"  ⚠️  Semantic similarity error: {e}")
+            # Unexpected error
+            print(f"  ⚠️  Unexpected semantic similarity error: {e}")
             return 0.0
     
     def _calculate_combined_similarity(
@@ -306,36 +351,135 @@ class DuplicateDetector:
             self.similarity_thresholds.get("default", 0.85)
         )
     
-    def _get_embedding(self, text: str) -> Optional[List[float]]:
+    def _get_embedding(self, text: str, entity_type: str = None, entity_id: int = None) -> Optional[List[float]]:
         """
-        Get embedding for text (with caching)
+        Get embedding for text with retry logic and circuit breaker
+        
+        Implements:
+        - Database lookup for pre-computed embeddings (fastest)
+        - In-memory cache for current session (fast)
+        - OpenAI API call with retry logic (slow)
+        - Exponential backoff retry (up to max_retries attempts)
+        - Circuit breaker pattern (opens after consecutive_failures threshold)
+        - Fallback to None (caller should use fuzzy-only matching)
         
         Args:
             text: Text to embed
+            entity_type: Optional entity type for database lookup
+            entity_id: Optional entity ID for database lookup
             
         Returns:
-            Embedding vector or None if error
+            Embedding vector or None if error/circuit breaker open
+            
+        Raises:
+            EmbeddingError: If all retry attempts fail
         """
-        # Check cache first
+        # Check in-memory cache first (fastest)
         if self.enable_caching and text in self.embedding_cache:
+            self.cache_hits += 1
             return self.embedding_cache[text]
         
-        try:
-            response = self.openai_client.embeddings.create(
-                model="text-embedding-3-small",
-                input=text
-            )
-            embedding = response.data[0].embedding
-            
-            # Cache for future use
-            if self.enable_caching:
-                self.embedding_cache[text] = embedding
-            
-            return embedding
-            
-        except Exception as e:
-            print(f"  ⚠️  Embedding error: {e}")
+        # Check database for pre-computed embedding (fast)
+        if self.use_db_storage and self.db and entity_type and entity_id:
+            try:
+                embedding = self.db.get_entity_embedding(entity_type, entity_id)
+                if embedding:
+                    self.db_hits += 1
+                    # Cache in memory for this session
+                    if self.enable_caching:
+                        self.embedding_cache[text] = embedding
+                    return embedding
+                else:
+                    self.db_misses += 1
+            except Exception as e:
+                print(f"  ⚠️  Database embedding lookup error: {e}")
+                self.db_misses += 1
+        
+        # Not in cache or database, need to generate via API
+        self.cache_misses += 1
+        
+        # Check circuit breaker
+        if self.circuit_breaker_open:
+            print(f"  ⚠️  Circuit breaker OPEN - skipping embedding API call")
+            print(f"     Opened at: {self.circuit_breaker_opened_at}")
+            print(f"     Consecutive failures: {self.consecutive_failures}")
             return None
+        
+        # Retry loop with exponential backoff
+        last_error = None
+        for attempt in range(self.max_retries):
+            try:
+                response = self.openai_client.embeddings.create(
+                    model="text-embedding-3-small",
+                    input=text
+                )
+                embedding = response.data[0].embedding
+                
+                # Success! Reset failure counter
+                self.consecutive_failures = 0
+                
+                # Cache in memory for this session
+                if self.enable_caching:
+                    self.embedding_cache[text] = embedding
+                
+                # Store in database for future sessions
+                if self.use_db_storage and self.db and entity_type and entity_id:
+                    try:
+                        self.db.store_entity_embedding(entity_type, entity_id, embedding)
+                    except Exception as e:
+                        print(f"  ⚠️  Failed to store embedding in database: {e}")
+                
+                return embedding
+                
+            except Exception as e:
+                last_error = e
+                self.consecutive_failures += 1
+                
+                # Check if we should open circuit breaker
+                if self.consecutive_failures >= self.circuit_breaker_threshold:
+                    self.circuit_breaker_open = True
+                    self.circuit_breaker_opened_at = datetime.now().isoformat()
+                    print(f"  🔴 Circuit breaker OPENED after {self.consecutive_failures} consecutive failures")
+                    print(f"     Semantic similarity disabled - falling back to fuzzy-only matching")
+                    return None
+                
+                # If this is not the last attempt, wait with exponential backoff
+                if attempt < self.max_retries - 1:
+                    wait_time = 2 ** attempt  # 1s, 2s, 4s
+                    print(f"  ⚠️  Embedding API error (attempt {attempt + 1}/{self.max_retries}): {e}")
+                    print(f"     Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    # Last attempt failed
+                    print(f"  ❌ Embedding API failed after {self.max_retries} attempts: {e}")
+                    self._log_embedding_failure(text, str(e))
+                    
+                    # Raise exception on final failure
+                    raise EmbeddingError(
+                        f"Failed to generate embedding after {self.max_retries} attempts: {e}"
+                    )
+        
+        # Should never reach here, but just in case
+        return None
+    
+    def _log_embedding_failure(self, text: str, error_message: str):
+        """
+        Log embedding failure for debugging
+        
+        Args:
+            text: Text that failed to embed
+            error_message: Error message
+        """
+        # Truncate text for logging
+        text_preview = text[:100] + "..." if len(text) > 100 else text
+        
+        print(f"  📝 Logging embedding failure:")
+        print(f"     Text: {text_preview}")
+        print(f"     Error: {error_message}")
+        print(f"     Timestamp: {datetime.now().isoformat()}")
+        print(f"     Consecutive failures: {self.consecutive_failures}")
+        
+        # TODO: Could write to a log file or database audit table here
     
     def _cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
         """
@@ -364,3 +508,28 @@ class DuplicateDetector:
         # Cosine similarity (normalize to 0-1 range)
         similarity = dot_product / (mag1 * mag2)
         return max(0.0, min(1.0, (similarity + 1) / 2))
+
+    def get_cache_statistics(self) -> Dict:
+        """
+        Get embedding cache statistics
+        
+        Returns:
+            Dict with cache performance metrics
+        """
+        total_requests = self.cache_hits + self.cache_misses
+        cache_hit_rate = (self.cache_hits / total_requests * 100) if total_requests > 0 else 0.0
+        
+        total_db_requests = self.db_hits + self.db_misses
+        db_hit_rate = (self.db_hits / total_db_requests * 100) if total_db_requests > 0 else 0.0
+        
+        return {
+            "memory_cache_hits": self.cache_hits,
+            "memory_cache_misses": self.cache_misses,
+            "memory_cache_hit_rate": f"{cache_hit_rate:.1f}%",
+            "db_cache_hits": self.db_hits,
+            "db_cache_misses": self.db_misses,
+            "db_cache_hit_rate": f"{db_hit_rate:.1f}%",
+            "total_api_calls": self.cache_misses - self.db_hits,
+            "circuit_breaker_open": self.circuit_breaker_open,
+            "consecutive_failures": self.consecutive_failures
+        }
