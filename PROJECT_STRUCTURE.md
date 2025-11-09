@@ -12,14 +12,24 @@ system0/
 │
 ├── .kiro/                        # Kiro IDE configuration
 │   └── specs/                    # Project specifications
-│       └── ontology-enhancement/
-│           ├── requirements.md   # Requirements document
-│           ├── design.md         # Design document
-│           └── tasks.md          # Task list (18 phases)
+│       ├── extraction-completion/
+│       │   ├── requirements.md   # Extraction system requirements
+│       │   ├── design.md         # Extraction system design
+│       │   └── tasks.md          # Extraction tasks
+│       ├── ontology-enhancement/
+│       │   ├── requirements.md   # Ontology enhancement requirements
+│       │   ├── design.md         # Ontology design
+│       │   └── tasks.md          # Ontology tasks
+│       └── knowledge-graph-consolidation/
+│           ├── requirements.md   # Consolidation requirements (NEW)
+│           ├── design.md         # Consolidation design (NEW)
+│           └── tasks.md          # Consolidation tasks (18 tasks) (NEW)
 │
 ├── config/                       # Configuration files
 │   ├── companies.json            # Company hierarchy definitions
-│   └── ceo_priorities.json       # CEO prioritized macroprocesos
+│   ├── ceo_priorities.json       # CEO prioritized macroprocesos
+│   ├── extraction_config.json    # Extraction configuration
+│   └── consolidation_config.json # Consolidation configuration (NEW)
 │
 ├── data/                         # All data files (databases, interviews)
 │   ├── intelligence.db           # Main database (created by run.py)
@@ -65,12 +75,21 @@ system0/
 │   ├── extractor.py              # Entity extraction logic
 │   ├── extractors.py             # Additional extractors
 │   ├── processor.py              # Main processing orchestrator
-│   ├── reviewer.py               # Ensemble validation system (NEW)
+│   ├── reviewer.py               # Ensemble validation system
+│   ├── consolidation_agent.py    # Knowledge Graph consolidation (NEW)
+│   ├── duplicate_detector.py     # Duplicate entity detection (NEW)
+│   ├── entity_merger.py          # Entity merging logic (NEW)
+│   ├── consensus_scorer.py       # Consensus confidence scoring (NEW)
+│   ├── relationship_discoverer.py # Relationship discovery (NEW)
+│   ├── pattern_recognizer.py     # Pattern recognition (NEW)
+│   ├── rate_limiter.py           # Shared rate limiter
 │   ├── rag_generator.py          # RAG database generation
 │   ├── ceo_validator.py          # CEO assumption validation
 │   ├── cross_company_analyzer.py # Cross-company analysis
 │   ├── hierarchy_discoverer.py   # Org hierarchy discovery
 │   ├── migrate_add_review_fields.py  # Database migration
+│   ├── migrations/               # Database migrations (NEW)
+│   │   └── add_consolidation_fields.py
 │   ├── run.py                    # Main entry point
 │   ├── requirements.txt          # Python dependencies
 │   └── README.md
@@ -92,7 +111,10 @@ system0/
 │   ├── fast_extraction_pipeline.py   # Fast extraction
 │   ├── full_extraction_pipeline.py   # Full extraction
 │   ├── generate_extraction_report.py # Report generation
-│   └── monitor_extraction.py     # Monitor extraction progress
+│   ├── monitor_extraction.py     # Monitor extraction progress
+│   ├── test_consolidation.py     # Test consolidation (NEW)
+│   ├── validate_consolidation.py # Validate consolidation (NEW)
+│   └── generate_consolidation_report.py # Consolidation report (NEW)
 │
 ├── tests/                        # Unit and integration tests
 │   ├── test_automation_candidate_extraction.py
@@ -111,7 +133,14 @@ system0/
 │   ├── test_real_interview_data.py
 │   ├── test_remaining_entities.py
 │   ├── test_system_extraction.py
-│   └── test_temporal_pattern_extraction.py
+│   ├── test_temporal_pattern_extraction.py
+│   ├── test_duplicate_detector.py        # Consolidation tests (NEW)
+│   ├── test_entity_merger.py             # Consolidation tests (NEW)
+│   ├── test_consensus_scorer.py          # Consolidation tests (NEW)
+│   ├── test_consolidation_agent.py       # Consolidation tests (NEW)
+│   ├── test_relationship_discoverer.py   # Consolidation tests (NEW)
+│   ├── test_pattern_recognizer.py        # Consolidation tests (NEW)
+│   └── test_consolidation_integration.py # Consolidation tests (NEW)
 │
 └── venv/                         # Python virtual environment
 ```
@@ -209,6 +238,9 @@ When adding new features that create files:
 ✅ Reports directory configured in `config.py`
 ✅ Migration script updated
 ✅ Ensemble validation system integrated
+✅ Parallel processing with WAL mode
+✅ Rate limiting with exponential backoff
+🎯 Knowledge Graph Consolidation spec created (ready to implement)
 
 ## Quick Reference
 

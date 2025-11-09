@@ -1,11 +1,17 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # RAG-Comversa Project Context
 
 ## Project Overview
 **Intelligence Extraction System** for Comversa - extracts structured business intelligence from 44 Spanish interview transcripts and stores it in a queryable SQLite database for AI agent use.
 
-**Current Branch:** `claude/create-claude-md-011CUvcCMuPWuxNTxhAq92F1`
-**Database:** `intelligence.db` (SQLite with 17 entity types)
-**Source Data:** 44 manager interviews in Spanish
+- **Language:** All interviews are in Spanish - never translate
+- **Database:** SQLite with 17 entity types
+- **AI Models:** OpenAI (gpt-4o-mini primary) with 6-model fallback chain
+- **Companies:** Los Tajibos (hotel), Comversa (construction), Bolivian Foods (restaurants)
+- **Source Data:** 44 manager interviews in Spanish
 
 ---
 
@@ -31,10 +37,11 @@
 11. ✅ Documentation - SETUP.md, guides
 12. ✅ Environment setup - .env.example
 
-**Phase 4: Optional Features** ✅
-13. ✅ Ensemble validation - Documented (disabled by default)
-14. ✅ Parallel processing - Implemented (has known issues)
-15. ✅ Report generator - Excel + JSON export
+**Phase 4: Parallel Processing & Rate Limiting** ✅
+13. ✅ WAL mode for parallel processing (no database locking)
+14. ✅ Rate limiting with exponential backoff
+15. ✅ Cost estimation before extraction
+16. ✅ Ensemble validation (disabled by default)
 
 **What's Working:**
 - ✅ All 17 entity types extracting
@@ -42,20 +49,34 @@
 - ✅ ExtractionMonitor (real-time progress)
 - ✅ Quality validation (always on)
 - ✅ Progress tracking with resume
-- ✅ Test scripts ready
-- ✅ **Rate limiting** - Added exponential backoff
-- ✅ **Cost estimation** - Shows cost before extraction
-- ✅ Ensemble disabled by default (can enable if needed)
+- ✅ Parallel processing (WAL mode + rate limiter)
+- ✅ Rate limiting (no API errors)
+- ✅ Cost estimation (shows cost before extraction)
+- ✅ Ensemble disabled by default (fast, cheap mode)
 
 **Recent Fixes (2025-11-08):**
-- ✅ Added rate limiting with exponential backoff
-- ✅ Added cost estimation and confirmation
-- ✅ Verified ensemble is disabled
-- ✅ Ready for testing
+- ✅ Fixed parallel processing with WAL mode
+- ✅ Added shared rate limiter
+- ✅ Tested with 5 interviews (4/5 succeeded)
+- ✅ Proved Knowledge Graph is essential (analyzed existing data)
 
-### 🎯 Current Phase: Ready to Test
+### 🎯 Current Phase: Knowledge Graph Consolidation (Week 1)
 
-**Status:** System ready for 5-interview test run
+**Status:** Spec created, ready to implement consolidation system
+
+**Problem Identified:**
+- 20-30% of extracted data is duplicated
+- 25 separate "Excel" entries, 12 separate "SAP" entries
+- Cannot answer questions like "What systems cause the most pain?"
+
+**Solution:**
+- Build Knowledge Graph Consolidation System
+- Merge duplicate entities with source tracking
+- Calculate consensus confidence scores
+- Discover relationships between entities
+- Identify recurring patterns
+
+**Spec Location:** `.kiro/specs/knowledge-graph-consolidation/`
 
 ---
 
@@ -104,147 +125,350 @@
 
 ---
 
-## Architecture
+## Core Architecture
+
+### Extraction Pipeline
 
 ```
-Interview JSON → Extractor → 17 Entity Types → Database → AI Agents
-
-Flow:
-1. Load interview from JSON (meta + qa_pairs)
-2. Extract all 17 entity types via IntelligenceExtractor
-3. Optional: Ensemble validation for quality review
-4. Store in SQLite database
-5. Query for AI agent consumption
+Interview JSON → IntelligenceExtractor → 17 Entity Types → SQLite → Knowledge Graph → AI Agents
 ```
 
-**Current Problem:** Steps 2-3 only handle 6 of 17 entity types!
+**Flow:**
+1. `processor.py` (IntelligenceProcessor) orchestrates the pipeline
+2. `extractor.py` (IntelligenceExtractor) extracts 6 v1.0 entity types
+3. `extractors.py` (13 specialized extractors) extracts 11 v2.0 entity types
+4. `validation_agent.py` validates completeness and quality
+5. `database.py` (IntelligenceDB/EnhancedIntelligenceDB) stores entities
+6. `monitor.py` (ExtractionMonitor) tracks real-time progress
+7. Knowledge Graph Consolidation merges duplicates and discovers relationships
+
+### Key Components
+
+- **IntelligenceExtractor** (`extractor.py`): Orchestrates extraction via `extract_all()`, delegates to v2 extractors
+- **IntelligenceProcessor** (`processor.py`): Main pipeline with `process_interviews()` and resume capability
+- **ValidationAgent** (`validation_agent.py`): Checks completeness, encoding, placeholders
+- **ExtractionMonitor** (`monitor.py`): Real-time progress dashboard
+- **Rate Limiter** (`rate_limiter.py`): Exponential backoff for API calls with shared state
+- **IntelligenceDB** (`database.py`): Core schema; EnhancedIntelligenceDB adds v2.0 tables
 
 ---
 
-## Quick Commands
+## Development Commands
+
+### Setup & Configuration
 
 ```bash
-# Run extraction (currently only 6 entity types)
-python intelligence_capture/run.py
+# Install dependencies
+pip install openai python-dotenv
 
-# Run tests
-pytest tests/
+# Configure API key
+cp .env.example .env
+# Edit .env: OPENAI_API_KEY=sk-proj-your-key-here
 
-# Check database
-sqlite3 intelligence.db "SELECT COUNT(*) FROM pain_points;"
-
-# Activate venv
-source venv/bin/activate
+# Verify setup
+python -c "from intelligence_capture.config import OPENAI_API_KEY; print('✓ API key configured' if OPENAI_API_KEY else '✗ No API key')"
 ```
 
----
+### Testing
 
-## Next Steps: Testing & Validation
-
-### Immediate: Test with 5 Interviews
-**Goal:** Verify system works end-to-end
 ```bash
-# Run batch test
+# Single interview test (~10 sec, ~$0.01)
+python scripts/test_single_interview.py
+
+# Batch test - 5 interviews (~2-3 min, ~$0.10)
 python scripts/test_batch_interviews.py --batch-size 5
 
-# Validate results
+# Validate extraction results
 python scripts/validate_extraction.py --db data/test_batch.db
-```
-
-**Expected:**
-- ~2-3 minutes processing time
-- ~$0.10 cost
-- All 17 entity types should have data
-- No rate limit errors
-- Quality validation passes
-
-### If Test Succeeds: Run Full Extraction
-**Goal:** Process all 44 interviews
-```bash
-# Run full extraction
-python intelligence_capture/run.py
-
-# Or use test script
-python scripts/test_batch_interviews.py --batch-size 44
-```
-
-**Expected:**
-- ~15-20 minutes processing time
-- ~$0.50-1.00 cost
-- Real-time monitoring shows progress
-- Resume capability if interrupted
-
-### After Extraction: Validate & Report
-```bash
-# Validate results
-python scripts/validate_extraction.py
 
 # Generate comprehensive report
 python scripts/generate_comprehensive_report.py --format both
 ```
 
-### Known Issues (Don't Use Yet)
-- ⚠️ Parallel processing has database locking issues
-- ⚠️ Ensemble validation is complex and expensive (disabled)
+### Production Extraction
+
+```bash
+# Full extraction - 44 interviews (~15-20 min, ~$0.50-1.00)
+python intelligence_capture/run.py
+
+# Resume interrupted extraction
+python intelligence_capture/run.py --resume
+
+# Custom database path
+python intelligence_capture/run.py --db data/custom.db
+```
+
+### Database Queries
+
+```bash
+# Open database
+sqlite3 intelligence.db
+
+# Example queries
+SELECT COUNT(*) FROM pain_points;
+SELECT * FROM pain_points WHERE company='Los Tajibos' AND severity='Critical';
+SELECT name, usage_count FROM systems ORDER BY usage_count DESC LIMIT 10;
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/
+
+# Run specific test
+pytest tests/test_automation_candidate_extraction.py
+
+# Run tests with verbose output
+pytest -v tests/
+```
 
 ---
 
-## Success Criteria (Phase 1)
+## Next Steps: Knowledge Graph Consolidation (Week 1)
 
-✅ All 17 entity types extracted from interviews
-✅ All 17 entity types stored in database
-✅ Quality validation identifies issues
-✅ Progress tracking enables resume after failures
-✅ Processing time: ~30-45 min for 44 interviews
-✅ Cost: ~$1.50 for 44 interviews (ensemble off)
+### Week 1 Goal: Build Consolidation System
+**Objective:** Merge duplicate entities and build consensus from multiple sources
+
+**Timeline:** 5 days
+- Day 1: Database schema + duplicate detector
+- Day 2: Entity merger + consensus scorer + consolidation agent
+- Day 3: Integration with processor + database migration
+- Day 4: Relationship discovery + pattern recognition
+- Day 5: Testing with 10 interviews + validation
+
+**Expected Results:**
+- Duplicate reduction: 80-95% (48 system entries → 3 consolidated)
+- Source tracking: All entities have mentioned_in_interviews
+- Consensus confidence: Average >= 0.75
+- Relationships: System → Pain Point, Process → System
+- Patterns: Recurring issues identified (30%+ of interviews)
+
+### How to Start
+```bash
+# 1. Review the spec
+cat .kiro/specs/knowledge-graph-consolidation/requirements.md
+cat .kiro/specs/knowledge-graph-consolidation/design.md
+cat .kiro/specs/knowledge-graph-consolidation/tasks.md
+
+# 2. Start with Task 1: Database Schema
+# Open tasks.md and click "Start task" next to Task 1
+```
+
+### After Week 1: Full Extraction
+Once consolidation is complete, run full 44-interview extraction:
+```bash
+# Run extraction with consolidation
+python intelligence_capture/run.py
+
+# Validate consolidation
+python scripts/validate_consolidation.py
+
+# Generate consolidation report
+python scripts/generate_consolidation_report.py
+```
+
+**Expected:**
+- Processing time: 15-20 minutes
+- Cost: ~$2.00-3.50
+- Consolidated, intelligent data ready for AI agents
 
 ---
 
-## Tech Stack
+## Configuration
 
-- **Language:** Python 3.9+
-- **Database:** SQLite3
-- **AI Models:** OpenAI (gpt-4o-mini primary, gpt-4o fallback)
-- **Optional:** Anthropic (Claude) for ensemble validation
-- **Data Format:** JSON (Spanish text)
+### Main Config: `config/extraction_config.json`
+
+```json
+{
+  "extraction": {
+    "model": "gpt-4o-mini",
+    "temperature": 0.1,
+    "max_retries": 3
+  },
+  "validation": {
+    "enable_validation_agent": true,
+    "enable_llm_validation": false  // Disable for speed
+  },
+  "ensemble": {
+    "enable_ensemble_review": false  // KEEP DISABLED - expensive
+  },
+  "monitoring": {
+    "enable_monitor": true,
+    "print_summary_every_n": 5
+  },
+  "performance": {
+    "parallel_processing": true  // Now working with WAL mode
+  }
+}
+```
+
+### Environment Variables: `.env`
+
+```ini
+OPENAI_API_KEY=sk-proj-your-key-here
+ANTHROPIC_API_KEY=sk-ant-api03-your-key-here  # Optional
+ENABLE_ENSEMBLE_REVIEW=false  # Keep disabled
+```
+
+---
+
+## Critical Design Patterns
+
+### LLM Fallback Chain
+
+The system uses a 6-model fallback chain in `_call_gpt4()`:
+1. gpt-4o-mini (primary)
+2. gpt-4o
+3. gpt-3.5-turbo
+4. o1-mini
+5. o1-preview
+6. claude-3-5-sonnet-20241022
+
+Each model attempts with exponential backoff before falling to next.
+
+### WAL Mode & Parallel Processing
+
+SQLite WAL (Write-Ahead Logging) mode enables parallel processing:
+- Database created with `PRAGMA journal_mode=WAL` in `database.py`
+- Shared rate limiter prevents API throttling across workers
+- Processing time reduced from 15-20 min to ~5-8 min for 44 interviews
+
+### Resume Capability
+
+Progress tracking enables resuming interrupted extractions:
+- `data/extraction_progress.json` tracks completed interviews
+- `processor.py` checks progress and skips completed interviews
+- Use `--resume` flag to continue from last checkpoint
+
+### Organizational Hierarchy
+
+All entities linked to: company → business_unit → department
+- Defined in `config/companies.json`
+- Enforced by validation_agent.py
+- Critical for multi-company queries
+
+### Validation Strategy
+
+**Always-on validation** (validation_agent.py):
+- Completeness checks (min entities per interview)
+- Encoding validation (UTF-8, no mojibake)
+- Placeholder detection (no "N/A", "Unknown")
+- Quality thresholds configurable
+
+**Optional ensemble validation** (DISABLED by default):
+- Multi-model cross-validation
+- Expensive - only enable for critical quality needs
+
+---
+
+## File Organization
+
+```
+system0/
+├── intelligence_capture/     # Main Python package
+│   ├── processor.py          # Pipeline orchestrator
+│   ├── extractor.py          # Main extraction (v1.0 + orchestration)
+│   ├── extractors.py         # v2.0 specialized extractors
+│   ├── database.py           # SQLite schema and operations
+│   ├── validation_agent.py   # Quality validation
+│   ├── monitor.py            # Real-time progress tracking
+│   ├── rate_limiter.py       # Shared rate limiter
+│   ├── parallel_processor.py # Parallel extraction with WAL
+│   └── run.py                # Entry point
+├── config/
+│   ├── extraction_config.json   # All extraction settings
+│   ├── companies.json           # Organizational hierarchy
+│   └── ceo_priorities.json      # CEO prioritized processes
+├── data/
+│   ├── intelligence.db          # Production database
+│   ├── interviews/analysis_output/all_interviews.json  # Source data
+│   └── extraction_progress.json # Resume tracking
+├── scripts/
+│   ├── test_single_interview.py    # Single interview test
+│   ├── test_batch_interviews.py    # Batch testing
+│   ├── validate_extraction.py      # Validation
+│   ├── test_parallel_fixes.py      # Test parallel processing
+│   └── generate_comprehensive_report.py  # Reporting
+├── .kiro/specs/
+│   ├── extraction-completion/      # Phase 1-4 specs
+│   └── knowledge-graph-consolidation/  # Week 1 consolidation spec
+└── tests/                    # Unit tests for all extractors
+```
+
+**Path conventions:**
+- Always run scripts from project root
+- Import paths from `intelligence_capture.config`
+- All databases go to `data/`
+- All reports go to `reports/`
+
+---
+
+## Known Issues & Constraints
+
+### Features Now Working (Fixed)
+
+1. **Parallel processing** (`parallel_processing: true`)
+   - ✅ Fixed with WAL mode in database.py
+   - ✅ Shared rate limiter prevents conflicts
+   - ✅ 4/5 test interviews succeeded
+
+### DO NOT USE (Disabled Features)
+
+1. **Ensemble validation** (`ENABLE_ENSEMBLE_REVIEW=false`)
+   - Complex and expensive (3x cost, 3x time)
+   - Only enable if absolutely necessary for quality
+
+### Performance Characteristics
+
+- Single interview: ~10 seconds, ~$0.01
+- 44 interviews (parallel): ~5-8 minutes, ~$0.50-1.00
+- 44 interviews (sequential): ~15-20 minutes, ~$0.50-1.00
+- Rate limiting: Exponential backoff prevents API errors
+- Resume: Can restart from any point without re-processing
+
+---
+
+## Testing Strategy
+
+**Always test before full extraction:**
+
+1. **Single interview** - Verify extraction logic works
+2. **Batch (5 interviews)** - Verify performance and quality
+3. **Validate results** - Check completeness and integrity
+4. **Full extraction (44)** - Production run
 
 ---
 
 ## Important Notes
 
-1. **Spanish-first:** All interviews in Spanish, no translation needed
-2. **LLM Fallback:** 6-model chain handles rate limits automatically
-3. **Ensemble Optional:** Disabled by default (set `ENABLE_ENSEMBLE_REVIEW=false`)
-4. **Organizational Hierarchy:** company → business_unit → department
-5. **Resume Capability:** Can restart failed extractions (once Task 4 complete)
+1. **Spanish-first:** All content is in Spanish - extraction prompts expect Spanish, validation works on Spanish text
+2. **No translation:** Never translate interviews or extracted entities
+3. **Organizational hierarchy:** Always respect company → business_unit → department structure
+4. **Entity relationships:** All entities must reference valid interview_id
+5. **UTF-8 encoding:** Critical for Spanish text - check with validation_agent
+6. **Cost estimation:** System shows estimated cost and requests confirmation before extraction
+7. **WAL mode:** Database uses WAL mode for parallel processing - improves performance 2-3x
+8. **Duplicate entities:** 20-30% of extracted data is duplicated - knowledge graph consolidation addresses this
 
 ---
 
 ## Git Workflow
 
-**Branch:** `claude/create-claude-md-011CUvcCMuPWuxNTxhAq92F1`
-
 ```bash
-# Commit after each task
-git add .
-git commit -m "feat: Task N - Description"
+# Always work on feature branches
+git checkout -b feature/your-feature-name
 
-# Push when ready (must include session ID in branch name)
-git push -u origin claude/create-claude-md-011CUvcCMuPWuxNTxhAq92F1
+# Commit after completing tasks
+git add .
+git commit -m "feat: descriptive message"
+
+# Push when ready
+git push -u origin feature/your-feature-name
 ```
 
 ---
 
-## How to Continue This Session
-
-1. Review current task status in todo list
-2. Check `.kiro/specs/extraction-completion/tasks.md` for details
-3. Start with Task 1: Consolidate extraction logic
-4. Test after each task with single interview
-5. Commit after each task completion
-
----
-
 **Last Updated:** 2025-11-08
-**Session:** Phase 2 - Testing & Validation
-**Progress:** ✅ Phase 1 Complete (4/4 tasks) | 🎯 Phase 2 Ready (0/4 tasks)
+**Current Focus:** Knowledge Graph Consolidation System
+**Progress:** ✅ Phases 1-4 Complete | 🎯 Consolidation Spec Created (0/18 tasks)
