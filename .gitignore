@@ -19,3 +19,14 @@ intelligence.db
 # OS
 .DS_Store
 Thumbs.db
+
+# Test databases and temporary files
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/extraction_progress.json
+data/*_backup_*.db*
+
+# Test reports and logs
+reports/extraction_report_*.json
+reports/test_results_*.md
