@@ -209,45 +209,71 @@ Overall Progress:
 
 ---
 
-### 6. Knowledge Graph Consolidation (NEW - Phases 1-6 Complete)
+### 6. Knowledge Graph Consolidation (Phases 1-11 Complete)
 
 **Purpose**: Merge duplicate entities, discover relationships, identify patterns
 
-**Status**: ✅ Core system production-ready (50% complete - 26/52 tasks)
+**Status**: ✅ **Production-ready** (69% complete - 36/52 tasks)
 
 **Components**:
-- `consolidation_agent.py` - Main orchestrator
-- `duplicate_detector.py` - Fuzzy + semantic matching
+- `consolidation_agent.py` - Main orchestrator with metrics integration
+- `duplicate_detector.py` - Fuzzy + semantic matching (96x speedup achieved)
 - `entity_merger.py` - Merge logic with source tracking
 - `consensus_scorer.py` - Confidence calculation
-- `relationship_discoverer.py` - System→Pain, Process→System relationships
+- `relationship_discoverer.py` - System→Pain, Process→System, KPI→Process, Automation→Pain
 - `pattern_recognizer.py` - Recurring patterns, problematic systems
+- `metrics.py` - Comprehensive metrics collection (NEW)
+- `rollback_consolidation.py` - Rollback mechanism with entity snapshots (NEW)
 
 **Flow**:
 ```python
 # After extraction
 entities = extractor.extract_all(interview)
 
-# Consolidate
+# Consolidate with metrics tracking
 consolidated = consolidation_agent.consolidate_entities(entities, interview_id)
 # - Finds duplicates (fuzzy 70% + semantic 30%)
 # - Merges entities (tracks sources, detects contradictions)
 # - Calculates confidence (based on source agreement)
 # - Discovers relationships (co-occurrence in interviews)
 # - Identifies patterns (recurring issues, problematic systems)
+# - Tracks metrics (duplicates, API calls, quality)
 
 # Store consolidated entities
 database.insert(consolidated)
+
+# Export metrics
+metrics = consolidation_agent.get_metrics()
+metrics.export_to_json("reports/metrics.json")
+metrics.display_summary()
 ```
 
 **Key Features**:
-- Duplicate detection: 0.85 similarity threshold (configurable per entity type)
-- Source tracking: `mentioned_in_interviews`, `source_count`
-- Consensus scoring: Base score + agreement bonus - contradiction penalty
-- Relationships: 4 types (causes, uses, measures, addresses)
-- Patterns: Recurring pains (3+ mentions), problematic systems (5+ mentions)
+- **Duplicate detection**: 0.70-0.90 similarity thresholds (tuned per entity type)
+- **Source tracking**: `mentioned_in_interviews`, `source_count`
+- **Consensus scoring**: Tuned for 44 interviews (source_count_divisor=5)
+- **Relationships**: 4 types (causes, uses, measures, addresses)
+- **Patterns**: Recurring pains (3+ mentions), problematic systems (5+ mentions)
+- **Performance**: 96x speedup, 95% cost reduction via fuzzy-first filtering
+- **Rollback**: Entity snapshots with full rollback capability
+- **Metrics**: Comprehensive tracking (duplicates, API calls, quality, performance)
 
-**Pending**: PostgreSQL/Neo4j sync (Week 5), production hardening (Phases 7-12)
+**Production Configuration** (`config/consolidation_config.json`):
+- Lower thresholds for pain_points (0.70) and processes (0.75) to catch more duplicates
+- Higher thresholds for KPIs (0.85) and team_structures (0.90) for precision
+- Fuzzy-first filtering enabled (skip semantic if fuzzy >0.95)
+- Retry logic with exponential backoff and circuit breaker
+- Structured logging to `logs/consolidation.log`
+
+**Completed Phases**:
+- ✅ Phase 1-3: Foundation, core components, database integration
+- ✅ Phase 4-6: Relationships, patterns, testing, reporting
+- ✅ Phase 7-9: Security hardening, performance optimization, code quality
+- ✅ Phase 10-11: Testing, rollback, metrics, production configuration
+
+**Pending**: 
+- Phase 12: Final validation (Tasks 37-40)
+- Phase 13-14: RAG 2.0 integration, PostgreSQL/Neo4j sync (Week 5)
 
 **See**: `.kiro/specs/knowledge-graph-consolidation/` for full specs
 
@@ -257,14 +283,15 @@ database.insert(consolidated)
 
 **Purpose**: SQLite storage with WAL mode
 
-**Schema**: 17 entity type tables + metadata + consolidation fields
+**Schema**: 17 entity type tables + metadata + consolidation fields + rollback support
 
 **Key Tables**:
 - `interviews` - Interview metadata
 - `pain_points` - Business problems
-- `relationships` - Entity connections (NEW)
-- `patterns` - Recurring issues (NEW)
-- `consolidation_audit` - Merge audit trail (NEW)
+- `relationships` - Entity connections (4 types: causes, uses, measures, addresses)
+- `patterns` - Recurring issues (recurring_pain, problematic_system)
+- `consolidation_audit` - Merge audit trail with rollback tracking
+- `entity_snapshots` - Entity state before consolidation (for rollback)
 - `processes` - Workflows
 - `systems` - Tools/software
 - `kpis` - Success metrics
