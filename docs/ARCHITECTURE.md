@@ -1,8 +1,34 @@
 # System Architecture
 
 **Last Updated**: 2025-11-09
-**Status**: ⚠️ **Implementation Complete, Bugs Present**
+**Status**: ⚠️ **Legacy System Complete, RAG 2.0 Phase 1 Conditional Go**
 **See**: [DECISIONS.md](DECISIONS.md) for why decisions were made
+**QA Status**: Phase 1 (Tasks 0-5) requires 2-3 days remediation before Week 2
+
+---
+
+## RAG 2.0 Phase 1 QA Status (Nov 9, 2025)
+
+**Overall Grade**: C (62/100) - CONDITIONAL GO with mandatory fixes
+
+**Critical Findings**:
+1. 🚨 **Dependencies Not Installed**: 67 packages from requirements-rag2.txt missing (only mistralai installed)
+2. 🚨 **Test Claims Invalid**: Reported "103 tests, 85% coverage" but actual execution: 0 tests, 0% coverage
+3. 🚨 **UTF-8 Violations**: 3 locations in context_registry.py missing `ensure_ascii=False` (lines 352, 438, 439)
+4. ⚠️  **Task 4 Incomplete**: PostgreSQL async integration acknowledged as partial
+5. ⚠️  **Tasks 1-2 Untested**: No unit tests exist despite completion claim
+
+**Prerequisites for Week 2**:
+- [ ] Install dependencies: `pip install -r requirements-rag2.txt && python -m spacy download es_core_news_md`
+- [ ] Fix UTF-8 violations in context_registry.py
+- [ ] Complete Task 4 PostgreSQL integration
+- [ ] Write missing tests for Tasks 1-2
+- [ ] Execute full test suite and verify 80%+ coverage
+- [ ] Update completion report with actual metrics
+
+**Estimated Remediation**: 2-3 days
+
+**See**: `docs/archive/2025-11/qa-reviews/` for detailed QA reports
 
 ---
 
@@ -586,6 +612,227 @@ See [RUNBOOK.md](RUNBOOK.md) for detailed testing procedures.
 
 ---
 
+## RAG 2.0 PostgreSQL Schemas (Tasks 2 & 4)
+
+### Migration Files Created: 2025-11-09
+
+#### Ingestion Queue Schema (`2025_01_01_ingestion_queue.sql`)
+
+**Purpose**: Track document ingestion lifecycle from queue to completion for RAG 2.0 multi-format pipeline.
+
+**Table: ingestion_events**
+```sql
+CREATE TABLE ingestion_events (
+    id SERIAL PRIMARY KEY,
+    org_id VARCHAR(100) NOT NULL,              -- Los Tajibos, Comversa, Bolivian Foods
+    document_id UUID NOT NULL,                  -- Links to documents table
+    connector_type VARCHAR(50) NOT NULL,        -- email, whatsapp, api, sharepoint, drive
+    source_path TEXT NOT NULL,                  -- data/documents/inbox/{connector}/{org}/...
+    source_format VARCHAR(50),                  -- pdf, docx, image, csv, xlsx, whatsapp
+    checksum VARCHAR(64) NOT NULL UNIQUE,       -- SHA-256 for deduplication
+    file_size_bytes BIGINT,
+    status VARCHAR(50) DEFAULT 'queued',        -- queued, processing, completed, failed
+    stage VARCHAR(50),                          -- enqueued, parsing, ocr, chunking, embedding...
+    enqueued_at TIMESTAMP DEFAULT NOW(),
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    error_message TEXT,                         -- Spanish error messages
+    retry_count INTEGER DEFAULT 0,
+    processing_time_seconds FLOAT,
+    metadata JSONB                              -- Flexible connector-specific details
+);
+```
+
+**Key Indexes**:
+- `idx_ingestion_org_status` - Org-based status filtering
+- `idx_ingestion_checksum` - Fast deduplication lookups
+- `idx_ingestion_status` - Worker polling for queued jobs
+- `idx_ingestion_metadata` - GIN index for JSONB queries
+
+**Auto-calculated Fields**:
+- `processing_time_seconds` - Calculated by trigger on completion
+
+**Rollback**: `scripts/migrations/rollback/2025_01_01_ingestion_queue_rollback.sql`
+
+---
+
+#### OCR Review Queue Schema (`2025_01_02_ocr_review_queue.sql`)
+
+**Purpose**: Queue low-confidence OCR segments for manual review and correction.
+
+**Table: ocr_review_queue**
+```sql
+CREATE TABLE ocr_review_queue (
+    id SERIAL PRIMARY KEY,
+    document_id UUID NOT NULL,                  -- Links to ingestion_events
+    page_number INTEGER NOT NULL,               -- 1-based page number
+    segment_index INTEGER NOT NULL,             -- 0-based segment within page
+    ocr_text TEXT,                              -- Raw OCR output (may be incorrect)
+    confidence FLOAT NOT NULL,                  -- 0.0-1.0 confidence score
+    ocr_engine VARCHAR(50) NOT NULL,            -- mistral_pixtral, tesseract
+    bounding_box JSONB,                         -- {x, y, width, height, ...}
+    image_crop_url TEXT,                        -- Path to cropped image
+    status VARCHAR(50) DEFAULT 'pending_review', -- pending_review, in_review, approved, rejected
+    reviewed_by VARCHAR(100),                   -- Reviewer username/email
+    corrected_text TEXT,                        -- Manually corrected text
+    review_notes TEXT,                          -- Spanish reviewer notes
+    created_at TIMESTAMP DEFAULT NOW(),
+    reviewed_at TIMESTAMP,
+    priority VARCHAR(20) DEFAULT 'normal',      -- high, normal, low
+    segment_type VARCHAR(50),                   -- handwriting, printed_degraded, tables
+    metadata JSONB
+);
+```
+
+**Key Indexes**:
+- `idx_ocr_status_priority` - Pending reviews by priority
+- `idx_ocr_confidence` - Low confidence segments first
+- `idx_ocr_document` - All segments for a document
+- `idx_ocr_reviewed_by` - Reviewer activity tracking
+
+**Views Created**:
+- `ocr_high_priority_queue` - Pending reviews with confidence < 0.50
+- `ocr_reviewer_stats` - Reviewer performance metrics
+
+**Auto-calculated Fields**:
+- `priority` - Auto-set by trigger based on confidence thresholds:
+  - High: confidence < 0.50
+  - Normal: 0.50-0.70
+  - Low: 0.70-0.90
+- `image_crop_url` - Auto-generated path: `data/ocr_crops/{document_id}/page_{page}_segment_{segment}.png`
+
+**Rollback**: `scripts/migrations/rollback/2025_01_02_ocr_review_queue_rollback.sql`
+
+---
+
+### Migration Runner
+
+**Script**: `scripts/run_pg_migrations.py`
+
+**Usage**:
+```bash
+# Run all pending migrations
+python scripts/run_pg_migrations.py
+
+# Show migration status
+python scripts/run_pg_migrations.py --status
+
+# Preview migrations (dry run)
+python scripts/run_pg_migrations.py --dry-run
+
+# Rollback specific migration
+python scripts/run_pg_migrations.py --rollback 2025_01_01_ingestion_queue
+```
+
+**Features**:
+- Transaction-safe execution
+- Migration history tracking in `migration_history` table
+- Automatic rollback on failure
+- Dry-run mode for preview
+- Safety checks before rollback (warns if data exists)
+
+**Environment**:
+```bash
+export DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+```
+
+---
+
+### RAG 2.0 Architecture Diagram (Phase 1 - Weeks 1-2)
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    RAG 2.0 INGESTION PIPELINE                     │
+└──────────────────────────────────────────────────────────────────┘
+
+SOURCES                QUEUE                   PROCESSING
+┌──────────┐          ┌─────────────┐         ┌──────────────┐
+│ Email    │   →      │ Ingestion   │    →    │ Document     │
+│ WhatsApp │   →      │ Events      │    →    │ Processor    │
+│ SharePt  │   →      │ (Postgres)  │    →    │ Multi-format │
+│ API      │   →      └─────────────┘         └──────────────┘
+└──────────┘                 ↓                       ↓
+                     ┌─────────────┐         ┌──────────────┐
+                     │ Worker Pool │    →    │ OCR Engine   │
+                     │ (4 concurrent)         │ Pixtral/Tess │
+                     └─────────────┘         └──────────────┘
+                                                     ↓
+                                             ┌──────────────┐
+                                             │ OCR Review   │
+                                             │ Queue (low   │
+                                             │ confidence)  │
+                                             └──────────────┘
+                                                     ↓
+STORAGE                                      ┌──────────────┐
+┌──────────┐                                 │ Document     │
+│Postgres  │   ←──────────────────────────   │ Chunks       │
+│+ pgvector│                                 │ Spanish      │
+│          │                                 └──────────────┘
+│Neo4j     │   ←──────────────────────────   Knowledge Graph
+│Graph     │                                 (Phase 2)
+└──────────┘
+```
+
+**Data Flow**:
+1. **Connectors** → Drop files in `data/documents/inbox/{connector}/{org}/`
+2. **Ingestion Watcher** → Queue jobs in `ingestion_events` (status: queued)
+3. **Worker Pool** → Poll queue, process documents (status: processing)
+4. **DocumentProcessor** → Parse multi-format (PDF, DOCX, images, CSV, XLSX)
+5. **OCR Engine** → Process images/scanned PDFs with Mistral Pixtral
+6. **Low Confidence** → Queue in `ocr_review_queue` for manual review
+7. **Spanish Chunker** → Split into 300-500 token chunks
+8. **Embeddings Pipeline** → Generate vectors with `text-embedding-3-small`
+9. **Postgres Storage** → Store chunks + embeddings in pgvector
+10. **Completion** → Update `ingestion_events` (status: completed)
+
+**Concurrency**:
+- Max 4 concurrent workers (configurable)
+- Max 5 concurrent OCR calls (shared rate limiter)
+- Shared rate limiter across all workers
+
+**Error Handling**:
+- Retry up to 3 times per document
+- Failed documents → `status: failed`, Spanish error messages
+- Processing directories: `processing/`, `processed/`, `failed/`
+
+---
+
+### Database Configuration
+
+**File**: `config/database.toml`
+
+```toml
+# PostgreSQL connection for RAG 2.0
+[postgresql]
+read_uri = "postgresql://user:pass@host:5432/dbname"
+write_uri = "postgresql://user:pass@host:5432/dbname"
+pool_size = 10
+max_overflow = 20
+pool_timeout = 30
+
+# SQLite (legacy - consolidation only)
+[sqlite]
+path = "data/full_intelligence.db"
+wal_mode = true
+busy_timeout = 5000
+
+# Neo4j (Phase 2)
+[neo4j]
+uri = "neo4j://localhost:7687"
+user = "neo4j"
+# password from environment: NEO4J_PASSWORD
+```
+
+**Environment Variables**:
+```bash
+DATABASE_URL="postgresql://user:pass@host:5432/dbname"  # Required for migrations
+NEO4J_PASSWORD="..."                                     # Required for graph
+OPENAI_API_KEY="..."                                     # Required for embeddings
+MISTRAL_API_KEY="..."                                    # Required for OCR
+```
+
+---
+
 ## References
 
 - **Implementation Details**: See code in `intelligence_capture/`
@@ -593,9 +840,11 @@ See [RUNBOOK.md](RUNBOOK.md) for detailed testing procedures.
 - **Usage Instructions**: See [RUNBOOK.md](RUNBOOK.md)
 - **Experiments Log**: See [EXPERIMENTS.md](EXPERIMENTS.md)
 - **Current Bugs**: See [DECISIONS.md](DECISIONS.md#known-issues)
+- **RAG 2.0 Tasks**: See [.kiro/specs/rag-2.0-enhancement/tasks.md](.kiro/specs/rag-2.0-enhancement/tasks.md)
 
 ---
 
 **Document Status**: ✅ Master Architecture Document
 **Supersedes**: COMPLETE_PROJECT_SUMMARY.md, PROJECT_TRUTH_AUDIT.md, SYSTEM_ARCHITECTURE_VISUAL.md
 **Last Reviewed**: 2025-11-09
+**RAG 2.0 Schemas**: Tasks 2 & 4 Complete (2025-11-09)

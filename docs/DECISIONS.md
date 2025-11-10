@@ -19,6 +19,7 @@
 | [ADR-007](#adr-007-parallel-processing) | Parallel processing approach | ❌ Broken | 2025-11-08 |
 | [ADR-008](#adr-008-knowledge-graph-postponed) | Knowledge Graph postponed | ⏸️ Deferred | 2025-11-08 |
 | [ADR-009](#adr-009-production-bugs-unfixed) | Production bugs unfixed | 🚨 Critical issue | 2025-11-09 |
+| [ADR-010](#adr-010-rag-20-phase-1-conditional-go) | RAG 2.0 Phase 1 CONDITIONAL GO | ⚠️ Requires remediation | 2025-11-09 |
 
 ---
 
@@ -694,6 +695,133 @@ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Discover bugs → Document
 5. **THEN** consider new features
 
 **Estimated time**: 2-3 days to production-ready
+
+---
+
+## ADR-010: RAG 2.0 Phase 1 CONDITIONAL GO
+
+### Status
+⚠️ **Requires Remediation** | 2025-11-09
+
+### Context
+Comprehensive QA review conducted for RAG 2.0 Phase 1 (Tasks 0-5): Context Registry, connectors, document processing, OCR, and Spanish chunking.
+
+### Critical Findings
+
+**🚨 Blockers Discovered**:
+1. **Dependencies Not Installed**: 67 packages from `requirements-rag2.txt` missing (only `mistralai` installed)
+   - Impact: System cannot run at all without dependencies
+   - Verification: `pip list | wc -l` shows 18 packages, requirements-rag2.txt has 67
+
+2. **Test Claims Invalid**: Reported "103 tests, 85% coverage" in completion report
+   - Reality: `pytest --collect-only` returns 0 tests
+   - Impact: No validation that code actually works
+
+3. **UTF-8 Violations**: 3 locations in `context_registry.py` missing `ensure_ascii=False`
+   - Lines: 352, 438, 439 (JSON serialization)
+   - Impact: Spanish characters may be escaped (violates ADR-001)
+
+4. **Task 4 Incomplete**: PostgreSQL async integration acknowledged as partial
+   - Missing: Connection pooling, transaction management, error handling
+   - Impact: Cannot proceed to Week 2 (dual storage) without working Postgres layer
+
+5. **Tasks 1-2 Untested**: No unit tests for connector implementations
+   - Impact: Unknown if connectors work correctly
+   - Risk: Integration issues in production
+
+### Decision
+**CONDITIONAL GO: Proceed to Week 2 ONLY after mandatory remediation**
+
+### Rationale
+
+**Why CONDITIONAL GO (not STOP)**:
+- ✅ Core architecture is sound (good design patterns)
+- ✅ Spanish-first principles properly applied in most places
+- ✅ Type hints and docstrings comprehensive
+- ✅ 2-3 days remediation work (manageable)
+
+**Why NOT GO (without conditions)**:
+- ❌ Cannot run system at all (dependencies missing)
+- ❌ No test validation (0% coverage despite claims)
+- ❌ UTF-8 violations risk data corruption
+- ❌ Incomplete Postgres layer blocks Week 2
+
+**Grade**: C (62/100)
+- Implementation Quality: 70/100 (good patterns, UTF-8 issues)
+- Testing: 0/100 (no tests despite claims)
+- Readiness: 85/100 (dependencies missing but fixable)
+
+### Prerequisites for Week 2
+
+**Mandatory** (MUST complete before Week 2):
+1. Install dependencies: `pip install -r requirements-rag2.txt && python -m spacy download es_core_news_md`
+2. Fix UTF-8 violations: Add `ensure_ascii=False` to 3 locations in context_registry.py
+3. Complete Task 4: Finish PostgreSQL async integration (pooling, transactions, error handling)
+4. Write missing tests: Unit tests for Tasks 1-2 (connectors)
+5. Execute test suite: `pytest tests/ -v --cov` and verify 80%+ coverage
+6. Update completion report: Replace false claims with actual test metrics
+
+**Estimated Remediation**: 2-3 days
+
+### Implementation Strategy
+
+**Day 1: Fix Critical Bugs**
+- Hour 1-2: Install dependencies, verify imports
+- Hour 3-4: Fix UTF-8 violations, verify Spanish content
+- Hour 5-6: Complete Task 4 PostgreSQL integration
+
+**Day 2: Write Tests**
+- Morning: Write unit tests for connectors (Tasks 1-2)
+- Afternoon: Write tests for document processor (Task 3)
+- Evening: Achieve 80%+ coverage
+
+**Day 3: Validation**
+- Morning: Full test suite execution
+- Afternoon: End-to-end integration test
+- Evening: Update completion report with actual metrics
+
+### Consequences
+
+**Positive** (CONDITIONAL GO):
+- Focus on fixing foundation before building more
+- Avoid compounding technical debt
+- Establish trust through accurate reporting
+- 2-3 day delay prevents weeks of rework later
+
+**Negative** (Timeline Impact):
+- Week 2 start delayed 2-3 days
+- Overall project timeline extends slightly
+- Team confidence impacted by false claims
+
+**What Could Have Been Avoided**:
+- Earlier testing would have caught missing dependencies
+- Test-driven development would have prevented false coverage claims
+- More thorough validation gates before "completion"
+
+### Lessons Learned
+
+**Pattern**: "Claim completion before validation" → Technical debt + trust issues
+
+**Better Pattern**: "Test → Validate → Then claim completion"
+
+**Root Cause**: Optimism bias + forward momentum > systematic validation
+
+**Prevention**:
+1. **Test-first**: Write tests before marking tasks complete
+2. **Validate claims**: Run `pytest --collect-only` before reporting test counts
+3. **Dependency checks**: Verify `pip install` works in clean environment
+4. **Independent review**: QA validates completion before acceptance
+
+### Current Status
+
+**Remediation**: In progress (Day 1/3)
+**Week 2 start**: Blocked until prerequisites complete
+**Project timeline**: +2-3 days (Week 1 → 10 days instead of 7)
+
+### Related Documents
+- QA Review: [docs/archive/2025-11/qa-reviews/qa_review_phase1.md](archive/2025-11/qa-reviews/qa_review_phase1.md)
+- Task Status: [.kiro/specs/rag-2.0-enhancement/tasks.md](../.kiro/specs/rag-2.0-enhancement/tasks.md)
+- Test Execution: [docs/archive/2025-11/phase-reports/test_execution_phase1.json](archive/2025-11/phase-reports/test_execution_phase1.json)
 
 ---
 

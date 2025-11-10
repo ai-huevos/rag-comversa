@@ -15,6 +15,7 @@
 | [EXP-003](#exp-003-llm-fallback-chain) | LLM Fallback Chain (6 models) | ✅ Success | 2025-11-07 | In production |
 | [EXP-004](#exp-004-17-entity-types) | 17 Entity Types (v1.0 + v2.0) | ✅ Success | 2025-11-07 | In production |
 | [EXP-005](#exp-005-rule-based-validation) | Rule-Based Validation | ✅ Success | 2025-11-08 | In production |
+| [EXP-006](#exp-006-rag-20-phase-1-qa-validation) | RAG 2.0 Phase 1 QA Validation | ⚠️ CONDITIONAL GO | 2025-11-09 | Remediation required |
 
 ---
 
@@ -470,11 +471,176 @@ LLM validation:
 
 ---
 
+### EXP-006: RAG 2.0 Phase 1 QA Validation
+
+**Date**: 2025-11-09
+**Status**: ⚠️ **CONDITIONAL GO** (Remediation required)
+**Related**: [ADR-010](DECISIONS.md#adr-010-rag-20-phase-1-conditional-go)
+
+#### Hypothesis
+Comprehensive QA validation before Week 2 will catch critical issues and prevent technical debt accumulation.
+
+#### Setup
+
+**QA Review Scope**:
+- Task 0: Context Registry implementation
+- Task 1-2: Source connectors and ingestion queue
+- Task 3: Multi-format DocumentProcessor
+- Task 4: OCR integration (Mistral Pixtral)
+- Task 5: Spanish-aware chunking
+
+**Validation Methodology**:
+1. **Dependency Audit**: `pip list` vs `requirements-rag2.txt`
+2. **Test Discovery**: `pytest --collect-only`
+3. **UTF-8 Compliance**: Grep for `json.dumps` without `ensure_ascii=False`
+4. **Code Quality**: Type hints, docstrings, error handling
+5. **Implementation Completeness**: Feature-by-feature validation
+
+#### Test Results
+
+**Overall Grade**: C (62/100)
+- Implementation Quality: 70/100
+- Testing: 0/100 (critical failure)
+- Readiness: 85/100
+
+**Critical Issues Discovered**:
+
+1. **Dependencies Not Installed** 🚨
+   ```bash
+   $ pip list | wc -l
+   18  # Only 18 packages installed
+
+   $ wc -l requirements-rag2.txt
+   67  # Requirements file has 67 packages
+
+   # Only mistralai installed, missing 66+ packages
+   ```
+   - Impact: System cannot run at all
+   - Severity: BLOCKER
+
+2. **Test Claims Invalid** 🚨
+   ```bash
+   $ pytest tests/ --collect-only
+   collected 0 items
+
+   # Completion report claimed: "103 tests, 85% coverage"
+   # Reality: 0 tests, 0% coverage
+   ```
+   - Impact: No validation that code works
+   - Severity: BLOCKER
+
+3. **UTF-8 Violations** 🚨
+   ```python
+   # intelligence_capture/context_registry.py
+   Line 352: json.dumps(context, indent=2)  # Missing ensure_ascii=False
+   Line 438: json.dumps(contexts, indent=2)  # Missing ensure_ascii=False
+   Line 439: json.dumps(summary, indent=2)   # Missing ensure_ascii=False
+   ```
+   - Impact: Spanish characters may be escaped
+   - Severity: HIGH (violates ADR-001)
+
+4. **Task 4 Incomplete** ⚠️
+   - PostgreSQL async integration acknowledged as partial
+   - Missing: Connection pooling, transaction management
+   - Impact: Cannot proceed to Week 2 (dual storage)
+
+5. **Tasks 1-2 Untested** ⚠️
+   - No unit tests for connector implementations
+   - Impact: Unknown if connectors work correctly
+
+#### Decision
+**CONDITIONAL GO: Proceed to Week 2 ONLY after mandatory remediation** (ADR-010)
+
+#### Remediation Plan
+
+**Mandatory Prerequisites**:
+1. Install dependencies: `pip install -r requirements-rag2.txt && python -m spacy download es_core_news_md`
+2. Fix UTF-8 violations: Add `ensure_ascii=False` to 3 locations
+3. Complete Task 4: Finish PostgreSQL async integration
+4. Write missing tests: Unit tests for Tasks 1-2
+5. Execute test suite: `pytest tests/ -v --cov` → verify 80%+ coverage
+6. Update completion report: Replace false claims with actual metrics
+
+**Estimated Time**: 2-3 days
+
+**Timeline Impact**: Week 1 extends from 7 days → 10 days
+
+#### Why This Experiment Was Valuable
+
+**What We Discovered**:
+- ✅ Early QA caught 5 critical issues before Week 2
+- ✅ Prevented building Week 2 on broken foundation
+- ✅ 2-3 day fix now prevents weeks of rework later
+- ✅ Established importance of independent validation
+
+**What Would Have Happened Without QA**:
+- ❌ Week 2 work would fail immediately (missing dependencies)
+- ❌ Spanish data corruption (UTF-8 violations)
+- ❌ No test coverage → production bugs
+- ❌ Compound technical debt across 5 weeks
+
+**Cost-Benefit Analysis**:
+- QA time investment: 1 day (8 hours)
+- Remediation time: 2-3 days
+- **Total**: 3-4 days with validation
+- **Without QA**: 5+ weeks of compounding issues
+- **Net benefit**: ~4 weeks saved
+
+#### Lessons Learned
+
+**1. Test-Driven Development Matters**
+- Writing tests after code → easy to skip or fake
+- Writing tests first → forces validation
+- Pattern: Test → Code → Validate → Complete
+
+**2. Dependency Management Critical**
+- Virtual environments can hide missing dependencies
+- Always test `pip install -r requirements.txt` in fresh environment
+- Document installation steps in RUNBOOK
+
+**3. False Claims Destroy Trust**
+- "103 tests, 85% coverage" claim with 0 tests
+- Impact: Team confidence damaged
+- Prevention: Automated CI checks before claiming completion
+
+**4. UTF-8 Compliance Non-Negotiable**
+- Spanish-first principle (ADR-001) requires `ensure_ascii=False`
+- Easy to miss, catastrophic impact
+- Prevention: Linter rule or pre-commit hook
+
+**5. Independent QA Works**
+- Self-review insufficient (bias towards "it works")
+- Independent validation catches real issues
+- Pattern: Implement → QA → Remediate → Approve
+
+#### Related Experiments
+
+**Comparison to Previous Validation Issues**:
+- [EXP-002](#exp-002-parallel-processing-with-wal): Parallel processing broken, discovered too late
+- [ADR-009](DECISIONS.md#adr-009-production-bugs-unfixed): Critical bugs documented but not fixed
+- **EXP-006**: QA caught issues early, forced remediation before Week 2
+
+**Success Pattern**: Early validation > Late discovery
+
+#### Recommendation
+
+**Adopt QA Gates for All Phases**:
+1. **Phase completion checkpoint**: Independent QA review
+2. **Prerequisites validation**: Test in clean environment
+3. **Test coverage enforcement**: CI blocks merge if <80% coverage
+4. **UTF-8 compliance check**: Automated linter rule
+5. **Dependency audit**: `pip list` vs `requirements.txt` in CI
+
+**Cost**: 1 day QA per phase
+**Benefit**: Prevent weeks of technical debt
+
+---
+
 ## Experiments Queue
 
 ### Planned Experiments (Not Started)
 
-#### EXP-006: Knowledge Graph Consolidation
+#### EXP-007: Knowledge Graph Consolidation
 **Status**: ⏸️ Postponed (dependencies not met)
 
 **Hypothesis**: Consolidating duplicate entities across interviews provides better quality than ensemble validation per interview.
@@ -492,7 +658,7 @@ LLM validation:
 
 ---
 
-#### EXP-007: GPT-4o-mini-2024 Model
+#### EXP-008: GPT-4o-mini-2024 Model
 **Status**: ⏸️ Pending model availability
 
 **Hypothesis**: Newer GPT-4o-mini model will improve quality without cost increase.
@@ -505,7 +671,7 @@ LLM validation:
 
 ---
 
-#### EXP-008: Batch API Calls
+#### EXP-009: Batch API Calls
 **Status**: ⏸️ Low priority
 
 **Hypothesis**: OpenAI Batch API could reduce cost by 50%.

@@ -20,6 +20,80 @@
 | **Consolidation dashboard** | `python scripts/generate_consolidation_report.py` | 30s | Free |
 | **Rollback consolidation** | `python scripts/rollback_consolidation.py --list` | 5s | Free |
 | **Performance tests** | `pytest tests/test_consolidation_performance.py -v` | 30s | Free |
+| **RAG 2.0 Phase 1 setup** | Install dependencies + run tests | 10 min | Free |
+| **Documentation cleanup** | `python scripts/cleanup_docs.py --list` | 5s | Free |
+
+---
+
+## RAG 2.0 Phase 1 Operations (Tasks 0-5)
+
+### Prerequisites Installation
+
+**Status**: ⚠️ **Required before Week 2**
+
+```bash
+# 1. Install all dependencies (currently missing 67 packages)
+pip install -r requirements-rag2.txt
+
+# 2. Download spaCy Spanish model
+python -m spacy download es_core_news_md
+
+# 3. Verify installation
+pip list | grep -E "nltk|spacy|asyncpg|neo4j|openai"
+
+# Expected: All packages installed
+```
+
+### Phase 1 Testing
+
+**Run all Phase 1 tests**:
+```bash
+# Collect tests (verify dependencies)
+pytest tests/ --collect-only
+
+# Run full test suite
+pytest tests/ -v --cov=intelligence_capture --cov-report=html
+
+# Expected: 80%+ coverage, all tests passing
+```
+
+### Known Issues (Must Fix)
+
+1. **UTF-8 Encoding Violations** (context_registry.py):
+```bash
+# Lines 352, 438, 439 missing ensure_ascii=False
+# Fix manually or with:
+grep -n "json.dumps" intelligence_capture/context_registry.py
+```
+
+2. **Task 4 PostgreSQL Integration**:
+```bash
+# Incomplete async operations in ocr_client.py
+# Requires 2-3 hours implementation
+```
+
+3. **Tasks 1-2 Missing Tests**:
+```bash
+# No unit tests for connectors and ingestion queue
+# Estimate: 4-6 hours to write
+```
+
+### Documentation Management
+
+**List archivable documents**:
+```bash
+python scripts/cleanup_docs.py --list
+```
+
+**Archive old reports**:
+```bash
+python scripts/cleanup_docs.py --archive
+```
+
+**Validate master docs**:
+```bash
+python scripts/cleanup_docs.py --validate
+```
 
 ---
 

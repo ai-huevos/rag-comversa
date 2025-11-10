@@ -1,0 +1,404 @@
+{
+  "review_metadata": {
+    "review_date": "2025-11-09",
+    "reviewer": "quality_governance_agent",
+    "phase": "Phase 1 (Week 1)",
+    "tasks_reviewed": [0, 1, 2, 3, 4, 5],
+    "methodology": "Sequential thinking (40 steps)",
+    "total_issues": 12
+  },
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "severity": "CRITICAL",
+      "category": "testing",
+      "title": "Test Claims vs Reality Mismatch",
+      "description": "Phase 1 completion report claims '103 tests, 85% coverage, all passing' but actual verification shows 0 tests executed due to missing dependencies.",
+      "evidence": {
+        "claimed": {
+          "test_count": 103,
+          "coverage": "85%",
+          "status": "all passing"
+        },
+        "actual": {
+          "test_count": 0,
+          "coverage": "0%",
+          "status": "ModuleNotFoundError: No module named 'nltk', 'spacy', 'asyncpg'",
+          "pytest_output": "collected 172 items / 17 errors"
+        }
+      },
+      "impact_on_week2": "BLOCKER - Cannot validate Phase 1 implementations",
+      "must_fix": true,
+      "remediation": {
+        "steps": [
+          "Install all dependencies: pip install -r requirements-rag2.txt",
+          "Download spaCy model: python -m spacy download es_core_news_md",
+          "Run pytest: pytest tests/ -v --cov=intelligence_capture",
+          "Report ACTUAL results, not theoretical coverage"
+        ],
+        "estimated_time": "2-4 hours",
+        "blocking_tasks": ["All Week 2 tasks"]
+      }
+    },
+    {
+      "id": "ISSUE-002",
+      "severity": "CRITICAL",
+      "category": "dependencies",
+      "title": "RAG 2.0 Dependencies Not Installed",
+      "description": "Critical dependencies from requirements-rag2.txt are not installed, preventing test execution and Week 2 development.",
+      "missing_dependencies": [
+        "nltk>=3.8.0",
+        "spacy>=3.7.0",
+        "es_core_news_md (spaCy Spanish model)",
+        "asyncpg>=0.29.0",
+        "pytesseract>=0.3.10",
+        "neo4j>=5.14.0",
+        "openai>=1.3.0"
+      ],
+      "installed_dependencies": [
+        "mistralai==1.9.11"
+      ],
+      "impact_on_week2": "BLOCKER - Week 2 cannot start without these dependencies",
+      "must_fix": true,
+      "remediation": {
+        "steps": [
+          "Run: pip install -r requirements-rag2.txt",
+          "Run: python -m spacy download es_core_news_md",
+          "Run: brew install tesseract tesseract-lang (macOS)",
+          "Verify: pip list | grep -E 'spacy|nltk|asyncpg|neo4j|openai'"
+        ],
+        "estimated_time": "30-60 minutes",
+        "blocking_tasks": ["All Week 2 tasks", "Phase 1 test execution"]
+      }
+    },
+    {
+      "id": "ISSUE-003",
+      "severity": "HIGH",
+      "category": "implementation",
+      "title": "Task 4 OCR PostgreSQL Integration Incomplete",
+      "description": "OCR Review Queue integration is marked 'Partial' - async PostgreSQL insert in OCRCoordinator._enqueue_for_review() not implemented.",
+      "file": "intelligence_capture/ocr/ocr_coordinator.py",
+      "location": "Method: _enqueue_for_review()",
+      "evidence": "Task 4 report states: 'Review Queue Integration: ⚠️ Partial - async PostgreSQL insert pending'",
+      "impact_on_week2": "HIGH - Task 8 (Document Persistence) depends on complete OCR integration",
+      "must_fix": true,
+      "remediation": {
+        "steps": [
+          "Implement async PostgreSQL insert using asyncpg",
+          "Connect to ocr_review_queue table",
+          "Test manual review CLI with actual PostgreSQL database",
+          "Verify full workflow: OCR → low confidence → queue → manual review"
+        ],
+        "estimated_time": "3-4 hours",
+        "blocking_tasks": ["Task 8 (Document Persistence)"]
+      }
+    },
+    {
+      "id": "ISSUE-004",
+      "severity": "MEDIUM",
+      "category": "code_quality",
+      "title": "UTF-8 Encoding Violations in context_registry.py",
+      "description": "Three json.dumps() calls missing ensure_ascii=False, risking Spanish character corruption in metadata fields.",
+      "file": "intelligence_capture/context_registry.py",
+      "locations": [
+        {
+          "line": 352,
+          "code": "json.dumps(query_params) if query_params else None",
+          "fix": "json.dumps(query_params, ensure_ascii=False) if query_params else None"
+        },
+        {
+          "line": 438,
+          "code": "json.dumps(contact_owner) if contact_owner else None",
+          "fix": "json.dumps(contact_owner, ensure_ascii=False) if contact_owner else None"
+        },
+        {
+          "line": 439,
+          "code": "json.dumps(consent_metadata) if consent_metadata else None",
+          "fix": "json.dumps(consent_metadata, ensure_ascii=False) if consent_metadata else None"
+        }
+      ],
+      "impact_on_week2": "MEDIUM - Could cause Spanish character corruption in org metadata",
+      "must_fix": true,
+      "remediation": {
+        "steps": [
+          "Add ensure_ascii=False to all three json.dumps() calls",
+          "Test with Spanish characters in metadata: {'name': 'Reconciliación'}",
+          "Verify no mojibake in PostgreSQL storage"
+        ],
+        "estimated_time": "15 minutes",
+        "blocking_tasks": []
+      }
+    },
+    {
+      "id": "ISSUE-005",
+      "severity": "MEDIUM",
+      "category": "testing",
+      "title": "Tasks 1-2 Have No Tests Written",
+      "description": "Despite Tasks 1-2 completion claim, agent report shows testing status as 'pending' with no tests created for connectors and ingestion queue.",
+      "affected_components": [
+        "intelligence_capture/connectors/ (4 connectors)",
+        "intelligence_capture/queues/ingestion_queue.py"
+      ],
+      "evidence": "Agent report JSON: 'testing_status': {'unit_tests': 'pending', 'integration_tests': 'pending'}",
+      "impact_on_week2": "MEDIUM - Connectors and queue untested, could fail in production",
+      "must_fix": false,
+      "should_fix_during": "Week 2",
+      "remediation": {
+        "steps": [
+          "Write unit tests for BaseConnector",
+          "Write tests for all 4 connector implementations",
+          "Write unit tests for IngestionQueue",
+          "Write integration test for connector → queue workflow",
+          "Target: >80% coverage"
+        ],
+        "estimated_time": "6-8 hours",
+        "blocking_tasks": []
+      }
+    },
+    {
+      "id": "ISSUE-006",
+      "severity": "MEDIUM",
+      "category": "infrastructure",
+      "title": "PostgreSQL Instance Not Provisioned",
+      "description": "DATABASE_URL environment variable not configured, PostgreSQL instance not provisioned for Week 2 tasks.",
+      "impact_on_week2": "HIGH - Tasks 6, 7, 8 cannot start without PostgreSQL",
+      "must_fix": false,
+      "should_fix_during": "Week 2 Day 1",
+      "remediation": {
+        "steps": [
+          "Provision Neon PostgreSQL instance",
+          "Enable pgvector extension",
+          "Set DATABASE_URL environment variable",
+          "Test connection: psql $DATABASE_URL",
+          "Apply Phase 1 migrations"
+        ],
+        "estimated_time": "30-60 minutes",
+        "blocking_tasks": ["Task 6", "Task 7", "Task 8"]
+      }
+    },
+    {
+      "id": "ISSUE-007",
+      "severity": "MEDIUM",
+      "category": "infrastructure",
+      "title": "Neo4j Instance Not Provisioned",
+      "description": "Neo4j URI and credentials not configured for Task 9 graph builder.",
+      "impact_on_week2": "HIGH - Task 9 cannot start without Neo4j",
+      "must_fix": false,
+      "should_fix_during": "Week 2 Day 1",
+      "remediation": {
+        "steps": [
+          "Provision Neo4j Aura instance OR install Neo4j Desktop",
+          "Set environment variables: NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD",
+          "Test connection: cypher-shell",
+          "Create indexes and constraints"
+        ],
+        "estimated_time": "30-60 minutes",
+        "blocking_tasks": ["Task 9"]
+      }
+    },
+    {
+      "id": "ISSUE-008",
+      "severity": "LOW",
+      "category": "infrastructure",
+      "title": "OpenAI API Key Not Verified",
+      "description": "OPENAI_API_KEY environment variable may not be configured for embedding pipeline (Task 7).",
+      "impact_on_week2": "MEDIUM - Task 7 cannot generate embeddings without API key",
+      "must_fix": false,
+      "should_fix_during": "Week 2 Day 1",
+      "remediation": {
+        "steps": [
+          "Verify OPENAI_API_KEY is set: echo $OPENAI_API_KEY",
+          "Test API key: curl openai.com/v1/embeddings with key",
+          "Document key in .env file for persistence"
+        ],
+        "estimated_time": "10 minutes",
+        "blocking_tasks": ["Task 7"]
+      }
+    },
+    {
+      "id": "ISSUE-009",
+      "severity": "LOW",
+      "category": "testing",
+      "title": "No Integration Tests for End-to-End Pipeline",
+      "description": "No tests verify full pipeline: connector → queue → processor → OCR → chunking → embeddings.",
+      "impact_on_week2": "LOW - Could discover integration issues late",
+      "must_fix": false,
+      "should_fix_during": "Week 2",
+      "remediation": {
+        "steps": [
+          "Create tests/test_e2e_ingestion.py",
+          "Test: Drop PDF in inbox → verify in PostgreSQL",
+          "Test: 10-page PDF processes in <2 minutes",
+          "Test: Low-confidence OCR segments enqueued for review"
+        ],
+        "estimated_time": "4-6 hours",
+        "blocking_tasks": []
+      }
+    },
+    {
+      "id": "ISSUE-010",
+      "severity": "LOW",
+      "category": "performance",
+      "title": "No Performance Benchmarks Run",
+      "description": "Success criterion '10-page PDF <2 min' not verified with actual benchmark test.",
+      "impact_on_week2": "LOW - Performance may not meet SLA",
+      "must_fix": false,
+      "should_fix_during": "Week 2-3",
+      "remediation": {
+        "steps": [
+          "Create performance test script",
+          "Benchmark: 10-page PDF processing time",
+          "Benchmark: Queue throughput (docs/day)",
+          "Benchmark: Embedding generation speed",
+          "Document results in reports/performance/"
+        ],
+        "estimated_time": "2-3 hours",
+        "blocking_tasks": []
+      }
+    },
+    {
+      "id": "ISSUE-011",
+      "severity": "LOW",
+      "category": "documentation",
+      "title": "CostGuard Not Yet Implemented",
+      "description": "Cost controls (throttle >$900, stop >$1,000) mentioned in requirements but intelligence_capture/cost_guard.py does not exist.",
+      "impact_on_week2": "MEDIUM - Task 7 should implement CostGuard for embedding pipeline",
+      "must_fix": false,
+      "should_fix_during": "Week 2 Task 7",
+      "remediation": {
+        "steps": [
+          "Create intelligence_capture/cost_guard.py",
+          "Track: OCR cost, embedding cost, LLM cost",
+          "Implement: Monthly projection from daily spend",
+          "Implement: Throttle ingestion workers >$900",
+          "Implement: Hard stop >$1,000 with approval requirement"
+        ],
+        "estimated_time": "3-4 hours",
+        "blocking_tasks": []
+      }
+    },
+    {
+      "id": "ISSUE-012",
+      "severity": "INFO",
+      "category": "documentation",
+      "title": "Task 0 Tests Only 4/6 Passing",
+      "description": "Context Registry tests show 4/6 passing, 2 require asyncpg installation to run.",
+      "file": "scripts/test_context_registry.py",
+      "evidence": "Task 0 report: '**Test Results:** 4/6 tests pass (2 require `asyncpg` installation)'",
+      "impact_on_week2": "LOW - Context Registry functionality works, tests just need dependencies",
+      "must_fix": false,
+      "should_fix_during": "Week 2 Day 1",
+      "remediation": {
+        "steps": [
+          "Install asyncpg: pip install asyncpg",
+          "Run: python scripts/test_context_registry.py",
+          "Verify: 6/6 tests pass"
+        ],
+        "estimated_time": "5 minutes",
+        "blocking_tasks": []
+      }
+    }
+  ],
+  "summary_by_severity": {
+    "CRITICAL": 2,
+    "HIGH": 1,
+    "MEDIUM": 5,
+    "LOW": 3,
+    "INFO": 1
+  },
+  "summary_by_category": {
+    "testing": 4,
+    "dependencies": 1,
+    "implementation": 1,
+    "code_quality": 1,
+    "infrastructure": 3,
+    "performance": 1,
+    "documentation": 1
+  },
+  "must_fix_before_week2": [
+    "ISSUE-001",
+    "ISSUE-002",
+    "ISSUE-003",
+    "ISSUE-004"
+  ],
+  "should_fix_during_week2": [
+    "ISSUE-005",
+    "ISSUE-006",
+    "ISSUE-007",
+    "ISSUE-008",
+    "ISSUE-009",
+    "ISSUE-010",
+    "ISSUE-011",
+    "ISSUE-012"
+  ],
+  "week2_blockers": [
+    {
+      "issue_id": "ISSUE-001",
+      "blocker_for": ["All tasks - cannot validate Phase 1"],
+      "severity": "CRITICAL"
+    },
+    {
+      "issue_id": "ISSUE-002",
+      "blocker_for": ["All tasks - dependencies required"],
+      "severity": "CRITICAL"
+    },
+    {
+      "issue_id": "ISSUE-003",
+      "blocker_for": ["Task 8 - Document Persistence"],
+      "severity": "HIGH"
+    },
+    {
+      "issue_id": "ISSUE-006",
+      "blocker_for": ["Task 6, 7, 8 - PostgreSQL required"],
+      "severity": "MEDIUM"
+    },
+    {
+      "issue_id": "ISSUE-007",
+      "blocker_for": ["Task 9 - Neo4j required"],
+      "severity": "MEDIUM"
+    }
+  ],
+  "remediation_timeline": {
+    "immediate": {
+      "duration": "4-8 hours",
+      "issues": ["ISSUE-001", "ISSUE-002", "ISSUE-003", "ISSUE-004"],
+      "description": "Must complete before Week 2 begins"
+    },
+    "week2_day1": {
+      "duration": "2-3 hours",
+      "issues": ["ISSUE-006", "ISSUE-007", "ISSUE-008", "ISSUE-012"],
+      "description": "Provision infrastructure for Week 2 tasks"
+    },
+    "week2_ongoing": {
+      "duration": "12-20 hours",
+      "issues": ["ISSUE-005", "ISSUE-009", "ISSUE-010", "ISSUE-011"],
+      "description": "Quality improvements during Week 2 development"
+    }
+  },
+  "quality_metrics": {
+    "code_files_created": 60,
+    "sql_migrations_created": 3,
+    "lines_of_code": 7856,
+    "test_files_created": 8,
+    "test_functions_written": "60+",
+    "actual_test_execution": "0 tests run (dependencies missing)",
+    "claimed_coverage": "85%",
+    "actual_coverage": "0%",
+    "spanish_first_compliance": "100% (no translation code)",
+    "utf8_encoding_compliance": "77% (10/13 json operations correct)",
+    "type_hints_coverage": "~95% (spot checks)"
+  },
+  "go_no_go_decision": {
+    "decision": "CONDITIONAL GO",
+    "conditions": [
+      "Install all dependencies from requirements-rag2.txt",
+      "Complete Task 4 PostgreSQL integration",
+      "Fix 3 UTF-8 encoding violations",
+      "Run actual test suite and achieve >80% coverage",
+      "Report real test results (not theoretical)"
+    ],
+    "timeline": "2-3 days for remediation",
+    "approval": "quality_governance agent",
+    "approval_date": "2025-11-09"
+  }
+}

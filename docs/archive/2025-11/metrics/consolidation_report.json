@@ -1,0 +1,128 @@
+{
+  "timestamp": "2025-11-09T17:59:35.463797",
+  "database": "/Users/tatooine/Documents/Development/Comversa/system0/data/full_intelligence.db",
+  "validation_results": {
+    "source_counts": {
+      "passed": true,
+      "metrics": {
+        "pain_points": {
+          "total": 54,
+          "invalid_source_count": 0
+        },
+        "processes": {
+          "total": 0,
+          "invalid_source_count": 0
+        },
+        "systems": {
+          "total": 79,
+          "invalid_source_count": 0
+        },
+        "kpis": {
+          "total": 0,
+          "invalid_source_count": 0
+        },
+        "automation_candidates": {
+          "total": 55,
+          "invalid_source_count": 0
+        },
+        "inefficiencies": {
+          "total": 0,
+          "invalid_source_count": 0
+        }
+      }
+    },
+    "consensus_confidence": {
+      "passed": true,
+      "metrics": {
+        "pain_points": {
+          "total": 54,
+          "invalid_confidence": 0,
+          "avg_confidence": 1.0
+        },
+        "processes": {
+          "total": 0,
+          "invalid_confidence": 0,
+          "avg_confidence": 0.0
+        },
+        "systems": {
+          "total": 79,
+          "invalid_confidence": 0,
+          "avg_confidence": 1.0
+        },
+        "kpis": {
+          "total": 0,
+          "invalid_confidence": 0,
+          "avg_confidence": 0.0
+        },
+        "automation_candidates": {
+          "total": 55,
+          "invalid_confidence": 0,
+          "avg_confidence": 1.0
+        },
+        "inefficiencies": {
+          "total": 0,
+          "invalid_confidence": 0,
+          "avg_confidence": 0.0
+        }
+      }
+    },
+    "interview_references": {
+      "passed": true,
+      "metrics": {
+        "valid_interview_ids": 19,
+        "invalid_references": 0
+      }
+    },
+    "relationships": {
+      "passed": true,
+      "metrics": {
+        "total_relationships": 0
+      }
+    },
+    "duplicate_reduction": {
+      "metrics": {
+        "pain_points": {
+          "original_count": 54,
+          "current_count": 54,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        },
+        "processes": {
+          "original_count": 0,
+          "current_count": 0,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        },
+        "systems": {
+          "original_count": 79,
+          "current_count": 79,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        },
+        "kpis": {
+          "original_count": 0,
+          "current_count": 0,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        },
+        "automation_candidates": {
+          "original_count": 55,
+          "current_count": 55,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        },
+        "inefficiencies": {
+          "original_count": 0,
+          "current_count": 0,
+          "consolidated_entities": 0,
+          "reduction_percentage": 0.0
+        }
+      }
+    },
+    "top_entities": {},
+    "contradictions": []
+  },
+  "summary": {
+    "all_checks_passed": true
+  }
+}

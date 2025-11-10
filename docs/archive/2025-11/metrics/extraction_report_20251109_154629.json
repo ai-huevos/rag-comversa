@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-09T15:46:29.060470",
+    "database": "/Users/tatooine/Documents/Development/Comversa/system0/data/full_intelligence.db",
+    "report_version": "1.0"
+  },
+  "summary": {
+    "total_interviews": 19,
+    "total_companies": 1,
+    "total_entities": 695,
+    "avg_entities_per_interview": 36.578947368421055
+  },
+  "entity_counts": {
+    "Pain Points": 54,
+    "Processes": 0,
+    "Systems": 79,
+    "KPIs": 0,
+    "Automation Candidates": 55,
+    "Inefficiencies": 0,
+    "Communication Channels": 113,
+    "Decision Points": 64,
+    "Data Flows": 72,
+    "Temporal Patterns": 111,
+    "Failure Modes": 68,
+    "Team Structures": 0,
+    "Knowledge Gaps": 0,
+    "Success Patterns": 79,
+    "Budget Constraints": 0,
+    "External Dependencies": 0
+  },
+  "company_breakdown": {
+    "": {
+      "interviews": 19,
+      "pain_points": 54,
+      "processes": 0,
+      "systems": 79,
+      "automation_candidates": 55
+    }
+  },
+  "quality_metrics": {
+    "empty_descriptions": 0,
+    "short_descriptions": 0,
+    "encoding_issues": 0,
+    "orphaned_entities": 0
+  },
+  "top_entities": {
+    "critical_pain_points": [],
+    "high_impact_automations": [],
+    "most_used_systems": [
+      {
+        "name": "Excel",
+        "type": "Productivity",
+        "usage_count": 8
+      },
+      {
+        "name": "SAP",
+        "type": "ERP",
+        "usage_count": 7
+      },
+      {
+        "name": "Opera",
+        "type": "PMS",
+        "usage_count": 6
+      },
+      {
+        "name": "Opera PMS",
+        "type": "PMS",
+        "usage_count": 5
+      },
+      {
+        "name": "Outlook",
+        "type": "Communication",
+        "usage_count": 4
+      },
+      {
+        "name": "MaintainX",
+        "type": "CMMS",
+        "usage_count": 3
+      },
+      {
+        "name": "WhatsApp",
+        "type": "Communication",
+        "usage_count": 3
+      },
+      {
+        "name": "Satcom",
+        "type": "Other",
+        "usage_count": 3
+      },
+      {
+        "name": "Teams",
+        "type": "Communication",
+        "usage_count": 3
+      },
+      {
+        "name": "Simphony",
+        "type": "POS",
+        "usage_count": 2
+      }
+    ]
+  },
+  "extraction_status": {
+    "pending": 19
+  }
+}
