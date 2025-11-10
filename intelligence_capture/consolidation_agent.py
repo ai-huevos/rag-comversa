@@ -21,6 +21,7 @@ from intelligence_capture.consensus_scorer import ConsensusScorer
 from intelligence_capture.relationship_discoverer import RelationshipDiscoverer
 from intelligence_capture.metrics import ConsolidationMetrics
 from intelligence_capture.logger import get_logger
+from intelligence_capture.consolidation_sync import ConsolidationSync
 
 # Initialize logger
 logger = get_logger(__name__)
@@ -38,7 +39,13 @@ class KnowledgeConsolidationAgent:
     - Incremental consolidation (new interviews merge with existing data)
     """
     
-    def __init__(self, db, config: Dict, openai_api_key: Optional[str] = None):
+    def __init__(
+        self,
+        db,
+        config: Dict,
+        openai_api_key: Optional[str] = None,
+        consolidation_sync: Optional[ConsolidationSync] = None,
+    ):
         """
         Initialize consolidation agent
         
@@ -58,6 +65,18 @@ class KnowledgeConsolidationAgent:
         
         # Initialize metrics collection
         self.metrics = ConsolidationMetrics()
+
+        # ConsolidationSync integration
+        sync_config = config.get("consolidation_sync", {})
+        if consolidation_sync:
+            self.consolidation_sync = consolidation_sync
+        elif sync_config.get("enabled"):
+            self.consolidation_sync = ConsolidationSync(
+                sqlite_db=db,
+                config=sync_config,
+            )
+        else:
+            self.consolidation_sync = None
         
         # Statistics
         self.stats = {
@@ -112,6 +131,7 @@ class KnowledgeConsolidationAgent:
                     entity_type,
                     interview_id
                 )
+                self._publish_entity_events(entity_type, consolidated[entity_type], interview_id)
             
             # Discover relationships between consolidated entities
             logger.info("Discovering relationships between entities")
@@ -123,8 +143,9 @@ class KnowledgeConsolidationAgent:
             # Store relationships in database
             for relationship in relationships:
                 self.db.insert_relationship(relationship)
-            
+
             self.stats["relationships_discovered"] = len(relationships)
+            self._publish_relationship_events(relationships)
             
             # Commit transaction if all operations succeeded
             self.db.conn.commit()
@@ -148,6 +169,34 @@ class KnowledgeConsolidationAgent:
             
             # Re-raise the exception
             raise
+
+    def _publish_entity_events(
+        self,
+        entity_type: str,
+        entities: List[Dict],
+        interview_id: int
+    ) -> None:
+        """Envía eventos a ConsolidationSync."""
+        if not self.consolidation_sync:
+            return
+
+        for entity in entities:
+            if not entity.get("is_consolidated"):
+                continue
+            self.consolidation_sync.emit_entity_event(
+                entity_type=entity_type,
+                entity=entity,
+                interview_id=interview_id,
+                document_chunk_ids=entity.get("document_chunk_ids"),
+            )
+
+    def _publish_relationship_events(self, relationships: List[Dict]) -> None:
+        """Envía eventos de relaciones."""
+        if not self.consolidation_sync or not relationships:
+            return
+
+        for relationship in relationships:
+            self.consolidation_sync.emit_relationship_event(relationship)
     
     def _consolidate_entity_type(
         self,

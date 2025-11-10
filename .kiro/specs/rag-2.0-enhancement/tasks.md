@@ -56,25 +56,25 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
 
 ## Phase 2: Dual Storage & Embeddings Foundation (Week 2)
 
-- [ ] 6. Create PostgreSQL + pgvector Schema & Migration Scripts
+- [x] 6. Create PostgreSQL + pgvector Schema & Migration Scripts ✅ (2025-11-10)
   - Author `scripts/migrations/2025_01_01_pgvector.sql` to create `documents`, `document_chunks`, `embeddings`, `ingestion_events`, and `ocr_review_queue` tables plus HNSW index (`m=16`, `ef_construction=200`) and pgvector extension enablement.
   - Add `config/database.toml` entries for Neon (read/write URIs, pool sizes) and integrate migration runner (`scripts/run_pg_migrations.py`) into CI so schema stays versioned.
   - Update `intelligence_capture/database.py` with Postgres repositories while keeping SQLite for consolidation history until cutover.
   - _Requirements: R4.1–R4.7, R7.5_
 
-- [ ] 7. Build Embedding Pipeline with Cost Tracking
+- [x] 7. Build Embedding Pipeline with Cost Tracking ✅ (2025-11-10)
   - Implement `intelligence_capture/embeddings/pipeline.py` to batch up to 100 chunks/call against `text-embedding-3-small`, cache results for 24 h (Redis or on-disk), and write vectors + metadata into the `embeddings` table.
   - Capture API spend per chunk (cost_cents) and expose hooks for `CostGuard` to throttle ingestion when monthly projections exceed $900 USD.
   - Provide retries/backoff and dead-letter logic so embedding failures don’t block non-affected documents.
   - _Requirements: R4.2–R4.7, R14.1, R7.8_
 
-- [ ] 8. Persist Document + Chunk Records Atomically
+- [x] 8. Persist Document + Chunk Records Atomically ✅ (2025-11-10)
   - Create `intelligence_capture/persistence/document_repository.py` that wraps Postgres inserts for `documents`, `document_chunks`, and `embeddings` within a transaction; ensure failures roll files back to `data/documents/failed/` with detailed logs.
   - Update ingestion workers to acknowledge queue jobs only after Postgres write success and to update `ingestion_progress.json`/`ingestion_events` stages for resume support.
   - Add unit tests covering 10-page PDF ingestion (<2 min SLA) and CSV edge cases to de-risk batch uploads.
   - _Requirements: R1.4, R1.6–R1.8, R7.2–R7.7_
 
-- [ ] 9. Bootstrap Neo4j + Graffiti Knowledge Graph Builder
+- [x] 9. Bootstrap Neo4j + Graffiti Knowledge Graph Builder ✅ (2025-11-10)
   - Stand up `graph/knowledge_graph_builder.py` using Graffiti episodes (one per document) to MERGE nodes (`System`, `Process`, `PainPoint`, etc.) and relationships (CAUSES, USES, HAS) with `org_id` namespaces and strength weighting.
   - Create bootstrapping script `scripts/graph/bootstrap_neo4j.py` that provisions indexes/constraints and validates Cypher queries required for hybrid retrieval.
   - Establish contract for ConsolidationSync to feed consolidated entities/relationships into Neo4j while writing back `neo4j_relationship_id` to SQLite for audit.

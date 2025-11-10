@@ -2,11 +2,24 @@
 Database schema and operations for Intelligence Capture System
 Based on PHASE1_ONTOLOGY_SCHEMA.json
 """
-import sqlite3
+import asyncio
 import json
+import os
+import sqlite3
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+try:  # pragma: no cover - dependencia opcional (solo usada en modo async)
+    import asyncpg  # type: ignore
+except ImportError:  # pragma: no cover
+    asyncpg = None  # type: ignore
+
+try:  # Python 3.11+
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - fallback para entornos viejos
+    import tomli as tomllib  # type: ignore
 
 
 def json_serialize(obj: Any) -> str:
@@ -1358,12 +1371,18 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             )
             if not cursor.fetchone():
                 continue
-            
+
+            cursor.execute(f"PRAGMA table_info({table})")
+            columns = [row[1] for row in cursor.fetchall()]
+
             # Create name index (for fuzzy matching)
-            cursor.execute(f"""
-                CREATE INDEX IF NOT EXISTS idx_{table}_name 
-                ON {table}(name)
-            """)
+            if "name" in columns:
+                cursor.execute(f"""
+                    CREATE INDEX IF NOT EXISTS idx_{table}_name 
+                    ON {table}(name)
+                """)
+            else:
+                print(f"  Skipping name index for {table} (no name column)")
             
             # Create source_count index (for pattern queries)
             cursor.execute(f"""
@@ -3117,3 +3136,130 @@ class EnhancedIntelligenceDB(IntelligenceDB):
             print(f"  ⚠️  Error during rollback: {e}")
             cursor.execute("ROLLBACK")
             return False
+
+
+# ======================================================================
+# PostgreSQL helpers for RAG 2.0
+# ======================================================================
+
+DATABASE_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "database.toml"
+
+
+@dataclass(frozen=True)
+class PostgresConfig:
+    """
+    Configuración estándar para los pools asyncpg utilizados por RAG 2.0.
+    """
+
+    read_uri: str
+    write_uri: str
+    pool_size: int = 10
+    max_overflow: int = 20
+    pool_timeout: int = 30
+    pool_recycle: int = 3600
+    statement_timeout: int = 60_000
+    command_timeout: int = 30
+
+    @property
+    def writer_dsn(self) -> str:
+        """DSN preferido para escrituras (respeta DATABASE_URL)."""
+        return os.getenv("DATABASE_URL", self.write_uri)
+
+    @property
+    def reader_dsn(self) -> str:
+        """DSN preferido para lecturas (respeta DATABASE_URL)."""
+        return os.getenv("DATABASE_URL", self.read_uri)
+
+
+def load_postgres_config(config_path: Optional[Path] = None) -> PostgresConfig:
+    """
+    Carga la configuración de Postgres definida en config/database.toml.
+    """
+    config_path = config_path or DATABASE_CONFIG_PATH
+    if not config_path.exists():
+        raise FileNotFoundError(
+            f"No se encontró archivo de configuración para Postgres: {config_path}"
+        )
+
+    with open(config_path, "rb") as fh:
+        config_data = tomllib.load(fh)
+
+    pg_config = config_data.get("postgresql")
+    if not pg_config:
+        raise ValueError("La sección [postgresql] no está definida en database.toml")
+
+    return PostgresConfig(
+        read_uri=pg_config["read_uri"],
+        write_uri=pg_config["write_uri"],
+        pool_size=pg_config.get("pool_size", 10),
+        max_overflow=pg_config.get("max_overflow", 20),
+        pool_timeout=pg_config.get("pool_timeout", 30),
+        pool_recycle=pg_config.get("pool_recycle", 3600),
+        statement_timeout=pg_config.get("statement_timeout", 60_000),
+        command_timeout=pg_config.get("command_timeout", 30),
+    )
+
+
+class PostgresConnectionManager:
+    """
+    Gestiona un pool asyncpg compartido entre componentes del pipeline.
+    """
+
+    def __init__(self, config: Optional[PostgresConfig] = None):
+        self.config = config or load_postgres_config()
+        self._pool: Optional[Any] = None
+        self._lock = asyncio.Lock()
+
+    async def get_pool(self) -> Any:
+        """Devuelve un pool listo para usarse."""
+        if asyncpg is None:  # pragma: no cover
+            raise RuntimeError(
+                "asyncpg no está instalado. Ejecuta `pip install asyncpg` antes de usar PostgresConnectionManager."
+            )
+        if self._pool and not self._pool.is_closed():
+            return self._pool
+
+        async with self._lock:
+            if self._pool and not self._pool.is_closed():
+                return self._pool
+
+            self._pool = await asyncpg.create_pool(
+                dsn=self.config.writer_dsn,
+                min_size=self.config.pool_size,
+                max_size=self.config.pool_size + self.config.max_overflow,
+                timeout=self.config.pool_timeout,
+                command_timeout=self.config.command_timeout,
+            )
+
+            async with self._pool.acquire() as conn:
+                await conn.execute(
+                    "SET statement_timeout = $1",
+                    self.config.statement_timeout,
+                )
+
+            return self._pool
+
+    async def close(self) -> None:
+        """Cierra el pool si está inicializado."""
+        if self._pool:
+            await self._pool.close()
+            self._pool = None
+
+
+async def create_document_repository() -> "DocumentRepository":
+    """
+    Factoría para crear DocumentRepository usando la configuración estándar.
+    """
+    from intelligence_capture.persistence.document_repository import DocumentRepository
+    if asyncpg is None:  # pragma: no cover
+        raise RuntimeError(
+            "asyncpg no está instalado. Ejecuta `pip install asyncpg` para usar DocumentRepository."
+        )
+
+    config = load_postgres_config()
+    return await DocumentRepository.create(
+        config.writer_dsn,
+        min_size=config.pool_size,
+        max_size=config.pool_size + config.max_overflow,
+        timeout=config.command_timeout,
+    )
