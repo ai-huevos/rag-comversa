@@ -1,0 +1,67 @@
+# RAG 2.0 Enhancement Dependencies
+# Task 0: Context Registry & Org Namespace Controls
+# Tasks 1-2: Source Connectors & Ingestion Queue
+
+# PostgreSQL async driver with pgvector support
+asyncpg>=0.29.0
+
+# YAML configuration parsing
+PyYAML>=6.0.1
+
+# Redis for caching (optional, falls back to in-memory)
+redis>=5.0.0
+
+# FastAPI for API endpoints (Week 3)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Pydantic AI for agentic RAG (Week 3)
+pydantic-ai>=0.0.1
+
+# Neo4j driver for knowledge graph (Week 2)
+neo4j>=5.14.0
+
+# Graffiti for Neo4j graph building (Week 2)
+graffiti>=0.1.0
+
+# Document processing libraries (Week 1, Task 3)
+PyPDF2>=3.0.0              # PDF parsing
+python-docx>=0.8.11        # DOCX parsing
+python-magic>=0.4.27       # MIME type detection
+Pillow>=10.1.0             # Image processing
+pytesseract>=0.3.10        # OCR fallback (Tesseract)
+pandas>=2.0.0              # CSV/XLSX parsing
+openpyxl>=3.1.2            # Excel file support
+
+# Task 4: OCR Engine & Review CLI
+# Mistral AI SDK for Pixtral OCR (primary)
+mistralai>=0.0.8           # Mistral API client
+# Note: Requires MISTRAL_API_KEY environment variable
+
+# Manual review CLI
+click>=8.1.0               # CLI framework
+tabulate>=0.9.0            # Table formatting for review queue
+
+# Embeddings and LLM
+openai>=1.3.0
+
+# Spanish NLP (Task 5: Spanish-Aware Chunking)
+spacy>=3.7.0
+nltk>=3.8.0
+# Spanish spaCy model - install separately with:
+# python -m spacy download es_core_news_md
+
+# Source Connectors (Tasks 1-2)
+# Email connector (IMAP OAuth)
+# Note: Built-in imaplib is used, no additional dependency
+
+# SharePoint connector
+office365-rest-python-client>=2.5.0
+
+# API connector (HTTP requests)
+requests>=2.31.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0

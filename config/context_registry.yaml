@@ -1,0 +1,234 @@
+# Context Registry Configuration
+# Task 0: Stand up Context Registry & Org Namespace Controls
+# Purpose: Configure caching, access control, and compliance settings for multi-org RAG system
+
+# Database Configuration
+database:
+  # PostgreSQL connection (uses DATABASE_URL env var by default)
+  url_env: DATABASE_URL
+  pool:
+    min_size: 2
+    max_size: 10
+    timeout: 30.0
+
+  # Connection retry settings
+  retry:
+    max_attempts: 3
+    backoff_seconds: 2
+
+# Cache Configuration
+cache:
+  # Cache TTL for organization lookups (seconds)
+  # R0.5: 1 hour default, invalidated on org onboarding
+  ttl: 3600
+
+  # Enable/disable caching
+  enabled: true
+
+  # Cache backend ('memory' or 'redis')
+  backend: memory
+
+  # Redis config (if backend=redis)
+  redis:
+    url_env: REDIS_URL
+    key_prefix: "context_registry:"
+
+# Access Control & Compliance
+access_control:
+  # Enable access logging for Bolivian privacy compliance
+  # Law 164 (Telecommunications and ICTs), Constitution Art. 21
+  logging_enabled: true
+
+  # Retention period for access logs (days)
+  # Habeas Data requirement: 12 months minimum
+  log_retention_days: 365
+
+  # Privacy framework
+  privacy_framework:
+    name: "Bolivian Law 164 - Telecommunications and ICTs"
+    constitutional_reference: "Article 21 - Right to Privacy"
+    habeas_data_compliance: true
+    data_retention_days: 365
+
+  # Default allowed operations for new organizations
+  default_operations:
+    - ingestion
+    - retrieval
+    - analysis
+
+  # Require consent validation before operations
+  require_consent_validation: true
+
+# Organization Onboarding
+onboarding:
+  # Default priority tier for new organizations
+  default_priority_tier: standard
+
+  # Priority tiers and their settings
+  priority_tiers:
+    standard:
+      ingestion_concurrency: 4
+      query_rate_limit: 60  # requests per minute
+      embedding_batch_size: 100
+
+    premium:
+      ingestion_concurrency: 8
+      query_rate_limit: 120
+      embedding_batch_size: 200
+
+  # Auto-generate consent metadata for new orgs
+  auto_generate_consent: true
+
+  # Consent template
+  consent_template:
+    consent_version: "1.0"
+    allowed_operations:
+      - ingestion
+      - retrieval
+      - export
+      - analysis
+    data_retention_days: 365
+    privacy_framework: "Bolivian Law 164 - Telecommunications and ICTs"
+    constitutional_reference: "Article 21 - Right to Privacy"
+    habeas_data_compliance: true
+
+# Namespace Validation
+namespace:
+  # Namespace format: org_id:business_unit[:department]
+  # Examples:
+  #   - los_tajibos:Hospitality
+  #   - los_tajibos:Hospitality:Recepción
+  #   - comversa:Construction:Proyectos
+
+  # Separator character
+  separator: ":"
+
+  # Minimum parts (org_id:business_unit)
+  min_parts: 2
+
+  # Maximum parts (org_id:business_unit:department)
+  max_parts: 3
+
+  # Validate namespace format on lookups
+  validate_format: true
+
+  # Case sensitivity
+  case_sensitive: false
+
+# Audit Trail Configuration
+audit:
+  # Enable audit trail for all registry changes
+  enabled: true
+
+  # Audit log table
+  table_name: context_registry_audit
+
+  # Track these actions
+  tracked_actions:
+    - created
+    - updated
+    - deleted
+    - deactivated
+    - reactivated
+
+  # Include changed values in audit log
+  include_old_values: true
+  include_new_values: true
+
+# Integration Settings
+integration:
+  # DocumentProcessor integration
+  document_processor:
+    # Attach org_id to all processed documents
+    attach_org_id: true
+
+    # Validate consent before processing
+    validate_consent: true
+
+    # Consent operation type
+    consent_operation: ingestion
+
+  # Prompt/Agent integration
+  prompts:
+    # Inject context into agent prompts
+    inject_context: true
+
+    # Context fields to inject
+    inject_fields:
+      - org_id
+      - business_unit
+      - department
+      - industry_context
+      - priority_tier
+
+  # FastAPI middleware
+  api:
+    # Enable middleware for request validation
+    middleware_enabled: true
+
+    # Require org_id in all API requests
+    require_org_id: true
+
+    # Log all API access
+    log_access: true
+
+    # Rate limiting per org_id
+    rate_limiting:
+      enabled: true
+      default_rpm: 60  # requests per minute
+
+# Monitoring & Health Checks
+monitoring:
+  # Health check settings
+  health_check:
+    enabled: true
+    timeout_seconds: 5
+
+  # Metrics collection
+  metrics:
+    enabled: true
+
+    # Metrics to track
+    track:
+      - cache_hit_rate
+      - cache_miss_rate
+      - lookup_latency
+      - validation_failures
+      - consent_violations
+      - access_log_count
+
+  # Alerting thresholds
+  alerts:
+    # Alert if cache hit rate drops below threshold
+    cache_hit_rate_threshold: 0.7
+
+    # Alert if validation failures exceed threshold
+    validation_failure_threshold: 10  # per minute
+
+    # Alert if consent violations detected
+    consent_violation_immediate: true
+
+# Companies Configuration Source
+companies:
+  # Path to companies.json (relative to project root)
+  config_file: config/companies.json
+
+  # Auto-sync on startup
+  auto_sync: false
+
+  # Sync interval (hours, 0 = disabled)
+  sync_interval_hours: 0
+
+# Development/Testing Settings
+development:
+  # Use in-memory cache for testing
+  use_memory_cache: true
+
+  # Mock consent validation (always true)
+  mock_consent_validation: false
+
+  # Verbose logging
+  verbose_logging: false
+
+  # Skip database connection for unit tests
+  skip_db_connection: false

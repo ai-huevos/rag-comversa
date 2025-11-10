@@ -1,0 +1,142 @@
+# Database Configuration for System0 Intelligence Extraction
+# Author: storage_graph agent
+# Created: 2025-11-09
+# Version: 1.0.0
+
+# ========================================================================
+# PostgreSQL Configuration (RAG 2.0)
+# ========================================================================
+
+[postgresql]
+# Connection URIs (override with DATABASE_URL environment variable)
+# Format: postgresql://user:password@host:port/database
+read_uri = "postgresql://user:pass@localhost:5432/rag_comversa"
+write_uri = "postgresql://user:pass@localhost:5432/rag_comversa"
+
+# Connection pool settings
+pool_size = 10              # Base pool size
+max_overflow = 20           # Max additional connections during peak
+pool_timeout = 30           # Seconds to wait for connection
+pool_recycle = 3600         # Recycle connections after 1 hour
+
+# Query settings
+statement_timeout = 60000   # 60 seconds max query time (milliseconds)
+command_timeout = 30        # 30 seconds for simple commands
+
+# SSL/TLS (for production)
+ssl_mode = "prefer"         # Options: disable, allow, prefer, require, verify-ca, verify-full
+# ssl_cert = "path/to/client-cert.pem"
+# ssl_key = "path/to/client-key.pem"
+# ssl_root_cert = "path/to/ca-cert.pem"
+
+# ========================================================================
+# SQLite Configuration (Legacy - Consolidation Only)
+# ========================================================================
+
+[sqlite]
+# Database path
+path = "data/full_intelligence.db"
+
+# WAL mode for parallel processing (ADR-007)
+wal_mode = true
+journal_mode = "WAL"
+
+# Timeout settings
+busy_timeout = 5000         # 5 seconds wait for locks
+timeout = 30.0              # 30 seconds connection timeout
+
+# Pragmas
+foreign_keys = true
+synchronous = "NORMAL"      # NORMAL is safe with WAL mode
+cache_size = -64000         # 64MB cache (negative = KB)
+
+# ========================================================================
+# Neo4j Configuration (Phase 2 - Knowledge Graph)
+# ========================================================================
+
+[neo4j]
+# Connection URI
+uri = "neo4j://localhost:7687"  # Local development
+# uri = "neo4j+s://xxxxx.databases.neo4j.io"  # Neo4j Aura (production)
+
+# Authentication
+user = "neo4j"
+# Password from environment variable: NEO4J_PASSWORD
+
+# Connection pool
+max_connection_lifetime = 3600  # 1 hour
+max_connection_pool_size = 50
+connection_acquisition_timeout = 60
+
+# Transaction settings
+max_transaction_retry_time = 30
+# Database name (Neo4j 4.0+)
+database = "neo4j"              # Default database
+
+# ========================================================================
+# Redis Configuration (Caching & Queue - Optional)
+# ========================================================================
+
+[redis]
+# Connection
+host = "localhost"
+port = 6379
+db = 0
+# Password from environment: REDIS_PASSWORD
+
+# Connection pool
+max_connections = 50
+socket_timeout = 5
+socket_connect_timeout = 5
+
+# Cache TTLs (seconds)
+embedding_cache_ttl = 86400     # 24 hours
+search_cache_ttl = 300          # 5 minutes
+session_ttl = 3600              # 1 hour
+
+# ========================================================================
+# Environment Variable Overrides
+# ========================================================================
+# These environment variables take precedence over config file:
+#
+# PostgreSQL:
+#   DATABASE_URL                    Full connection string
+#   POSTGRES_HOST                   Database host
+#   POSTGRES_PORT                   Database port
+#   POSTGRES_USER                   Database user
+#   POSTGRES_PASSWORD               Database password
+#   POSTGRES_DB                     Database name
+#
+# Neo4j:
+#   NEO4J_URI                       Connection URI
+#   NEO4J_USER                      Username
+#   NEO4J_PASSWORD                  Password
+#
+# Redis:
+#   REDIS_URL                       Full connection string
+#   REDIS_HOST                      Redis host
+#   REDIS_PORT                      Redis port
+#   REDIS_PASSWORD                  Redis password
+#
+# ========================================================================
+
+# ========================================================================
+# Usage Examples
+# ========================================================================
+#
+# Load configuration in Python:
+#
+#   import toml
+#   from pathlib import Path
+#
+#   config = toml.load(Path(__file__).parent / "config" / "database.toml")
+#   pg_config = config["postgresql"]
+#   connection_string = os.getenv("DATABASE_URL", pg_config["read_uri"])
+#
+# Override with environment:
+#
+#   export DATABASE_URL="postgresql://user:pass@prod.example.com:5432/rag_prod"
+#   export NEO4J_PASSWORD="secure_password"
+#   python scripts/run_pg_migrations.py
+#
+# ========================================================================

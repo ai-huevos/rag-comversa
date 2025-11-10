@@ -1,0 +1,196 @@
+# Source Connectors Configuration
+# RAG 2.0 Multi-Format Ingestion
+#
+# Copy to config/connectors.yaml and configure for your environment
+# Use env:VARIABLE_NAME to reference environment variables
+
+connectors:
+  # =============================================================================
+  # Email Connector - Gmail/Outlook IMAP with OAuth
+  # =============================================================================
+  - org_id: los_tajibos
+    type: email
+    config:
+      # IMAP server configuration
+      imap_host: imap.gmail.com          # Gmail: imap.gmail.com | Outlook: outlook.office365.com
+      imap_user: hotel@lostajibos.com    # Email address
+      oauth_token: env:TAJIBOS_GMAIL_TOKEN  # OAuth access token (from env var)
+
+      # Folder settings
+      folder: INBOX                       # IMAP folder to monitor (default: INBOX)
+
+      # Organization context
+      business_unit: Hotel                # Business unit (optional)
+      department: Recepción               # Department (optional)
+
+      # Processing limits
+      max_emails: 100                     # Maximum emails to fetch per run
+      unread_only: true                   # Only fetch unread emails
+
+  # =============================================================================
+  # WhatsApp Connector - Export File Parser
+  # =============================================================================
+  - org_id: comversa
+    type: whatsapp
+    config:
+      # Export directory (where WhatsApp ZIP was extracted)
+      export_directory: data/whatsapp_exports/comversa
+
+      # Organization context
+      business_unit: Construcción
+
+      # Media handling
+      include_media: true                 # Include images, videos, documents
+
+  # =============================================================================
+  # API Connector - REST API Document Dumps
+  # =============================================================================
+  - org_id: bolivian_foods
+    type: api
+    config:
+      # API endpoint
+      api_url: https://api.bolivianfoods.com/documents
+
+      # Authentication configuration
+      auth_config:
+        type: bearer                      # bearer | api_key | basic | none
+        token: env:BOLIVIAN_FOODS_API_TOKEN
+
+        # For API key authentication:
+        # type: api_key
+        # api_key: env:API_KEY
+        # header_name: X-API-Key            # Default: X-API-Key
+
+        # For basic authentication:
+        # type: basic
+        # username: api_user
+        # password: env:API_PASSWORD
+
+        # For no authentication:
+        # type: none
+
+      # Organization context
+      business_unit: Producción
+
+      # Pagination configuration
+      pagination_config:
+        type: page                        # page | offset | cursor | none
+        page_size: 50                     # Items per page
+        max_pages: 10                     # Maximum pages to fetch
+
+        # For offset pagination:
+        # type: offset
+        # page_size: 100
+
+        # For cursor pagination:
+        # type: cursor
+        # page_size: 100
+
+        # For no pagination:
+        # type: none
+
+      # Rate limiting
+      rate_limit_delay: 1.0               # Seconds between requests
+
+  # =============================================================================
+  # SharePoint Connector - SharePoint Online/OneDrive
+  # =============================================================================
+  - org_id: los_tajibos
+    type: sharepoint
+    config:
+      # SharePoint site configuration
+      site_url: https://lostajibos.sharepoint.com/sites/hotel
+      folder_path: /Shared Documents/Operaciones
+
+      # Azure AD authentication (requires app registration)
+      client_id: env:SHAREPOINT_CLIENT_ID
+      client_secret: env:SHAREPOINT_CLIENT_SECRET
+
+      # Organization context
+      business_unit: Hotel
+      department: Operaciones
+
+      # Folder scanning
+      recursive: true                     # Scan subfolders recursively
+
+      # File filtering (optional)
+      file_extensions:                    # Only fetch these file types
+        - .pdf
+        - .docx
+        - .xlsx
+        - .pptx
+        - .txt
+        - .csv
+
+  # =============================================================================
+  # Additional Examples
+  # =============================================================================
+
+  # Multiple connectors per org (different business units)
+  - org_id: los_tajibos
+    type: email
+    config:
+      imap_host: imap.gmail.com
+      imap_user: restaurante@lostajibos.com
+      oauth_token: env:TAJIBOS_RESTAURANT_TOKEN
+      folder: INBOX
+      business_unit: Restaurante          # Different business unit
+      max_emails: 50
+
+  # API with custom pagination
+  - org_id: comversa
+    type: api
+    config:
+      api_url: https://api.comversa.bo/projects
+      auth_config:
+        type: api_key
+        api_key: env:COMVERSA_API_KEY
+        header_name: X-Comversa-API-Key
+      business_unit: Proyectos
+      pagination_config:
+        type: cursor                      # Cursor-based pagination
+        page_size: 25
+        max_pages: 20
+      rate_limit_delay: 2.0               # Slower rate limit
+
+# =============================================================================
+# Environment Variables Required
+# =============================================================================
+#
+# Create .env file with:
+#
+# # Los Tajibos Gmail OAuth
+# export TAJIBOS_GMAIL_TOKEN="ya29.a0AfH6SMBx..."
+# export TAJIBOS_RESTAURANT_TOKEN="ya29.a0AfH6SMBy..."
+#
+# # Bolivian Foods API
+# export BOLIVIAN_FOODS_API_TOKEN="bf_live_abc123..."
+#
+# # Comversa API
+# export COMVERSA_API_KEY="cmv_abc123..."
+#
+# # SharePoint Azure AD
+# export SHAREPOINT_CLIENT_ID="12345678-1234-1234-1234-123456789012"
+# export SHAREPOINT_CLIENT_SECRET="abc123..."
+#
+# # PostgreSQL database
+# export DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+#
+# =============================================================================
+# Usage
+# =============================================================================
+#
+# From Python:
+#
+#   from intelligence_capture.connectors import ConnectorRegistry
+#   connectors = ConnectorRegistry.create_from_config_file(
+#       Path("config/connectors.yaml")
+#   )
+#   for key, connector in connectors.items():
+#       result = await connector.run()
+#
+# From CLI (future):
+#
+#   python -m intelligence_capture.connectors.run --config config/connectors.yaml
+#
+# =============================================================================

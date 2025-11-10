@@ -1,0 +1,148 @@
+{
+  "agent": "storage_graph",
+  "tasks": [2, 4],
+  "status": "completed",
+  "timestamp": "2025-11-09T19:30:00Z",
+  "deliverables": {
+    "migrations_created": [
+      "scripts/migrations/2025_01_01_ingestion_queue.sql",
+      "scripts/migrations/2025_01_02_ocr_review_queue.sql"
+    ],
+    "rollback_scripts": [
+      "scripts/migrations/rollback/2025_01_01_ingestion_queue_rollback.sql",
+      "scripts/migrations/rollback/2025_01_02_ocr_review_queue_rollback.sql"
+    ],
+    "migration_runner": "scripts/run_pg_migrations.py",
+    "documentation_updated": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "configuration_created": [
+      "config/database.toml"
+    ]
+  },
+  "schemas": {
+    "ingestion_events": {
+      "purpose": "Track document ingestion lifecycle from queue to completion",
+      "tables": ["ingestion_events"],
+      "indexes": [
+        "idx_ingestion_org_status",
+        "idx_ingestion_checksum",
+        "idx_ingestion_status",
+        "idx_ingestion_enqueued_at",
+        "idx_ingestion_document_id",
+        "idx_ingestion_connector_type",
+        "idx_ingestion_failed",
+        "idx_ingestion_metadata"
+      ],
+      "triggers": ["trigger_update_ingestion_metrics"],
+      "functions": ["update_ingestion_metrics"],
+      "key_features": [
+        "Deduplication via SHA-256 checksum",
+        "Multi-stage processing tracking",
+        "Auto-calculated processing time",
+        "Spanish error messages",
+        "Flexible JSONB metadata",
+        "Retry mechanism (max 3 attempts)",
+        "Org-based data isolation"
+      ]
+    },
+    "ocr_review_queue": {
+      "purpose": "Queue low-confidence OCR segments for manual review",
+      "tables": ["ocr_review_queue"],
+      "indexes": [
+        "idx_ocr_status_priority",
+        "idx_ocr_confidence",
+        "idx_ocr_document",
+        "idx_ocr_reviewed_by",
+        "idx_ocr_segment_type",
+        "idx_ocr_engine_confidence",
+        "idx_ocr_metadata"
+      ],
+      "views": [
+        "ocr_high_priority_queue",
+        "ocr_reviewer_stats"
+      ],
+      "triggers": [
+        "trigger_set_ocr_review_priority",
+        "trigger_generate_ocr_crop_path"
+      ],
+      "functions": [
+        "set_ocr_review_priority",
+        "generate_ocr_crop_path"
+      ],
+      "key_features": [
+        "Auto-priority assignment based on confidence",
+        "Auto-generated image crop paths",
+        "Confidence thresholds: <0.50 (high), 0.50-0.70 (normal), 0.70-0.90 (low)",
+        "Reviewer performance tracking",
+        "Segment type classification",
+        "Spanish review notes",
+        "High-priority queue view",
+        "Reviewer stats view"
+      ]
+    }
+  },
+  "migration_runner_features": [
+    "Transaction-safe execution",
+    "Migration history tracking",
+    "Automatic rollback on failure",
+    "Dry-run mode for preview",
+    "Safety checks before rollback",
+    "Status reporting",
+    "Environment variable support"
+  ],
+  "database_configuration": {
+    "postgresql": {
+      "pool_size": 10,
+      "max_overflow": 20,
+      "pool_timeout": 30,
+      "ssl_support": true
+    },
+    "sqlite": {
+      "wal_mode": true,
+      "busy_timeout": 5000,
+      "foreign_keys": true
+    },
+    "neo4j": {
+      "max_pool_size": 50,
+      "connection_lifetime": 3600
+    },
+    "redis": {
+      "max_connections": 50,
+      "embedding_cache_ttl": 86400,
+      "search_cache_ttl": 300
+    }
+  },
+  "compliance": {
+    "spanish_first": true,
+    "error_messages_spanish": true,
+    "utf8_encoding": true,
+    "org_data_isolation": true,
+    "rollback_plans": true,
+    "safety_checks": true
+  },
+  "success_criteria": {
+    "migrations_created": true,
+    "rollback_scripts_provided": true,
+    "indexes_on_frequent_queries": true,
+    "jsonb_for_metadata": true,
+    "timestamp_tracking": true,
+    "documentation_updated": true,
+    "postgresql_best_practices": true
+  },
+  "next_steps": {
+    "task_1": "Normalize Source Connectors into Inbox Taxonomy (intake_processing agent)",
+    "task_3": "Extend DocumentProcessor for Multi-Format Parsing (intake_processing agent)",
+    "week_2": "PostgreSQL + pgvector embeddings pipeline (Tasks 6-9)"
+  },
+  "notes": [
+    "All migrations follow PostgreSQL best practices",
+    "Comprehensive indexes for query performance",
+    "Auto-calculated fields via triggers reduce application logic",
+    "Safety checks in rollback scripts prevent accidental data loss",
+    "JSONB metadata fields provide flexibility for connector-specific details",
+    "Spanish-first compliance maintained throughout",
+    "Dry-run mode allows preview before execution",
+    "Migration history table tracks all applied migrations"
+  ]
+}
