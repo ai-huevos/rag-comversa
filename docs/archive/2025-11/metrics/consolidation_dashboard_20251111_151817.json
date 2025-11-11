@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-11-11T15:18:17.618658",
+  "database": "/Users/tatooine/Documents/Development/Comversa/system0/data/full_intelligence.db",
+  "entity_counts": {
+    "pain_points": {
+      "before": 276,
+      "after": 276,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "processes": {
+      "before": 208,
+      "after": 208,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "systems": {
+      "before": 214,
+      "after": 214,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "kpis": {
+      "before": 139,
+      "after": 139,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "automation_candidates": {
+      "before": 294,
+      "after": 294,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    },
+    "inefficiencies": {
+      "before": 127,
+      "after": 127,
+      "reduction": 0,
+      "reduction_pct": 0.0
+    }
+  },
+  "top_entities": {},
+  "confidence_distribution": {
+    "0.0-0.2": 0,
+    "0.2-0.4": 0,
+    "0.4-0.6": 0,
+    "0.6-0.8": 0,
+    "0.8-1.0": 1258
+  },
+  "relationships": [],
+  "patterns": [],
+  "contradictions": [],
+  "summary": {
+    "total_before": 1258,
+    "total_after": 1258,
+    "total_reduction": 0,
+    "total_relationships": 0,
+    "total_patterns": 0,
+    "high_priority_patterns": 0,
+    "total_contradictions": 0
+  }
+}

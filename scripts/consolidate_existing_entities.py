@@ -134,6 +134,7 @@ def consolidate_existing_entities(
         print(f"  🔍 Scanning for duplicates...")
 
         duplicate_groups = []
+        similarity_scores = {}  # Track similarity scores for each pair
         processed_ids = set()
 
         for i, entity1 in enumerate(entities):
@@ -170,6 +171,8 @@ def consolidate_existing_entities(
 
                 if similarity_score >= threshold:
                     group.append(entity2)
+                    # Store similarity score for this pair
+                    similarity_scores[(entity1['id'], entity2['id'])] = similarity_score
                     processed_ids.add(entity2['id'])
 
             if len(group) > 1:
@@ -200,13 +203,40 @@ def consolidate_existing_entities(
 
                     # Merge all duplicates into master
                     for dup in duplicates:
-                        # Merge attributes
-                        merged = merger.merge(dup, master, interview_id=None)
+                        # Get similarity score for this pair
+                        score = similarity_scores.get((master['id'], dup['id']), 0.8)
 
-                        # Update master in database
-                        # (Implementation would update master and delete duplicate)
+                        # Get interview_id from the duplicate entity (or use None)
+                        interview_id = dup.get('interview_id')
+
+                        # Merge attributes
+                        merged = merger.merge(dup, master, interview_id, score)
+
+                        # Update master with merged data
+                        master = merged
 
                         total_merged += 1
+
+                    # Update master entity in database with all merged data
+                    cursor = db.conn.cursor()
+
+                    # Build update SQL dynamically based on entity fields
+                    update_fields = []
+                    values = []
+                    for key, value in master.items():
+                        if key != 'id':  # Don't update ID
+                            update_fields.append(f"{key} = ?")
+                            values.append(value)
+                    values.append(master['id'])  # WHERE id = ?
+
+                    update_sql = f"UPDATE {entity_type} SET {', '.join(update_fields)} WHERE id = ?"
+                    cursor.execute(update_sql, values)
+
+                    # Delete duplicate entities
+                    for dup in duplicates:
+                        cursor.execute(f"DELETE FROM {entity_type} WHERE id = ?", (dup['id'],))
+
+                    db.conn.commit()
 
                 print(f"  ✅ Merged {len(duplicate_groups)} groups ({total_merged} entities)")
             else:
