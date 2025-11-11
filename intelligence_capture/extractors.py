@@ -1666,17 +1666,43 @@ class TemporalPatternExtractor:
         temporal_activities = self._extract_temporal_activities(text)
         
         for activity in temporal_activities:
+            # Intelligent duration estimation if not found
+            duration = activity.get("duration")
+            if not duration:
+                activity_name_lower = activity["name"].lower()
+                frequency_lower = activity["frequency"].lower()
+
+                # Estimate based on activity type and frequency
+                if any(word in activity_name_lower for word in ["cierre", "close", "closing"]):
+                    duration = 120  # Closings typically take 2 hours
+                elif any(word in activity_name_lower for word in ["reunión", "meeting", "junta"]):
+                    duration = 60  # Standard meeting duration
+                elif any(word in activity_name_lower for word in ["planificación", "planning"]):
+                    duration = 90  # Planning sessions
+                elif any(word in activity_name_lower for word in ["reporte", "report", "informe"]):
+                    duration = 90  # Report generation
+                elif any(word in activity_name_lower for word in ["revisión", "review", "chequeo", "check"]):
+                    duration = 45  # Reviews and checks
+                elif any(word in activity_name_lower for word in ["supervisión", "supervision"]):
+                    duration = 30  # Quick supervision
+                elif frequency_lower == "monthly":
+                    duration = 120  # Monthly activities tend to be longer
+                elif frequency_lower == "weekly":
+                    duration = 60  # Weekly activities
+                else:
+                    duration = 30  # Default estimate for daily/other activities
+
             pattern_data = {
                 "activity_name": activity["name"],
                 "frequency": activity["frequency"],
                 "time_of_day": activity.get("time"),
-                "duration_minutes": activity.get("duration"),
+                "duration_minutes": duration,
                 "participants": [meta.get("role", "Unknown")],
                 "triggers_actions": [],
                 "related_process": self._infer_related_process(text, meta.get("role", "")),
                 "confidence_score": 0.7,
                 "extraction_source": "rule_based",
-                "extraction_reasoning": f"Found temporal pattern: {activity['name']}"
+                "extraction_reasoning": f"Found temporal pattern: {activity['name']}" + (f". Duration estimated as {duration} minutes based on activity type." if not activity.get("duration") else "")
             }
             patterns.append(pattern_data)
         
@@ -1827,37 +1853,63 @@ Extract ALL temporal patterns - recurring activities with time-based characteris
 
 **For each temporal pattern, extract:**
 
-1. **activity_name**: Name of the activity (e.g., "Reunión de coordinación", "Cierre diario de ventas", "Revisión de inventario")
-2. **frequency**: How often it happens:
-   - "Hourly" - every hour
-   - "Daily" - every day
-   - "Weekly" - every week
-   - "Monthly" - every month
-   - "Quarterly" - every quarter
-   - "Annually" - every year
+1. **activity_name**: SPECIFIC activity name, not generic
+   - GOOD: "Supervisión de tareas diarias cada mañana"
+   - BAD: "Daily activities"
+
+2. **frequency**: MUST be one of: Hourly, Daily, Weekly, Monthly, Quarterly, Annually
+   - Extract from context like "every Monday", "twice a week", "end of month"
+
 3. **time_of_day**: Specific time in 24-hour format (e.g., "09:00", "14:30") or null if not mentioned
-4. **duration_minutes**: How long it takes in minutes (e.g., 30, 60, 120) or null if not mentioned
+
+4. **duration_minutes**: How long does this activity take? **REQUIRED - Always extract or estimate**
+   - If mentioned explicitly: "takes 2 hours" → 120
+   - If context implies timing: "morning check" → estimate 30-60
+   - If truly unknown: estimate based on activity type
+   - ESTIMATION RULES:
+     * "quick", "brief", "few minutes" → 15-30
+     * "check", "review", "supervisión" → 30-60
+     * "meeting", "reunión" → 60
+     * "long", "extensive", "thorough" → 120-300
+     * "report generation", "cierre" → 60-120
+     * "planning session", "planificación" → 90-120
+   - **NEVER leave duration_minutes as null** - always provide an estimate
+
 5. **participants**: Who participates (roles/departments, e.g., ["Gerente", "Jefes de área", "Equipo de ventas"])
+
 6. **triggers_actions**: What actions this triggers (e.g., ["Asignación de tareas", "Generación de reportes"])
+
 7. **related_process**: Business process this relates to (e.g., "Gestión de mantenimiento", "Proceso de cierre")
+
 8. **confidence_score**: 0.0-1.0 based on how explicit the mention is
-9. **extraction_reasoning**: Brief explanation of why you extracted this
+
+9. **extraction_reasoning**: Brief explanation including duration estimation rationale if estimated
+
+**CRITICAL DURATION EXTRACTION EXAMPLES:**
+
+- "Chequeo completo del estado de los sistemas cada mañana" →
+  activity: "Chequeo completo del estado", frequency: "Daily", duration_minutes: 90 (thorough check implies ~1.5 hours)
+
+- "Resolución de tickets por criticidad" →
+  activity: "Resolución de tickets por criticidad", frequency: "Daily", duration_minutes: 120 (typical ticket resolution)
+
+- "Reuniones de planificación semanal" →
+  activity: "Reuniones de planificación", frequency: "Weekly", duration_minutes: 60 (standard meeting duration)
+
+- "Supervisión rápida del equipo cada mañana" →
+  activity: "Supervisión del equipo", frequency: "Daily", duration_minutes: 30 (quick supervision)
+
+- "Cierre mensual de contabilidad" →
+  activity: "Cierre mensual de contabilidad", frequency: "Monthly", duration_minutes: 180 (accounting close is extensive)
 
 **Important Guidelines:**
 - Extract SPECIFIC activities, not vague mentions of time
 - Include meetings, closings, reports, reviews, and any recurring activity
 - Normalize frequency to standard values (Hourly, Daily, Weekly, Monthly, Quarterly, Annually)
 - Convert times to 24-hour format (9am → "09:00", 2pm → "14:00")
-- Extract duration in minutes (30 minutos → 30, 2 horas → 120)
+- **ALWAYS provide duration_minutes** - estimate if not explicitly mentioned
 - Be specific about participants (roles, not just "equipo")
 - Identify what actions are triggered by this temporal pattern
-
-**Examples of Temporal Patterns:**
-- "Reunión diaria a las 9am con el equipo" → Daily at 09:00
-- "Cierre mensual el último día del mes" → Monthly
-- "Revisión de inventario cada semana, toma 2 horas" → Weekly, 120 minutes
-- "Reporte semanal todos los lunes" → Weekly
-- "Junta de coordinación cada viernes a las 3pm, dura 30 minutos" → Weekly at 15:00, 30 minutes
 
 **Return Format:**
 {{
@@ -1866,12 +1918,12 @@ Extract ALL temporal patterns - recurring activities with time-based characteris
       "activity_name": "Activity name",
       "frequency": "Hourly|Daily|Weekly|Monthly|Quarterly|Annually",
       "time_of_day": "HH:MM" or null,
-      "duration_minutes": number or null,
+      "duration_minutes": integer (REQUIRED, estimate if not mentioned),
       "participants": ["Role 1", "Role 2"],
       "triggers_actions": ["Action 1", "Action 2"],
       "related_process": "Process name",
       "confidence_score": 0.0-1.0,
-      "extraction_reasoning": "Brief explanation"
+      "extraction_reasoning": "Brief explanation including duration estimation method if applicable"
     }}
   ]
 }}
@@ -1900,19 +1952,46 @@ If no temporal patterns are found, return {{"temporal_patterns": []}}.
             # Add extraction source and validate
             for pattern in patterns:
                 pattern["extraction_source"] = "llm_extraction"
-                
+
                 # Ensure required fields exist
                 if not pattern.get("activity_name") or not pattern.get("frequency"):
                     continue
-                
+
                 # Set defaults for missing fields
                 pattern.setdefault("time_of_day", None)
-                pattern.setdefault("duration_minutes", None)
                 pattern.setdefault("participants", [])
                 pattern.setdefault("triggers_actions", [])
                 pattern.setdefault("related_process", None)
                 pattern.setdefault("confidence_score", 0.8)
                 pattern.setdefault("extraction_reasoning", "Extracted by LLM")
+
+                # Intelligent duration estimation if missing
+                if not pattern.get("duration_minutes"):
+                    activity = pattern.get("activity_name", "").lower()
+                    frequency = pattern.get("frequency", "").lower()
+
+                    # Estimate based on activity type and frequency
+                    if any(word in activity for word in ["cierre", "close", "closing"]):
+                        pattern["duration_minutes"] = 120  # Closings typically take 2 hours
+                    elif any(word in activity for word in ["reunión", "meeting", "junta"]):
+                        pattern["duration_minutes"] = 60  # Standard meeting duration
+                    elif any(word in activity for word in ["planificación", "planning"]):
+                        pattern["duration_minutes"] = 90  # Planning sessions
+                    elif any(word in activity for word in ["reporte", "report", "informe"]):
+                        pattern["duration_minutes"] = 90  # Report generation
+                    elif any(word in activity for word in ["revisión", "review", "chequeo", "check"]):
+                        pattern["duration_minutes"] = 45  # Reviews and checks
+                    elif any(word in activity for word in ["supervisión", "supervision"]):
+                        pattern["duration_minutes"] = 30  # Quick supervision
+                    elif frequency == "monthly":
+                        pattern["duration_minutes"] = 120  # Monthly activities tend to be longer
+                    elif frequency == "weekly":
+                        pattern["duration_minutes"] = 60  # Weekly activities
+                    else:
+                        pattern["duration_minutes"] = 30  # Default estimate for daily/other activities
+
+                    # Update reasoning to explain estimation
+                    pattern["extraction_reasoning"] = f"{pattern['extraction_reasoning']}. Duration estimated as {pattern['duration_minutes']} minutes based on activity type."
             
             return patterns
             
