@@ -25,6 +25,16 @@ if not os.getenv("OPENAI_API_KEY"):
 
 from intelligence_capture.database import EnhancedIntelligenceDB
 from intelligence_capture.config import DB_PATH, INTERVIEWS_FILE, PROJECT_ROOT
+from intelligence_capture.logging_config import (
+    setup_extraction_logging,
+    log_extraction_start,
+    log_extraction_complete,
+    log_interview_start,
+    log_interview_complete,
+    log_interview_error,
+    log_batch_progress,
+    create_extraction_report
+)
 from intelligence_capture.extractors import (
     CommunicationChannelExtractor,
     DecisionPointExtractor,
@@ -52,12 +62,13 @@ PROGRESS_FILE = PROJECT_ROOT / "data" / "extraction_progress.json"
 
 class ExtractionPipeline:
     """Manages the full extraction pipeline with batch processing and retry logic"""
-    
+
     def __init__(self, db_path: Path, interviews_path: Path):
         self.db_path = db_path
         self.interviews_path = interviews_path
         self.db = None
         self.extractors = {}
+        self.logger = setup_extraction_logging()
         self.stats = {
             "total_interviews": 0,
             "processed_interviews": 0,
@@ -71,13 +82,15 @@ class ExtractionPipeline:
     def initialize(self):
         """Initialize database and extractors"""
         print("🔧 Initializing pipeline...")
-        
+        self.logger.info("Initializing extraction pipeline")
+
         # Create database
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.db = EnhancedIntelligenceDB(self.db_path)
         self.db.connect()
         self.db.init_v2_schema()
         print(f"  ✅ Database initialized: {self.db_path}")
+        self.logger.info(f"Database initialized: {self.db_path}")
         
         # Initialize all extractors
         print("  🤖 Initializing extractors...")
@@ -100,8 +113,9 @@ class ExtractionPipeline:
         # Initialize stats
         for entity_name in self.extractors.keys():
             self.stats["entities_extracted"][entity_name] = 0
-        
+
         print(f"  ✅ {len(self.extractors)} extractors ready")
+        self.logger.info(f"{len(self.extractors)} extractors initialized: {', '.join(self.extractors.keys())}")
     
     def load_interviews(self) -> List[Dict]:
         """Load all interviews from JSON file"""
@@ -134,16 +148,19 @@ class ExtractionPipeline:
     def process_interview(self, interview: Dict, interview_idx: int) -> Dict:
         """
         Process a single interview with all extractors
-        
+
         Returns:
             Dict with extraction results and stats
         """
         meta = interview.get("meta", {})
         role = meta.get('role', 'Unknown')
         company = meta.get('company', 'Unknown')
-        
+
         print(f"\n[{interview_idx + 1}/{self.stats['total_interviews']}] Processing: {role}")
         print("-" * 70)
+        log_interview_start(self.logger, interview_idx + 1, self.stats['total_interviews'], company, role)
+
+        start_time = time.time()
         
         result = {
             "interview_id": None,
@@ -177,18 +194,23 @@ class ExtractionPipeline:
                     print(f"  ❌ {entity_name}: {str(e)[:100]}")
             
             self.stats["processed_interviews"] += 1
-            
+
+            # Log completion
+            duration = time.time() - start_time
+            log_interview_complete(self.logger, str(interview_id), duration, result["entities"])
+
         except Exception as e:
             error_msg = f"Interview processing failed: {str(e)}"
             result["errors"].append(error_msg)
             print(f"  ❌ Interview failed: {str(e)}")
+            log_interview_error(self.logger, f"{company}/{role}", e)
             self.stats["failed_interviews"].append({
                 "index": interview_idx,
                 "role": role,
                 "company": company,
                 "error": str(e)
             })
-        
+
         return result
     
     def _store_entities(self, interview_id: int, company: str, business_unit: str, 
@@ -229,7 +251,11 @@ class ExtractionPipeline:
         """Process a batch of interviews"""
         end_idx = min(start_idx + batch_size, len(interviews))
         batch = interviews[start_idx:end_idx]
-        
+
+        batch_num = (start_idx // batch_size) + 1
+        total_batches = (len(interviews) + batch_size - 1) // batch_size
+        log_batch_progress(self.logger, batch_num, total_batches)
+
         results = []
         for i, interview in enumerate(batch):
             result = self.process_interview(interview, start_idx + i)
@@ -250,17 +276,19 @@ class ExtractionPipeline:
         print("=" * 70)
         print(f"\nDatabase: {self.db_path}")
         print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        
+
         self.stats["start_time"] = datetime.now().isoformat()
         start_time = time.time()
-        
+
         # Initialize
         self.initialize()
-        
+
         # Load interviews
         print(f"\n📂 Loading interviews...")
         interviews = self.load_interviews()
         print(f"  ✅ Loaded {len(interviews)} interviews")
+
+        log_extraction_start(self.logger, len(interviews), BATCH_SIZE)
         
         # Check for previous progress
         progress = self.load_progress()
@@ -295,7 +323,17 @@ class ExtractionPipeline:
         end_time = time.time()
         self.stats["end_time"] = datetime.now().isoformat()
         self.stats["total_duration_seconds"] = int(end_time - start_time)
-        
+
+        # Log completion
+        log_extraction_complete(
+            self.logger,
+            self.stats["total_interviews"],
+            self.stats["processed_interviews"],
+            len(self.stats["failed_interviews"]),
+            self.stats["total_duration_seconds"],
+            self.stats["entities_extracted"]
+        )
+
         self.print_summary()
         self.save_report()
         

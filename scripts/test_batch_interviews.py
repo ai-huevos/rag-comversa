@@ -14,6 +14,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from intelligence_capture.processor import IntelligenceProcessor
 from intelligence_capture.config import DB_PATH, INTERVIEWS_FILE
+from intelligence_capture.logging_config import (
+    setup_extraction_logging,
+    log_extraction_start,
+    log_extraction_complete,
+    log_interview_start,
+    log_interview_complete,
+    log_interview_error
+)
 
 
 def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume: bool = False):
@@ -25,6 +33,9 @@ def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume
         db_path: Path to test database (default: test_batch.db)
         test_resume: If True, test resume capability by interrupting and restarting
     """
+    # Setup logging
+    logger = setup_extraction_logging()
+
     # Use test database
     if db_path is None:
         db_path = Path(__file__).parent.parent / "data" / "test_batch.db"
@@ -33,6 +44,7 @@ def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume
     if db_path.exists() and not test_resume:
         db_path.unlink()
         print(f"🗑️  Deleted existing test database")
+        logger.info(f"Deleted existing test database: {db_path}")
 
     # Load interviews
     print(f"\n📂 Loading interviews from: {INTERVIEWS_FILE}")
@@ -46,6 +58,7 @@ def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume
 
     # Initialize processor
     print(f"\n🔧 Initializing processor with test database: {db_path}")
+    logger.info(f"Initializing processor with test database: {db_path}")
     processor = IntelligenceProcessor(db_path=db_path)
     processor.initialize()
 
@@ -53,22 +66,31 @@ def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume
     print(f"\n🚀 Processing {len(interviews)} interviews...")
     print(f"{'='*70}\n")
 
+    log_extraction_start(logger, len(interviews))
+
     start_time = time.time()
     success_count = 0
     error_count = 0
 
     for i, interview in enumerate(interviews, 1):
         meta = interview.get("meta", {})
-        print(f"\n[{i}/{len(interviews)}] Processing {meta.get('company', 'Unknown')} / {meta.get('respondent', 'Unknown')}")
+        company = meta.get('company', 'Unknown')
+        respondent = meta.get('respondent', 'Unknown')
+        print(f"\n[{i}/{len(interviews)}] Processing {company} / {respondent}")
+        log_interview_start(logger, i, len(interviews), company, respondent)
 
+        interview_start = time.time()
         try:
             success = processor.process_interview(interview)
             if success:
                 success_count += 1
+                interview_duration = time.time() - interview_start
+                log_interview_complete(logger, f"{company}/{respondent}", interview_duration, {})
             else:
                 error_count += 1
         except Exception as e:
             print(f"  ❌ Error: {str(e)}")
+            log_interview_error(logger, f"{company}/{respondent}", e)
             error_count += 1
 
     elapsed_time = time.time() - start_time
@@ -80,6 +102,8 @@ def test_batch_interviews(batch_size: int = 5, db_path: Path = None, test_resume
     print(f"  Total time: {elapsed_time:.1f}s")
     print(f"  Avg time per interview: {elapsed_time/len(interviews):.1f}s")
     print(f"{'='*70}\n")
+
+    log_extraction_complete(logger, len(interviews), success_count, error_count, elapsed_time, {})
 
     # Analyze results
     print(f"📊 Analyzing results...")
