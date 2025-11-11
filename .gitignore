@@ -30,3 +30,15 @@ data/*_backup_*.db*
 # Test reports and logs
 reports/extraction_report_*.json
 reports/test_results_*.md
+
+# Virtual environments
+.venv/
+venv/
+
+# Logs
+logs/
+*.log
+
+# Data files (interviews)
+data/*.json
+!data/README.md

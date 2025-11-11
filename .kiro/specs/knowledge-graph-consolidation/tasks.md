@@ -772,7 +772,7 @@ After completing all tasks, the system should achieve:
   - 📄 `docs/CONSOLIDATION_SYNC_ARCHITECTURE.md`
   - _Requirements: RAG 2.0 tasks 19-21, consolidation requirements 1-25_
 
-- [ ] 42. Implement ConsolidationSync to PostgreSQL
+- [x] 42. Implement ConsolidationSync to PostgreSQL ✅ (2025-11-10)
   - Create `intelligence_capture/consolidation_sync.py`
   - Implement `ConsolidationSync` class with `__init__(sqlite_db, postgres_conn, neo4j_driver)`
   - Implement `sync_consolidated_entities()` - copies consolidated entities from SQLite to PostgreSQL
@@ -783,9 +783,10 @@ After completing all tasks, the system should achieve:
   - Add incremental sync: only sync entities modified since last sync (use consolidated_at timestamp)
   - Add transaction support: rollback PostgreSQL if sync fails mid-process
   - Log all sync operations with entity counts and timing
+  - _Evidence: tests/test_consolidation_sync.py (fan-out), scripts/sync_graph_consolidation.py_
   - _Requirements: RAG 2.0 design §2, consolidation requirements 3.1-3.5_
 
-- [ ] 43. Implement ConsolidationSync to Neo4j
+- [x] 43. Implement ConsolidationSync to Neo4j ✅ (2025-11-10)
   - Update `intelligence_capture/consolidation_sync.py`
   - Implement `sync_to_neo4j()` - creates Neo4j nodes for consolidated entities
   - Map entity types to Neo4j node labels: System, PainPoint, Process, KPI, etc.
@@ -796,9 +797,10 @@ After completing all tasks, the system should achieve:
   - Use Graffiti library for Neo4j operations (per RAG 2.0 design)
   - Add Cypher query optimization: batch node/relationship creation
   - Implement conflict resolution: merge nodes if already exist, update properties
+  - _Evidence: Graph fan-out via GraphSyncAdapter + tests/test_rag2_consolidation_integration.py_
   - _Requirements: RAG 2.0 design §2.3, consolidation requirements 6.1-6.5_
 
-- [ ] 44. Create Ingestion Worker for Consolidation
+- [x] 44. Create Ingestion Worker for Consolidation ✅ (2025-11-10)
   - Create `intelligence_capture/ingestion_worker.py` (if not exists from RAG 2.0 tasks 3-5)
   - Add consolidation mode: `--mode consolidation`
   - Watch for new interviews in ingestion queue
@@ -807,9 +809,10 @@ After completing all tasks, the system should achieve:
   - Add CostGuard integration: estimate cost before processing, throttle if >$900/month
   - Add checkpoint creation: bundle consolidated entities for governance review
   - Log all ingestion operations to `reports/ingestion_status.json`
+  - _Evidence: ingestion worker CLI + tests/test_ingestion_worker.py_
   - _Requirements: RAG 2.0 tasks 19-21, consolidation requirements 9.1-9.5_
 
-- [ ] 45. Create Consolidation Backlog Alert System
+- [x] 45. Create Consolidation Backlog Alert System ✅ (2025-11-10)
   - Update `intelligence_capture/ingestion_worker.py`
   - Implement `check_consolidation_backlog()` - counts unconsolidated entities
   - Query SQLite for entities with is_consolidated = false
@@ -818,6 +821,7 @@ After completing all tasks, the system should achieve:
   - Alert channels: log file, console, email (if configured)
   - Generate backlog report: `reports/consolidation_backlog.json`
   - Include recommendations: increase worker concurrency, adjust similarity thresholds
+  - _Evidence: intelligence_capture/monitoring/backlog_monitor.py + reports/consolidation_backlog.json_
   - _Requirements: RAG 2.0 task 21, consolidation requirements 10.1-10.5_
 
 - [ ] 46. Create Consolidation Runbook for RAG 2.0

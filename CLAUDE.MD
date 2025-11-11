@@ -28,6 +28,8 @@ This file defines how Claude/Codex agents work inside this repository. Load it *
 | **Week 4 – Quality & Governance** | Retrieval evaluation harness, Spanish optimization, performance tuning, checkpoints & approvals | tasks 15–18 |
 | **Week 5 – Consolidation & Automation** | ConsolidationSync ↔ Postgres/Neo4j, ingestion workers, backlog alerts, runbooks & compliance evidence | tasks 19–21 + `.kiro/specs/knowledge-graph-consolidation/*` |
 
+**Semana 5 · Actualización (10-nov-2025):** ConsolidationSync ya fan-out a Postgres/Neo4j (`intelligence_capture/consolidation_sync.py`), CLI operativa `scripts/sync_graph_consolidation.py`, worker + monitor (`intelligence_capture/ingestion_worker.py`, `intelligence_capture/monitoring/backlog_monitor.py`) y pruebas `tests/test_rag2_consolidation_integration.py`.
+
 Always consult `.codex/manifest.yaml` for authoritative phase status before coding.
 
 ---

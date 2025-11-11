@@ -109,5 +109,14 @@
     "enable_pattern_recognition": true,
     "auto_rollback_on_error": false,
     "require_manual_approval_for_rollback": true
+  },
+
+  "consolidation_sync": {
+    "_comment": "Configuración para propagar merges hacia PostgreSQL/Neo4j.",
+    "enabled": true,
+    "batch_size": 250,
+    "default_org_id": null,
+    "neo4j_enabled": false,
+    "graph_batch_size": 100
   }
 }
