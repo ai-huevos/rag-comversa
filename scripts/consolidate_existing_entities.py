@@ -61,7 +61,8 @@ def get_all_entities(db: EnhancedIntelligenceDB, entity_type: str) -> List[Dict[
 def consolidate_existing_entities(
     db_path: Path,
     entity_types: List[str] = None,
-    dry_run: bool = False
+    dry_run: bool = False,
+    exclude_ids: List[int] = None
 ):
     """
     Consolidate existing entities in the database
@@ -70,12 +71,19 @@ def consolidate_existing_entities(
         db_path: Path to database file
         entity_types: List of entity types to consolidate (None = all)
         dry_run: If True, only show what would be consolidated
+        exclude_ids: List of entity IDs to exclude from consolidation
     """
+    # Initialize exclusions
+    if exclude_ids is None:
+        exclude_ids = []
+    exclude_set = set(exclude_ids)
     print("=" * 70)
     print("RETROSPECTIVE ENTITY CONSOLIDATION")
     print("=" * 70)
     print(f"\nDatabase: {db_path}")
     print(f"Mode: {'DRY RUN (no changes)' if dry_run else 'LIVE (will modify database)'}")
+    if exclude_set:
+        print(f"Excluding IDs: {sorted(exclude_set)}")
     print()
 
     # Load configuration
@@ -129,14 +137,14 @@ def consolidate_existing_entities(
         processed_ids = set()
 
         for i, entity1 in enumerate(entities):
-            if entity1['id'] in processed_ids:
+            if entity1['id'] in processed_ids or entity1['id'] in exclude_set:
                 continue
 
             group = [entity1]
 
             # Compare with remaining entities
             for entity2 in entities[i+1:]:
-                if entity2['id'] in processed_ids:
+                if entity2['id'] in processed_ids or entity2['id'] in exclude_set:
                     continue
 
                 # Calculate similarity using public methods
@@ -257,17 +265,28 @@ def main():
         action='store_true',
         help='Show what would be consolidated without making changes'
     )
+    parser.add_argument(
+        '--exclude-ids',
+        type=str,
+        help='Comma-separated list of entity IDs to exclude (e.g., "150,151")'
+    )
 
     args = parser.parse_args()
 
     # Get entity types
     entity_types = [args.entity_type] if args.entity_type else None
 
+    # Parse exclude IDs
+    exclude_ids = None
+    if args.exclude_ids:
+        exclude_ids = [int(id.strip()) for id in args.exclude_ids.split(',')]
+
     # Run consolidation
     consolidate_existing_entities(
         db_path=args.db_path,
         entity_types=entity_types,
-        dry_run=args.dry_run
+        dry_run=args.dry_run,
+        exclude_ids=exclude_ids
     )
 
 
