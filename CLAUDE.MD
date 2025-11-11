@@ -18,7 +18,27 @@ This file defines how Claude/Codex agents work inside this repository. Load it *
 
 ---
 
-## 2. Current Focus & Timeline (RAG 2.0)
+## 1.5. Quick Start (New Developers)
+
+**First Time Setup:**
+```bash
+cp .env.example .env          # Add your OpenAI API key
+pip install -r intelligence_capture/requirements.txt
+python scripts/check_setup.py # Verify setup
+```
+
+**Test the System:**
+```bash
+python scripts/test_single_interview.py  # ~10s, $0.01
+```
+
+**Current State:** RAG 2.0 Week 1/5 in progress. See §2 for timeline.
+**Critical Constraints:** Spanish-only (NEVER translate), UTF-8 everywhere, cost guardrails active.
+**Start Here:** Read [docs/README.md](docs/README.md), then [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+---
+
+## 2. Current Focus & Timeline (RAG 2.0) ⚠️ Check `.kiro/specs/*/tasks.md` for current status
 
 | Horizon | Objectives | Key Artifacts |
 | --- | --- | --- |
@@ -204,13 +224,18 @@ python scripts/test_consolidation.py
 
 ### Database Operations
 
+⚠️ **IMPORTANT:** Two database systems in use:
+- **SQLite** (current/legacy): 17 entity tables, local `intelligence.db`
+- **PostgreSQL+pgvector** (RAG 2.0, in progress): Document chunks + embeddings
+- **Neo4j** (RAG 2.0, in progress): Consolidated knowledge graph
+
 #### Switch Between Databases
 ```bash
-# Legacy SQLite (current)
+# Legacy SQLite (current - use for extraction work)
 export DB_TYPE=sqlite
 sqlite3 data/full_intelligence.db
 
-# PostgreSQL (RAG 2.0)
+# PostgreSQL (RAG 2.0 - use for embeddings/chunks)
 export DATABASE_URL="postgresql://user:pass@host:5432/dbname"
 psql $DATABASE_URL
 ```
@@ -265,6 +290,17 @@ CI must run relevant tests before merge; Orchestrator/Governance agents gate rel
 - [ ] Tests pass with sanitized fixtures (no real client data)
 - [ ] Cost estimate logged if using LLM APIs
 
+### Common Issues & Fixes
+
+| Issue | Fix |
+|-------|-----|
+| `Database is locked` | Enable WAL mode: `PRAGMA journal_mode=WAL` |
+| `mojibake` (corrupted Spanish) | Verify `ensure_ascii=False` in json.dumps() |
+| Rate limit errors | Check rate_limiter.py is being used |
+| Missing API key | Check `.env` has `OPENAI_API_KEY=sk-...` |
+| Import errors | Run from project root, activate venv |
+| Cost overrun | Review CostGuard settings, check monthly budget |
+
 ---
 
 ## 10. Rules of Engagement
@@ -306,5 +342,5 @@ Track progress using `.kiro/specs/*/tasks.md` and report status in `reports/agen
 - **`.ai/CODING_STANDARDS.md`** – **Python coding standards (Spanish-first, UTF-8, type hints, docstrings)**
 - `docs/RAG2_runbook.md` – operational procedures (Week 5 deliverable).
 
-**Last Updated:** November 9, 2025  
+**Last Updated:** November 11, 2025  
 **Status:** 🟡 RAG 2.0 enhancement in progress (Week 1/5)
