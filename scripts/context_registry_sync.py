@@ -14,7 +14,7 @@ import asyncio
 import argparse
 from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
