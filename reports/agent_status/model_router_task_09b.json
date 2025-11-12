@@ -1,0 +1,15 @@
+{
+  "fecha": "2025-11-12",
+  "agente": "Storage & Graph",
+  "tarea": "9b - Migrar entidades legacy y endurecer ruteo LLM",
+  "resumen": "Se desactivaron los extractores v1 redundantes y ahora los objetos pain_points, systems y automation_candidates provienen directamente de los extractores v2, manteniendo claves legacy para los consumidores heredados. Se agregó scripts/migrate_entities_to_v2.py para rellenar business_unit/department a partir de interviews y se documentó la ejecución. La configuración de modelos quedó externalizada (model_routing) y call_llm_with_fallback ahora usa un ModelRouter con round-robin + rate limiting por modelo.",
+  "artefactos": [
+    "intelligence_capture/extractor.py",
+    "intelligence_capture/extractors.py",
+    "intelligence_capture/model_router.py",
+    "intelligence_capture/rate_limiter.py",
+    "scripts/migrate_entities_to_v2.py",
+    "config/extraction_config.json",
+    "docs/RAG2_IMPLEMENTATION.md"
+  ]
+}

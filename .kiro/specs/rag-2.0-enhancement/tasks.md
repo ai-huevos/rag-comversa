@@ -105,6 +105,13 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
   - 📋 **Scripts:** [`scripts/backfill_consolidated_entities.py`](../../../scripts/backfill_consolidated_entities.py), [`scripts/sync_consolidated_to_neo4j.py`](../../../scripts/sync_consolidated_to_neo4j.py)
   - _Requirements: R5.1–R5.7, R12.2, R12.6_ ✅
 
+- [x] 9b. Migrate legacy entities + LLM routing to v2 schema ✅ **COMPLETE** (2025-11-12)
+  - ✅ `intelligence_capture/extractor.py` now sources `pain_points`, `systems`, and `automation_candidates` from the enhanced v2 extractors while keeping `processes`, `kpis`, and `inefficiencies` on legacy prompts for continuity.
+  - ✅ Added `scripts/migrate_entities_to_v2.py` to backfill `business_unit`/`department` columns for existing rows (supports `--dry-run` previews) after running `EnhancedIntelligenceDB.init_v2_schema()`.
+  - ✅ Introduced `intelligence_capture/model_router.py` plus configurable `model_routing` settings in `config/extraction_config.json` so round-robin + fallback chains (with provider metadata) live in configuration instead of source code.
+  - ✅ Updated `call_llm_with_fallback` to rotate models per router, enforce per-model rate limits, and gracefully skip providers that are not yet wired (Gemini, K2, DeepSeek entries present for future activation).
+  - _Requirements: R4.5, R6.4, R7.4, R8.1, R9.2_ ✅
+
 ---
 
 ## Phase 3: Agentic RAG & API Delivery (Week 3)

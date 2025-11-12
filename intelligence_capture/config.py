@@ -1,6 +1,7 @@
 """
 Configuration for Intelligence Capture System
 """
+import logging
 import os
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent
+logger = logging.getLogger(__name__)
 DATA_DIR = PROJECT_ROOT / "data" / "interviews" / "analysis_output"
 INTERVIEWS_FILE = DATA_DIR / "all_interviews.json"
 
@@ -93,6 +95,26 @@ def load_extraction_config(config_path: Path = None) -> dict:
             "max_retries": MAX_RETRIES,
             "timeout_seconds": TIMEOUT_SECONDS,
             "max_tokens": 4000
+        },
+        "model_routing": {
+            "round_robin": [
+                "gpt-4o-mini",
+                "gpt-4o-mini",
+                "gpt-4o"
+            ],
+            "fallback": [
+                "gpt-4o-mini",
+                "gpt-4o",
+                "o1-mini"
+            ],
+            "providers": {
+                "gpt-4o-mini": {"provider": "openai"},
+                "gpt-4o": {"provider": "openai"},
+                "o1-mini": {"provider": "openai"},
+                "gemini-1.5-pro": {"provider": "gemini"},
+                "deepseek-chat": {"provider": "deepseek"},
+                "k2-large": {"provider": "k2"}
+            }
         },
         "validation": {
             "enable_validation_agent": True,
@@ -215,10 +237,15 @@ try:
     EXTRACTION_CONFIG = load_extraction_config()
     validate_extraction_config(EXTRACTION_CONFIG)
 except Exception as e:
-    print(f"⚠️  Config validation failed: {e}")
-    print(f"   Continuing with defaults")
+    logger.error("Config validation failed", exc_info=True)
+    print(f"⚠️  Error validando configuración: {e}")
+    print("   Continuando con valores predeterminados")
     EXTRACTION_CONFIG = None
 
+MODEL_ROUTING_CONFIG = (EXTRACTION_CONFIG or {}).get("model_routing", {})
+ROUND_ROBIN_CHAIN = MODEL_ROUTING_CONFIG.get("round_robin", ["gpt-4o-mini"])
+FALLBACK_CHAIN = MODEL_ROUTING_CONFIG.get("fallback", ROUND_ROBIN_CHAIN)
+MODEL_PROVIDER_MAP = MODEL_ROUTING_CONFIG.get("providers", {})
 
 # Consolidation Configuration Loader
 def load_consolidation_config(config_path: Path = None) -> dict:
