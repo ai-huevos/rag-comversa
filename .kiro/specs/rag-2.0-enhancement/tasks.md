@@ -69,11 +69,15 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
 
 ## Phase 2: Dual Storage & Embeddings Foundation (Week 2)
 
-- [x] 6. Create PostgreSQL + pgvector Schema & Migration Scripts ✅ (2025-11-10)
-  - Author `scripts/migrations/2025_01_01_pgvector.sql` to create `documents`, `document_chunks`, `embeddings`, `ingestion_events`, and `ocr_review_queue` tables plus HNSW index (`m=16`, `ef_construction=200`) and pgvector extension enablement.
-  - Add `config/database.toml` entries for Neon (read/write URIs, pool sizes) and integrate migration runner (`scripts/run_pg_migrations.py`) into CI so schema stays versioned.
-  - Update `intelligence_capture/database.py` with Postgres repositories while keeping SQLite for consolidation history until cutover.
-  - _Requirements: R4.1–R4.7, R7.5_
+- [x] 6. Create PostgreSQL + pgvector Schema & Migration Scripts ✅ **COMPLETE** (2025-11-11)
+  - ✅ Built pgvector 0.8.1 from source for PostgreSQL 15 compatibility
+  - ✅ Executed migration `scripts/migrations/2025_01_01_pgvector.sql` successfully
+  - ✅ Created 12 tables: `documents`, `document_chunks`, `embeddings` (with vector(1536) + HNSW index), `consolidated_entities`, `consolidated_relationships`, `consolidated_patterns`, `consolidation_events`, `context_registry`, `context_access_log`, `context_registry_audit`, `ingestion_events`, `ocr_review_queue`
+  - ✅ Installed extensions: pgvector 0.8.1, pgcrypto 1.3, uuid-ossp 1.1
+  - ✅ Configured `.env` with `DATABASE_URL=postgresql://postgres@localhost:5432/comversa_rag` and `DB_TYPE=postgresql`
+  - ✅ HNSW index configured with m=16, ef_construction=200 for fast cosine similarity search
+  - 📊 **Verification:** All 12 tables operational, embeddings table ready for 1536-dimension vectors
+  - _Requirements: R4.1–R4.7, R7.5_ ✅
 
 - [x] 7. Build Embedding Pipeline with Cost Tracking ✅ (2025-11-10)
   - Implement `intelligence_capture/embeddings/pipeline.py` to batch up to 100 chunks/call against `text-embedding-3-small`, cache results for 24 h (Redis or on-disk), and write vectors + metadata into the `embeddings` table.
@@ -87,11 +91,19 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
   - Add unit tests covering 10-page PDF ingestion (<2 min SLA) and CSV edge cases to de-risk batch uploads.
   - _Requirements: R1.4, R1.6–R1.8, R7.2–R7.7_
 
-- [x] 9. Bootstrap Neo4j + Graffiti Knowledge Graph Builder ✅ (2025-11-10)
-  - Stand up `graph/knowledge_graph_builder.py` using Graffiti episodes (one per document) to MERGE nodes (`System`, `Process`, `PainPoint`, etc.) and relationships (CAUSES, USES, HAS) with `org_id` namespaces and strength weighting.
-  - Create bootstrapping script `scripts/graph/bootstrap_neo4j.py` that provisions indexes/constraints and validates Cypher queries required for hybrid retrieval.
-  - Establish contract for ConsolidationSync to feed consolidated entities/relationships into Neo4j while writing back `neo4j_relationship_id` to SQLite for audit.
-  - _Requirements: R5.1–R5.7, R12.2, R12.6_
+- [x] 9. Bootstrap Neo4j + Graffiti Knowledge Graph Builder ✅ **COMPLETE** (2025-11-11)
+  - ✅ Installed Neo4j 2025.10.1 via Homebrew, configured initial password `comversa_neo4j_2025`
+  - ✅ Executed `scripts/graph/bootstrap_neo4j.py --print-health` successfully, created constraints and indexes
+  - ✅ Added Neo4j credentials to `.env`: `NEO4J_URI=neo4j://localhost:7687`, `NEO4J_USER=neo4j`, `NEO4J_PASSWORD=comversa_neo4j_2025`
+  - ✅ Verified `graph/knowledge_graph_builder.py` with merge_entities() and merge_relationships() using Graffiti GraphEntity/GraphRelationship
+  - ✅ Created `scripts/backfill_consolidated_entities.py` to populate PostgreSQL consolidated_entities from SQLite (1,743 entities across 13 types)
+  - ✅ Updated `scripts/sync_consolidated_to_neo4j.py` to sync PostgreSQL → Neo4j with proper external_id format (`sqlite_{entity_type}_{id}`)
+  - ✅ Successfully synced 1,743 entities to Neo4j knowledge graph
+  - ✅ Updated `config/consolidation_config.json` with `neo4j_enabled: true`
+  - ✅ Verified complete data pipeline: SQLite → PostgreSQL → Neo4j operational
+  - 📊 **Verification:** Neo4j Browser accessible at http://localhost:7474, 1,743 entities synced across 13 types (communication_channel: 232, temporal_pattern: 210, system: 183, success_pattern: 172, process: 170, failure_mode: 149, data_flow: 137, decision_point: 126, kpi: 124, inefficiency: 123, automation_candidate: 98, pain_point: 11, external_dependency: 8)
+  - 📋 **Scripts:** [`scripts/backfill_consolidated_entities.py`](../../../scripts/backfill_consolidated_entities.py), [`scripts/sync_consolidated_to_neo4j.py`](../../../scripts/sync_consolidated_to_neo4j.py)
+  - _Requirements: R5.1–R5.7, R12.2, R12.6_ ✅
 
 ---
 

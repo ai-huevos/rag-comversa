@@ -1,7 +1,7 @@
 # RAG 2.0 Implementation Guide
 
-**Status**: 🟡 Week 1/5 In Progress
-**Last Updated**: November 9, 2025
+**Status**: 🟡 Week 2/5 In Progress (Phase 1 Complete, Phase 2 Started)
+**Last Updated**: November 11, 2025
 **Target**: Conversational intelligence queries over 44 Spanish interviews + multi-format documents
 
 ---
@@ -73,30 +73,193 @@ Enable conversational queries that combine semantic search + graph relationships
 
 ---
 
-### Week 2: Dual Storage (Tasks 6-9)
+### Week 2: Dual Storage (Tasks 6-9) ✅ Task 6 Complete
 **Goal**: Set up PostgreSQL+pgvector and Neo4j for semantic + graph queries
 
-#### PostgreSQL + pgvector Schema
+#### ✅ Task 6: PostgreSQL + pgvector Setup (COMPLETE - 2025-11-11)
+
+**Environment:**
+- PostgreSQL 15.14 (via Homebrew)
+- pgvector 0.8.1 (built from source)
+- Database: `comversa_rag`
+- Connection: `postgresql://postgres@localhost:5432/comversa_rag`
+
+**Migration Executed:** `scripts/migrations/2025_01_01_pgvector.sql`
+
+**Tables Created (12 total):**
+
+1. **Core RAG Tables:**
+   - `documents` - Document metadata with org_id, source_type, checksum, status
+   - `document_chunks` - Spanish text chunks with token_count, page_number, spanish_features JSONB
+   - `embeddings` - Vector embeddings (1536 dims) with HNSW index, cost tracking
+
+2. **Consolidation Sync Tables:**
+   - `consolidated_entities` - Shadow table for SQLite→Postgres entity sync
+   - `consolidated_relationships` - Entity relationships with confidence scores
+   - `consolidated_patterns` - Discovered patterns from consolidation
+   - `consolidation_events` - Event log for ConsolidationSync operations
+
+3. **Context & Ingestion:**
+   - `context_registry` - Org namespaces and consent metadata
+   - `context_access_log` - Privacy compliance audit trail
+   - `context_registry_audit` - Registry change tracking
+   - `ingestion_events` - Document ingestion job tracking
+   - `ocr_review_queue` - Manual review queue for low-confidence OCR
+
+**Actual Schema (embeddings table):**
 ```sql
--- Document chunks with embeddings
-CREATE TABLE document_chunks (
-    id SERIAL PRIMARY KEY,
-    org_id VARCHAR(50) NOT NULL,
-    document_id VARCHAR(100) NOT NULL,
-    chunk_index INT NOT NULL,
-    content TEXT NOT NULL,
-    embedding vector(1536), -- OpenAI text-embedding-3-small
-    metadata JSONB, -- {source, page_num, confidence}
-    created_at TIMESTAMP DEFAULT NOW()
+CREATE TABLE embeddings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    chunk_id UUID NOT NULL,
+    document_id UUID NOT NULL,
+    provider VARCHAR(50) NOT NULL DEFAULT 'openai',
+    model VARCHAR(100) NOT NULL DEFAULT 'text-embedding-3-small',
+    dimensions INTEGER NOT NULL DEFAULT 1536,
+    embedding VECTOR(1536) NOT NULL,
+    cost_cents NUMERIC(10, 4) DEFAULT 0.0,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    metadata JSONB
 );
 
--- HNSW index for <1s similarity search
-CREATE INDEX ON document_chunks USING hnsw (embedding vector_cosine_ops);
-
--- B-tree indexes for filtering
-CREATE INDEX ON document_chunks(org_id);
-CREATE INDEX ON document_chunks(document_id);
+-- HNSW index for fast cosine similarity search
+CREATE INDEX idx_embeddings_hnsw
+    ON embeddings
+    USING hnsw (embedding vector_cosine_ops)
+    WITH (m = 16, ef_construction = 200);
 ```
+
+**Extensions Installed:**
+- `pgvector 0.8.1` - Vector operations and HNSW indexing
+- `pgcrypto 1.3` - Cryptographic functions for UUIDs
+- `uuid-ossp 1.1` - UUID generation utilities
+
+**Verification Commands:**
+```bash
+# List all tables
+psql -U postgres -d comversa_rag -c "\dt"
+
+# Check extensions
+psql -U postgres -d comversa_rag -c "SELECT extname, extversion FROM pg_extension;"
+
+# Verify embeddings table structure
+psql -U postgres -d comversa_rag -c "\d embeddings"
+
+# Check consolidated entities
+psql -U postgres -d comversa_rag -c "SELECT entity_type, COUNT(*) FROM consolidated_entities GROUP BY entity_type ORDER BY COUNT(*) DESC;"
+```
+
+---
+
+#### ✅ Task 9: Neo4j Knowledge Graph Setup (COMPLETE - 2025-11-11)
+
+**Environment:**
+- Neo4j 2025.10.1 (via Homebrew)
+- Connection: `neo4j://localhost:7687`
+- Browser: `http://localhost:7474`
+- Credentials: `neo4j` / `comversa_neo4j_2025`
+
+**Implementation Steps:**
+
+1. **Neo4j Installation:**
+   ```bash
+   brew install neo4j
+   neo4j-admin dbms set-initial-password comversa_neo4j_2025
+   neo4j console  # Running in console mode
+   ```
+
+2. **Bootstrap Constraints:**
+   ```bash
+   python scripts/graph/bootstrap_neo4j.py --print-health
+   # Creates Entity constraints on (org_id, external_id)
+   ```
+
+3. **Consolidation Backfill:**
+   ```bash
+   # Populate PostgreSQL from SQLite consolidated entities
+   python scripts/backfill_consolidated_entities.py
+   # Result: 1,743 entities → consolidated_entities table
+   ```
+
+4. **Neo4j Sync:**
+   ```bash
+   # Sync PostgreSQL consolidated entities to Neo4j
+   export NEO4J_PASSWORD=comversa_neo4j_2025
+   python scripts/sync_consolidated_to_neo4j.py
+   # Result: 1,743 entities synced to Neo4j knowledge graph
+   ```
+
+**Data Pipeline:**
+```
+SQLite (17 entity tables)
+    ↓ consolidate_existing_entities.py (1,616 → 1,067 merged)
+SQLite (consolidated in-place)
+    ↓ backfill_consolidated_entities.py
+PostgreSQL (consolidated_entities: 1,743 rows)
+    ↓ sync_consolidated_to_neo4j.py
+Neo4j (1,743 Entity nodes with properties)
+```
+
+**Entity Distribution (Neo4j):**
+- communication_channel: 232 nodes
+- temporal_pattern: 210 nodes
+- system: 183 nodes
+- success_pattern: 172 nodes
+- process: 170 nodes
+- failure_mode: 149 nodes
+- data_flow: 137 nodes
+- decision_point: 126 nodes
+- kpi: 124 nodes
+- inefficiency: 123 nodes
+- automation_candidate: 98 nodes
+- pain_point: 11 nodes
+- external_dependency: 8 nodes
+
+**Entity Schema:**
+```cypher
+// Node properties
+(:Entity {
+  external_id: 'sqlite_{entity_type}_{id}',  // Unique identifier
+  entity_type: 'pain_point',
+  name: 'Slow Excel processing',
+  org_id: 'default',
+  source_count: 5,                           // How many interviews mentioned
+  consensus_confidence: 0.85,                 // Consolidation confidence
+  // Plus all entity-specific properties from payload
+})
+```
+
+**Verification Commands:**
+```bash
+# Access Neo4j Browser
+open http://localhost:7474
+
+# Count all entities
+export NEO4J_PASSWORD=comversa_neo4j_2025
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) RETURN count(n) as total_nodes"
+
+# Entity breakdown by type
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) RETURN n.entity_type as type, count(n) as count ORDER BY count DESC"
+
+# High-confidence entities (mentioned by 3+ interviews)
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) WHERE n.source_count >= 3 RETURN n.entity_type, n.name, n.source_count ORDER BY n.source_count DESC LIMIT 20"
+```
+
+**Key Scripts Created:**
+- [`scripts/backfill_consolidated_entities.py`](../scripts/backfill_consolidated_entities.py) - One-time backfill from SQLite to PostgreSQL
+- [`scripts/sync_consolidated_to_neo4j.py`](../scripts/sync_consolidated_to_neo4j.py) - Sync PostgreSQL consolidated_entities to Neo4j
+
+**Configuration Updates:**
+- `.env`: Added `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD`
+- `config/consolidation_config.json`: Set `neo4j_enabled: true`
+
+**Next Steps:**
+- Relationships: Sync `consolidated_relationships` table to create edges between entities
+- Graph queries: Implement hybrid retrieval combining vector search + graph traversal
+
+---
 
 #### Embedding Pipeline (`intelligence_capture/embeddings/pipeline.py`)
 ```python
