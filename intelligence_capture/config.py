@@ -94,6 +94,26 @@ def load_extraction_config(config_path: Path = None) -> dict:
             "timeout_seconds": TIMEOUT_SECONDS,
             "max_tokens": 4000
         },
+        "model_routing": {
+            "round_robin": [
+                "gpt-4o-mini",
+                "gpt-4o-mini",
+                "gpt-4o"
+            ],
+            "fallback": [
+                "gpt-4o-mini",
+                "gpt-4o",
+                "o1-mini"
+            ],
+            "providers": {
+                "gpt-4o-mini": {"provider": "openai"},
+                "gpt-4o": {"provider": "openai"},
+                "o1-mini": {"provider": "openai"},
+                "gemini-1.5-pro": {"provider": "gemini"},
+                "deepseek-chat": {"provider": "deepseek"},
+                "k2-large": {"provider": "k2"}
+            }
+        },
         "validation": {
             "enable_validation_agent": True,
             "enable_llm_validation": False,
@@ -219,6 +239,10 @@ except Exception as e:
     print(f"   Continuing with defaults")
     EXTRACTION_CONFIG = None
 
+MODEL_ROUTING_CONFIG = (EXTRACTION_CONFIG or {}).get("model_routing", {})
+ROUND_ROBIN_CHAIN = MODEL_ROUTING_CONFIG.get("round_robin", ["gpt-4o-mini"])
+FALLBACK_CHAIN = MODEL_ROUTING_CONFIG.get("fallback", ROUND_ROBIN_CHAIN)
+MODEL_PROVIDER_MAP = MODEL_ROUTING_CONFIG.get("providers", {})
 
 # Consolidation Configuration Loader
 def load_consolidation_config(config_path: Path = None) -> dict:

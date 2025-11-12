@@ -199,6 +199,13 @@ PostgreSQL (consolidated_entities: 1,743 rows)
 Neo4j (1,743 Entity nodes with properties)
 ```
 
+#### 🆕 Task: Legacy entity migration & model routing (2025-11-12)
+
+- **Entity pipeline** – `intelligence_capture/extractor.py` now projects `pain_points`, `systems` and `automation_candidates` directly from the enhanced v2 extractors, so every new run persists the richer schema while keeping legacy keys available for downstream agents.
+- **Backfill utility** – `scripts/migrate_entities_to_v2.py` can be executed with `--dry-run` or write mode to hydrate `business_unit`/`department` columns on existing records using interview metadata before enabling consolidation/RAG queries.
+- **Configurable LLM chains** – `config/extraction_config.json` + `intelligence_capture/config.py` expose `model_routing.round_robin` and `model_routing.fallback` arrays (with provider metadata) so ops can tune model usage without editing code.
+- **Round-robin dispatcher** – `intelligence_capture/model_router.py` plus the updated `call_llm_with_fallback` rotate requests across the configured chain, apply per-model rate limiters, and keep the fallback order aligned with the new configuration.
+
 **Entity Distribution (Neo4j):**
 - communication_channel: 232 nodes
 - temporal_pattern: 210 nodes

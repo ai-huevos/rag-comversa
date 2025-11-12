@@ -6,6 +6,38 @@
     "timeout_seconds": 60,
     "max_tokens": 4000
   },
+  "model_routing": {
+    "round_robin": [
+      "gpt-4o-mini",
+      "gpt-4o-mini",
+      "gpt-4o"
+    ],
+    "fallback": [
+      "gpt-4o-mini",
+      "gpt-4o",
+      "o1-mini"
+    ],
+    "providers": {
+      "gpt-4o-mini": {
+        "provider": "openai"
+      },
+      "gpt-4o": {
+        "provider": "openai"
+      },
+      "o1-mini": {
+        "provider": "openai"
+      },
+      "gemini-1.5-pro": {
+        "provider": "gemini"
+      },
+      "deepseek-chat": {
+        "provider": "deepseek"
+      },
+      "k2-large": {
+        "provider": "k2"
+      }
+    }
+  },
   "validation": {
     "enable_validation_agent": true,
     "enable_llm_validation": false,
