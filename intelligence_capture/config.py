@@ -1,6 +1,7 @@
 """
 Configuration for Intelligence Capture System
 """
+import logging
 import os
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent
+logger = logging.getLogger(__name__)
 DATA_DIR = PROJECT_ROOT / "data" / "interviews" / "analysis_output"
 INTERVIEWS_FILE = DATA_DIR / "all_interviews.json"
 
@@ -235,8 +237,9 @@ try:
     EXTRACTION_CONFIG = load_extraction_config()
     validate_extraction_config(EXTRACTION_CONFIG)
 except Exception as e:
-    print(f"⚠️  Config validation failed: {e}")
-    print(f"   Continuing with defaults")
+    logger.error("Config validation failed", exc_info=True)
+    print(f"⚠️  Error validando configuración: {e}")
+    print("   Continuando con valores predeterminados")
     EXTRACTION_CONFIG = None
 
 MODEL_ROUTING_CONFIG = (EXTRACTION_CONFIG or {}).get("model_routing", {})
