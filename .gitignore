@@ -54,3 +54,7 @@ consolidation_audit.txt
 test_*.db
 test_*.db-shm
 test_*.db-wal
+
+# Dashboard build artifacts
+dashboard/.next/
+dashboard/node_modules/
