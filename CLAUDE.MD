@@ -48,6 +48,8 @@ python scripts/test_single_interview.py  # ~10s, $0.01
 | **Week 4 – Quality & Governance** | Retrieval evaluation harness, Spanish optimization, performance tuning, checkpoints & approvals | tasks 15–18 |
 | **Week 5 – Consolidation & Automation** | ConsolidationSync ↔ Postgres/Neo4j, ingestion workers, backlog alerts, runbooks & compliance evidence | tasks 19–21 + `.kiro/specs/knowledge-graph-consolidation/*` |
 
+**Week 2 Update (11-nov-2025):** PostgreSQL+pgvector+Neo4j setup complete. Database `comversa_rag` operational with 12 tables, HNSW vector indexing ready. Neo4j knowledge graph operational with 1,743 consolidated entities. Complete data pipeline: SQLite → PostgreSQL → Neo4j working. Next: embedding pipeline (Task 7).
+
 **Semana 5 · Actualización (10-nov-2025):** ConsolidationSync ya fan-out a Postgres/Neo4j (`intelligence_capture/consolidation_sync.py`), CLI operativa `scripts/sync_graph_consolidation.py`, worker + monitor (`intelligence_capture/ingestion_worker.py`, `intelligence_capture/monitoring/backlog_monitor.py`) y pruebas `tests/test_rag2_consolidation_integration.py`.
 
 Always consult `.codex/manifest.yaml` for authoritative phase status before coding.
@@ -127,7 +129,20 @@ Older docs live in `docs/archive/2025-11/` for reference only.
 ## 6. System Snapshot
 
 - **Extraction status:** All 17 entity types working with ValidationAgent, ExtractionMonitor, rate limiter, cost estimation.
-- **Critical issues:** WAL/parallelism needs retest, cost guard for new pipelines pending, entity consolidation not yet synced to Neo4j, ingestion automation incomplete.
+- **Database status:**
+  - ✅ **PostgreSQL 15 + pgvector 0.8.1** operational (2025-11-11)
+  - ✅ **12 tables created:** documents, document_chunks, embeddings (HNSW indexed), consolidated_entities (1,743 entities), consolidated_relationships, consolidation_events, context_registry, ingestion_events, ocr_review_queue
+  - ✅ **Extensions:** pgvector, pgcrypto, uuid-ossp
+  - ✅ **Neo4j 2025.10.1** operational (2025-11-11)
+  - ✅ **Knowledge Graph:** 1,743 consolidated entities across 13 types, constraints & indexes active
+  - ✅ **Consolidation Sync:** SQLite → PostgreSQL → Neo4j pipeline working
+  - 🔄 **SQLite** still active for extraction (17 entity tables) until full cutover
+- **RAG 2.0 Progress:**
+  - ✅ **Week 1 (Tasks 0-5):** Complete - Intake, OCR, Spanish chunking
+  - ✅ **Week 2 (Task 6):** Complete - PostgreSQL+pgvector migrations
+  - ✅ **Week 2 (Task 8-9):** Complete - Neo4j setup, consolidation sync backfill
+  - ⏳ **Week 2 (Task 7):** Pending - Embedding pipeline
+- **Critical issues:** Cost guard for embedding pipeline pending, ingestion automation incomplete.
 - **Consolidation:** ✅ **Phase 12 COMPLETE - Production Ready** (77% done - 40/52 tasks)
   - **Phases 1-12 COMPLETE:** Foundation, core components, database integration, relationships & patterns, testing, reporting, security hardening, performance optimization, code quality, final validation
   - Core system production-ready: DuplicateDetector, EntityMerger, ConsensusScorer, RelationshipDiscoverer, PatternRecognizer
@@ -224,32 +239,113 @@ python scripts/test_consolidation.py
 
 ### Database Operations
 
-⚠️ **IMPORTANT:** Two database systems in use:
-- **SQLite** (current/legacy): 17 entity tables, local `intelligence.db`
-- **PostgreSQL+pgvector** (RAG 2.0, in progress): Document chunks + embeddings
-- **Neo4j** (RAG 2.0, in progress): Consolidated knowledge graph
+⚠️ **IMPORTANT:** Three database systems in use:
+- **SQLite** (current/legacy): 17 entity tables, local `data/full_intelligence.db`
+- **PostgreSQL+pgvector** (RAG 2.0, ✅ operational): Document chunks + embeddings + consolidated entities, 12 tables
+- **Neo4j** (RAG 2.0, ✅ operational): Consolidated knowledge graph, 1,743 entities
 
-#### Switch Between Databases
+#### PostgreSQL Setup (✅ Complete - 2025-11-11)
 ```bash
-# Legacy SQLite (current - use for extraction work)
-export DB_TYPE=sqlite
-sqlite3 data/full_intelligence.db
+# Connection details (from .env)
+DATABASE_URL=postgresql://postgres@localhost:5432/comversa_rag
+DB_TYPE=postgresql
 
-# PostgreSQL (RAG 2.0 - use for embeddings/chunks)
-export DATABASE_URL="postgresql://user:pass@host:5432/dbname"
-psql $DATABASE_URL
+# psql is in PATH (added to ~/.zshrc)
+psql -U postgres -d comversa_rag
+
+# List all tables
+psql -U postgres -d comversa_rag -c "\dt"
+
+# Check extensions
+psql -U postgres -d comversa_rag -c "SELECT extname, extversion FROM pg_extension;"
+
+# Verify embeddings table
+psql -U postgres -d comversa_rag -c "\d embeddings"
+
+# Check table counts
+psql -U postgres -d comversa_rag -c "
+SELECT
+    schemaname, tablename,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+"
 ```
 
-#### Common Schema Checks
+#### SQLite Operations (Legacy)
 ```bash
+# Switch to SQLite mode
+export DB_TYPE=sqlite
+
 # List all tables
-sqlite3 intelligence.db ".tables"
+sqlite3 data/full_intelligence.db ".tables"
 
 # Show table schema
-sqlite3 intelligence.db ".schema pain_points"
+sqlite3 data/full_intelligence.db ".schema pain_points"
 
 # Check consolidation status
-sqlite3 intelligence.db "SELECT entity_type, COUNT(*) FROM consolidated_entities GROUP BY entity_type;"
+sqlite3 data/full_intelligence.db "SELECT entity_type, COUNT(*) FROM consolidated_entities GROUP BY entity_type;"
+```
+
+#### Neo4j Operations (✅ Complete - 2025-11-11)
+```bash
+# Connection details (from .env)
+NEO4J_URI=neo4j://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=comversa_neo4j_2025
+
+# Access Neo4j Browser (visual query interface)
+# URL: http://localhost:7474
+# Username: neo4j
+# Password: comversa_neo4j_2025
+
+# Command-line cypher-shell
+export NEO4J_PASSWORD=comversa_neo4j_2025
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD"
+
+# Count all entities
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) RETURN count(n) as total_nodes"
+
+# Entity breakdown by type
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) RETURN n.entity_type as type, count(n) as count ORDER BY count DESC"
+
+# High-confidence entities
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n:Entity) WHERE n.consensus_confidence > 0.85 RETURN n.entity_type, n.name, n.source_count LIMIT 10"
+
+# Clear all data (use with caution)
+cypher-shell -u neo4j -p "$NEO4J_PASSWORD" \
+  "MATCH (n) DETACH DELETE n"
+```
+
+#### Consolidation Sync Pipeline
+```bash
+# Backfill PostgreSQL from SQLite consolidated entities (one-time)
+python scripts/backfill_consolidated_entities.py
+
+# Sync PostgreSQL consolidated entities to Neo4j
+export NEO4J_PASSWORD=comversa_neo4j_2025
+python scripts/sync_consolidated_to_neo4j.py
+
+# Sync using ConsolidationSync event-driven pipeline
+python scripts/sync_graph_consolidation.py --mode full
+
+# Check sync status
+python scripts/sync_graph_consolidation.py --mode dry-run
+```
+
+#### Migration Scripts
+```bash
+# PostgreSQL migrations (executed in order)
+psql -U postgres -d comversa_rag -f scripts/migrations/2025_01_00_context_registry.sql
+psql -U postgres -d comversa_rag -f scripts/migrations/2025_01_01_ingestion_queue.sql
+psql -U postgres -d comversa_rag -f scripts/migrations/2025_01_01_pgvector.sql
+psql -U postgres -d comversa_rag -f scripts/migrations/2025_01_02_ocr_review_queue.sql
+
+# Rollback scripts available in scripts/migrations/rollback/
 ```
 
 ---

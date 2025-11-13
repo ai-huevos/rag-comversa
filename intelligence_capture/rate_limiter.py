@@ -70,13 +70,14 @@ class RateLimiter:
             return recent_calls
 
 
-# Global rate limiter instance (shared across all workers)
-_global_rate_limiter = None
+# Global rate limiter instances (keyed by model/provider)
+_rate_limiters = {}
 
 
-def get_rate_limiter(max_calls_per_minute=50):
-    """Get or create global rate limiter instance"""
-    global _global_rate_limiter
-    if _global_rate_limiter is None:
-        _global_rate_limiter = RateLimiter(max_calls_per_minute)
-    return _global_rate_limiter
+def get_rate_limiter(max_calls_per_minute=50, key: str = "default"):
+    """Get or create a rate limiter keyed by model/provider."""
+    limiter = _rate_limiters.get(key)
+    if limiter is None:
+        limiter = RateLimiter(max_calls_per_minute)
+        _rate_limiters[key] = limiter
+    return limiter

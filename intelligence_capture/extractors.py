@@ -9,14 +9,9 @@ from typing import Dict, List, Optional, Tuple
 from openai import OpenAI, RateLimitError
 import os
 
-
-# Model fallback chain - Optimized for structured extraction
-# gpt-4o-mini is PERFECT for structured JSON extraction tasks
-MODEL_FALLBACK_CHAIN = [
-    "gpt-4o-mini",              # Primary: Best cost/quality for structured extraction
-    "gpt-4o-mini",              # Retry: Rate limits are usually temporary
-    "gpt-4o",                   # Last resort: Only if 4o-mini completely unavailable
-]
+from .config import MODEL_PROVIDER_MAP
+from .model_router import MODEL_ROUTER
+from .rate_limiter import get_rate_limiter
 
 
 def call_llm_with_fallback(client: OpenAI, messages: List[Dict], temperature: float = 0.1, max_retries: int = 3) -> Optional[str]:
@@ -33,11 +28,20 @@ def call_llm_with_fallback(client: OpenAI, messages: List[Dict], temperature: fl
         Response content or None if all models fail
     """
     last_error = None
+    model_sequence = MODEL_ROUTER.build_sequence()
     
-    for model in MODEL_FALLBACK_CHAIN:
+    for model in model_sequence:
+        provider = MODEL_PROVIDER_MAP.get(model, {}).get("provider", "openai")
+        if provider != "openai":
+            print(f"  ⚠️  Provider '{provider}' for model '{model}' not implemented yet, skipping.")
+            continue
+
         for attempt in range(max_retries):
             try:
                 print(f"  Attempting with model: {model} (attempt {attempt + 1}/{max_retries})")
+
+                limiter = get_rate_limiter(max_calls_per_minute=50, key=f"{provider}:{model}")
+                limiter.wait_if_needed()
                 
                 response = client.chat.completions.create(
                     model=model,

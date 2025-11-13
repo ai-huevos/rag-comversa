@@ -1,5 +1,6 @@
 # Environment variables (NEVER commit these!)
 .env
+.env.local
 
 # Python virtual environment
 venv/
@@ -30,6 +31,9 @@ data/*_backup_*.db*
 # Test reports and logs
 reports/extraction_report_*.json
 reports/test_results_*.md
+reports/*_report.json
+reports/*.txt
+reports/doc_updates*.txt
 
 # Virtual environments
 .venv/
@@ -42,3 +46,15 @@ logs/
 # Data files (interviews)
 data/*.json
 !data/README.md
+
+# Runtime artifacts (root level)
+consolidation_audit.txt
+*_audit.txt
+# Test database files (temporary)
+test_*.db
+test_*.db-shm
+test_*.db-wal
+
+# Dashboard build artifacts
+dashboard/.next/
+dashboard/node_modules/

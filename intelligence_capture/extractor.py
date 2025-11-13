@@ -32,7 +32,7 @@ class IntelligenceExtractor:
 
     def __init__(self):
         self.client = OpenAI(api_key=OPENAI_API_KEY)
-        self.rate_limiter = get_rate_limiter(max_calls_per_minute=50)
+        self.rate_limiter = get_rate_limiter(max_calls_per_minute=50, key="legacy:gpt-4o-mini")
 
         # Initialize all v2.0 extractors
         print("🔧 Initializing extractors...")
@@ -91,12 +91,9 @@ class IntelligenceExtractor:
         print(f"\n🔍 Extracting from: {meta.get('respondent')} ({meta.get('role')})")
 
         # v1.0 extractions (legacy, for backward compatibility)
-        print("  📦 Running v1.0 extractors...")
-        results["pain_points"] = self._extract_pain_points(interview_text, meta)
+        print("  📦 Running legacy-only extractors...")
         results["processes"] = self._extract_processes(interview_text, meta)
-        results["systems"] = self._extract_systems(interview_text, meta)
         results["kpis"] = self._extract_kpis(interview_text, meta)
-        results["automation_candidates"] = self._extract_automation_candidates(interview_text, meta)
         results["inefficiencies"] = self._extract_inefficiencies(interview_text, meta)
 
         # v2.0 extractions (new entity types)
@@ -110,6 +107,9 @@ class IntelligenceExtractor:
                 print(f"    ⚠️  {entity_type} failed: {str(e)}")
                 results[entity_type] = []
                 # Continue processing remaining entity types
+
+        # Project v2 entities into legacy schemas for backward compatibility
+        self._project_v2_entities(results)
 
         return results
     
@@ -172,41 +172,6 @@ class IntelligenceExtractor:
         
         return {}
     
-    def _extract_pain_points(self, interview_text: str, meta: Dict) -> List[Dict]:
-        """Extract pain points from interview"""
-        
-        system_prompt = """Eres un analista experto en procesos empresariales. 
-Tu tarea es extraer PAIN POINTS (puntos de dolor/problemas) de entrevistas a gerentes.
-
-Un pain point es:
-- Un problema recurrente que dificulta el trabajo
-- Una ineficiencia que causa frustración
-- Un obstáculo que impide cumplir objetivos
-- Una limitación de sistemas o procesos
-
-Extrae SOLO pain points EXPLÍCITOS mencionados por el entrevistado.
-
-Responde en JSON con este formato:
-{
-  "pain_points": [
-    {
-      "type": "Process|Data|Systems|Culture|Training|Approval|Integration",
-      "description": "Descripción clara del problema",
-      "affected_roles": ["Rol1", "Rol2"],
-      "affected_processes": ["Proceso1"],
-      "frequency": "Daily|Weekly|Monthly|Occasional",
-      "severity": "Low|Medium|High|Critical",
-      "impact_description": "Cómo afecta al trabajo",
-      "proposed_solutions": ["Solución sugerida por el entrevistado"]
-    }
-  ]
-}"""
-        
-        result = self._call_gpt4(system_prompt, interview_text)
-        pain_points = result.get("pain_points", [])
-        print(f"  ✓ Pain points: {len(pain_points)}")
-        return pain_points
-    
     def _extract_processes(self, interview_text: str, meta: Dict) -> List[Dict]:
         """Extract processes from interview"""
         
@@ -239,36 +204,6 @@ Responde en JSON:
         processes = result.get("processes", [])
         print(f"  ✓ Processes: {len(processes)}")
         return processes
-    
-    def _extract_systems(self, interview_text: str, meta: Dict) -> List[Dict]:
-        """Extract systems/tools from interview"""
-        
-        system_prompt = """Eres un analista de sistemas empresariales.
-Extrae TODOS los sistemas, herramientas y software que el entrevistado menciona.
-
-Incluye:
-- Software empresarial (ERP, PMS, CRM, etc.)
-- Herramientas de productividad (Excel, Outlook, etc.)
-- Sistemas específicos del negocio
-- Plataformas de comunicación
-
-Responde en JSON:
-{
-  "systems": [
-    {
-      "name": "Nombre exacto del sistema",
-      "domain": "Área de uso",
-      "vendor": "Proveedor si se menciona",
-      "type": "ERP|PMS|POS|CRM|CMMS|BI|Productivity|Communication",
-      "pain_points": ["Problemas mencionados con este sistema"]
-    }
-  ]
-}"""
-        
-        result = self._call_gpt4(system_prompt, interview_text)
-        systems = result.get("systems", [])
-        print(f"  ✓ Systems: {len(systems)}")
-        return systems
     
     def _extract_kpis(self, interview_text: str, meta: Dict) -> List[Dict]:
         """Extract KPIs from interview"""
@@ -304,41 +239,6 @@ Responde en JSON:
         print(f"  ✓ KPIs: {len(kpis)}")
         return kpis
     
-    def _extract_automation_candidates(self, interview_text: str, meta: Dict) -> List[Dict]:
-        """Extract automation opportunities from interview"""
-        
-        system_prompt = """Eres un experto en automatización de procesos.
-Identifica oportunidades de AUTOMATIZACIÓN basadas en lo que el entrevistado describe.
-
-Una oportunidad de automatización es:
-- Una tarea manual repetitiva
-- Un proceso que requiere copiar datos entre sistemas
-- Una aprobación que podría tener reglas automáticas
-- Un reporte que se genera manualmente
-
-Responde en JSON:
-{
-  "automation_candidates": [
-    {
-      "name": "Nombre de la automatización",
-      "process": "Proceso a automatizar",
-      "trigger": "Qué inicia la automatización",
-      "action": "Qué haría automáticamente",
-      "output": "Resultado esperado",
-      "owner": "Quién se beneficia",
-      "complexity": "Low|Medium|High",
-      "impact": "Low|Medium|High|Critical",
-      "effort_estimate": "Estimado en días/semanas",
-      "systems_involved": ["Sistema1", "Sistema2"]
-    }
-  ]
-}"""
-        
-        result = self._call_gpt4(system_prompt, interview_text)
-        automations = result.get("automation_candidates", [])
-        print(f"  ✓ Automation candidates: {len(automations)}")
-        return automations
-    
     def _extract_inefficiencies(self, interview_text: str, meta: Dict) -> List[Dict]:
         """Extract inefficiencies from interview"""
         
@@ -368,3 +268,100 @@ Responde en JSON:
         inefficiencies = result.get("inefficiencies", [])
         print(f"  ✓ Inefficiencies: {len(inefficiencies)}")
         return inefficiencies
+
+    # ------------------------------------------------------------------ #
+    # v2.0 → Legacy projections (compatibility during migration)
+    # ------------------------------------------------------------------ #
+
+    def _project_v2_entities(self, results: Dict[str, List[Dict]]) -> None:
+        """
+        Populate legacy entity keys using richer v2.0 structures so callers
+        depending on v1 schemas continue to work during the migration.
+        """
+        results["pain_points"] = self._project_pain_points_from_v2(
+            results.get("pain_points_v2", [])
+        )
+        results["systems"] = self._project_systems_from_v2(
+            results.get("systems_v2", [])
+        )
+        results["automation_candidates"] = self._project_automation_from_v2(
+            results.get("automation_candidates_v2", [])
+        )
+
+    def _project_pain_points_from_v2(self, pain_points_v2: List[Dict]) -> List[Dict]:
+        """Map enhanced pain points into the legacy schema."""
+        projected = []
+
+        for pain in pain_points_v2 or []:
+            projected.append({
+                "type": pain.get("type", "Process Inefficiency"),
+                "description": pain.get("description", ""),
+                "affected_roles": pain.get("affected_roles", []),
+                "affected_processes": pain.get("affected_processes", []),
+                "frequency": pain.get("frequency", "Ad-hoc"),
+                "severity": pain.get("severity", "Medium"),
+                "impact_description": pain.get("impact_description", ""),
+                "proposed_solutions": pain.get("proposed_solutions", []),
+                "jtbd_who": pain.get("jtbd_who"),
+                "jtbd_what": pain.get("jtbd_what"),
+                "jtbd_where": pain.get("jtbd_where"),
+                "time_wasted": pain.get("time_wasted_per_occurrence_minutes"),
+                "root_cause": pain.get("root_cause"),
+                "current_workaround": pain.get("current_workaround"),
+                "hair_on_fire": pain.get("hair_on_fire", False),
+                "confidence_score": pain.get("confidence_score", 0.0),
+                "extraction_source": "v2_projection",
+                "extraction_reasoning": pain.get("extraction_reasoning", "")
+            })
+
+        return projected
+
+    def _project_systems_from_v2(self, systems_v2: List[Dict]) -> List[Dict]:
+        """Map enhanced systems into the legacy schema."""
+        projected: List[Dict[str, Any]] = []
+
+        for system in systems_v2 or []:
+            name = system.get("name")
+            if not name:
+                continue
+
+            projected.append({
+                "name": name,
+                "domain": system.get("domain") or system.get("primary_use_case", "Unknown"),
+                "vendor": system.get("vendor"),
+                "type": system.get("type", system.get("system_type", "Other")),
+                "pain_points": system.get("integration_pain_points", []),
+                "data_quality_issues": system.get("data_quality_issues", []),
+                "user_satisfaction_score": system.get("user_satisfaction_score", 5.0),
+                "replacement_candidate": system.get("replacement_candidate", False),
+                "adoption_rate": system.get("adoption_rate"),
+                "extraction_source": "v2_projection",
+                "extraction_reasoning": system.get("extraction_reasoning", "")
+            })
+
+        return projected
+
+    def _project_automation_from_v2(self, automation_v2: List[Dict]) -> List[Dict]:
+        """Map enhanced automation candidates into the legacy schema."""
+        projected: List[Dict[str, Any]] = []
+
+        for candidate in automation_v2 or []:
+            projected.append({
+                "name": candidate.get("name", candidate.get("process", "Automatización propuesta")),
+                "process": candidate.get("process", ""),
+                "trigger": candidate.get("trigger_event"),
+                "action": candidate.get("action"),
+                "output": candidate.get("output"),
+                "owner": candidate.get("owner"),
+                "complexity": candidate.get("complexity", "Medium"),
+                "impact": candidate.get("impact", "Medium"),
+                "effort_estimate": candidate.get("effort_estimate"),
+                "systems_involved": candidate.get("systems_involved", []),
+                "current_manual_process_description": candidate.get("current_manual_process_description"),
+                "confidence_score": candidate.get("confidence_score", 0.0),
+                "frequency": candidate.get("frequency"),
+                "extraction_source": "v2_projection",
+                "extraction_reasoning": candidate.get("extraction_reasoning", "")
+            })
+
+        return projected

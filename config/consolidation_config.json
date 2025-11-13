@@ -116,7 +116,7 @@
     "enabled": true,
     "batch_size": 250,
     "default_org_id": null,
-    "neo4j_enabled": false,
+    "neo4j_enabled": true,
     "graph_batch_size": 100
   }
 }
