@@ -101,12 +101,12 @@ class PostgresService:
             (SELECT COUNT(*) FROM consolidated_entities WHERE entity_type = 'process') as total_processes,
             (SELECT COUNT(*) FROM consolidated_entities WHERE entity_type = 'system') as total_systems,
             (SELECT COUNT(*) FROM consolidated_entities WHERE entity_type = 'data_flow') as total_data_flows,
-            (SELECT COUNT(DISTINCT metadata->>'respondent')
+            (SELECT COUNT(DISTINCT employee_id)
              FROM consolidated_entities
-             WHERE metadata->>'respondent' IS NOT NULL) as total_employees,
-            (SELECT COUNT(DISTINCT metadata->>'interview_id')
+             WHERE employee_id IS NOT NULL) as total_employees,
+            (SELECT COUNT(DISTINCT payload->>'interview_id')
              FROM consolidated_entities
-             WHERE metadata->>'interview_id' IS NOT NULL) as interviews_completed,
+             WHERE payload->>'interview_id' IS NOT NULL) as interviews_completed,
             (SELECT MAX(updated_at) FROM consolidated_entities) as last_updated
         """
 
@@ -131,13 +131,13 @@ class PostgresService:
         """
         query = """
         SELECT
-            metadata->>'company' as company,
-            COUNT(*) FILTER (WHERE metadata->>'respondent' IS NOT NULL) as employees,
+            employee_company as company,
+            COUNT(DISTINCT employee_id) as employees,
             COUNT(*) FILTER (WHERE entity_type = 'process') as processes,
             COUNT(*) FILTER (WHERE entity_type = 'system') as systems
         FROM consolidated_entities
-        WHERE metadata->>'company' IS NOT NULL
-        GROUP BY metadata->>'company'
+        WHERE employee_company IS NOT NULL AND employee_company != ''
+        GROUP BY employee_company
         ORDER BY employees DESC
         """
 
@@ -145,9 +145,9 @@ class PostgresService:
 
         # Assign brand colors per company
         color_map = {
-            "Los Tajibos": "#EA580C",      # orange
-            "Bolivian Foods": "#DC2626",   # red
-            "Comversa": "#2563EB",         # blue
+            "LOS TAJIBOS": "#EA580C",      # orange
+            "BOLIVIAN FOODS": "#DC2626",   # red
+            "COMVERSA": "#2563EB",         # blue
         }
 
         return [
@@ -175,16 +175,16 @@ class PostgresService:
         SELECT
             id,
             name,
-            metadata->>'severity' as severity,
-            metadata->>'impact' as impact,
-            metadata->>'time_saved' as times_saved,
-            metadata->>'company' as company,
-            metadata->>'department' as department
+            payload->>'severity' as severity,
+            payload->>'impact_description' as impact,
+            payload->>'time_wasted_per_occurrence_minutes' as times_saved,
+            employee_company as company,
+            payload->>'department' as department
         FROM consolidated_entities
         WHERE entity_type = 'pain_point'
-          AND metadata->>'severity' IN ('Critical', 'Crítica', 'Alta', 'High')
+          AND payload->>'severity' IN ('Critical', 'Crítica', 'Alta', 'High')
         ORDER BY
-            CASE metadata->>'severity'
+            CASE payload->>'severity'
                 WHEN 'Critical' THEN 1
                 WHEN 'Crítica' THEN 1
                 WHEN 'Alta' THEN 2
@@ -207,12 +207,12 @@ class PostgresService:
 
         return [
             PainPoint(
-                id=row["id"],
+                id=str(row["id"]),  # Convert UUID to string
                 title=row["name"],
                 priority=severity_map.get(row["severity"], row["severity"]),
                 impact=row["impact"] or "Impacto en eficiencia operativa",
                 times_saved=row["times_saved"] or "A determinar",
-                company=row["company"],
+                company=row["company"] or "N/A",
                 department=row["department"]
             )
             for row in results
@@ -227,9 +227,9 @@ class PostgresService:
         """
         query = """
         SELECT
-            COUNT(*) FILTER (WHERE metadata->>'criticality' IN ('Critical', 'Crítico')) as critical,
-            COUNT(*) FILTER (WHERE metadata->>'criticality' IN ('Important', 'Importante', 'High', 'Alta')) as important,
-            COUNT(*) FILTER (WHERE metadata->>'criticality' IN ('Support', 'Soporte', 'Low', 'Baja')) as support,
+            COUNT(*) FILTER (WHERE payload->>'criticality' IN ('Critical', 'Crítico')) as critical,
+            COUNT(*) FILTER (WHERE payload->>'criticality' IN ('Important', 'Importante', 'High', 'Alta')) as important,
+            COUNT(*) FILTER (WHERE payload->>'criticality' IN ('Support', 'Soporte', 'Low', 'Baja')) as support,
             COUNT(*) as total
         FROM consolidated_entities
         WHERE entity_type = 'system'
@@ -253,10 +253,10 @@ class PostgresService:
         """
         query = """
         SELECT
-            COUNT(*) FILTER (WHERE metadata->>'frequency' IN ('Daily', 'Diario')) as daily,
-            COUNT(*) FILTER (WHERE metadata->>'frequency' IN ('Weekly', 'Semanal')) as weekly,
-            COUNT(*) FILTER (WHERE metadata->>'frequency' IN ('Monthly', 'Mensual')) as monthly,
-            COUNT(*) FILTER (WHERE metadata->>'frequency' IN ('Annual', 'Anual', 'Yearly')) as annual
+            COUNT(*) FILTER (WHERE payload->>'frequency' IN ('Daily', 'Diario')) as daily,
+            COUNT(*) FILTER (WHERE payload->>'frequency' IN ('Weekly', 'Semanal')) as weekly,
+            COUNT(*) FILTER (WHERE payload->>'frequency' IN ('Monthly', 'Mensual')) as monthly,
+            COUNT(*) FILTER (WHERE payload->>'frequency' IN ('Annual', 'Anual', 'Yearly')) as annual
         FROM consolidated_entities
         WHERE entity_type = 'process'
         """
@@ -303,7 +303,7 @@ class PostgresService:
             params.append(entity_type)
 
         if company:
-            conditions.append("metadata->>'company' = %s")
+            conditions.append("employee_company = %s")
             params.append(company)
 
         if search:
@@ -328,10 +328,10 @@ class PostgresService:
             id,
             entity_type,
             name,
-            metadata->>'company' as company,
-            metadata->>'department' as department,
-            metadata->>'severity' as severity,
-            metadata->>'frequency' as frequency,
+            employee_company as company,
+            payload->>'department' as department,
+            payload->>'severity' as severity,
+            payload->>'frequency' as frequency,
             consensus_confidence,
             source_count,
             created_at
@@ -346,7 +346,7 @@ class PostgresService:
 
         entities = [
             EntityListItem(
-                id=row["id"],
+                id=str(row["id"]),  # Convert UUID to string
                 entity_type=row["entity_type"],
                 name=row["name"],
                 company=row["company"] or "Sin empresa",
@@ -362,12 +362,12 @@ class PostgresService:
 
         return entities, total
 
-    def get_entity_detail(self, entity_id: int) -> Optional[EntityDetailResponse]:
+    def get_entity_detail(self, entity_id: str) -> Optional[EntityDetailResponse]:
         """
         Get detailed entity information by ID
 
         Args:
-            entity_id: Entity ID
+            entity_id: Entity ID (UUID string)
 
         Returns:
             EntityDetailResponse or None if not found
@@ -377,8 +377,9 @@ class PostgresService:
             id,
             entity_type,
             name,
-            description,
-            metadata,
+            payload->>'description' as description,
+            payload,
+            employee_company,
             consensus_confidence,
             source_count,
             created_at,
@@ -392,18 +393,18 @@ class PostgresService:
         if not result:
             return None
 
-        # Extract sources from metadata
-        metadata = result["metadata"] or {}
-        sources = metadata.get("sources", [])
+        # Extract sources from payload
+        payload = result["payload"] or {}
+        sources = payload.get("mentioned_in_interviews", [])
 
         return EntityDetailResponse(
-            id=result["id"],
+            id=str(result["id"]),  # Convert UUID to string
             entity_type=result["entity_type"],
             name=result["name"],
             description=result["description"],
-            company=metadata.get("company", "Sin empresa"),
-            department=metadata.get("department"),
-            metadata=metadata,
+            company=result["employee_company"] or "Sin empresa",
+            department=payload.get("department"),
+            metadata=payload,
             confidence=float(result["consensus_confidence"]),
             source_count=result["source_count"],
             sources=sources if isinstance(sources, list) else [sources] if sources else [],

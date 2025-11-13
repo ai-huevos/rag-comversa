@@ -65,12 +65,12 @@ async def list_entities(
 
 
 @router.get("/{entity_id}", response_model=EntityDetailResponse)
-async def get_entity(entity_id: int):
+async def get_entity(entity_id: str):
     """
     Get detailed entity information by ID
 
     Args:
-        entity_id: Entity ID from consolidated_entities table
+        entity_id: Entity ID (UUID) from consolidated_entities table
 
     Returns:
         EntityDetailResponse: Full entity details including metadata and sources
@@ -79,7 +79,7 @@ async def get_entity(entity_id: int):
         HTTPException: 404 if entity not found, 500 on database error
 
     Example:
-        GET /api/entities/42
+        GET /api/entities/96175a37-6784-4791-ab3f-090a4218cdbd
     """
     try:
         entity = db_service.get_entity_detail(entity_id)

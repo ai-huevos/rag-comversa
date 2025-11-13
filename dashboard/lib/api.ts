@@ -25,7 +25,7 @@ export interface DashboardData {
     color: string;
   }>;
   critical_pain_points: Array<{
-    id: number;
+    id: string;  // UUID
     title: string;
     priority: 'Crítica' | 'Alta' | 'Media' | 'Baja';
     impact: string;

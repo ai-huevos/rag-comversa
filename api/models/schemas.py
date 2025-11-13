@@ -36,7 +36,7 @@ class MetricCard(BaseModel):
 
 class PainPoint(BaseModel):
     """Pain point data with priority and impact"""
-    id: int = Field(..., description="Pain point ID")
+    id: str = Field(..., description="Pain point ID (UUID)")
     title: str = Field(..., description="Pain point title in Spanish")
     priority: Literal["Crítica", "Alta", "Media", "Baja"] = Field(..., description="Priority level")
     impact: str = Field(..., description="Business impact in Spanish")
@@ -83,7 +83,7 @@ class DashboardData(BaseModel):
 
 class EntityListItem(BaseModel):
     """Individual entity list item"""
-    id: int
+    id: str = Field(..., description="Entity ID (UUID)")
     entity_type: str = Field(..., description="Entity type (pain_point, process, system, etc.)")
     name: str = Field(..., description="Entity name/description in Spanish")
     company: str
@@ -106,7 +106,7 @@ class EntityListResponse(BaseModel):
 
 class EntityDetailResponse(BaseModel):
     """Detailed entity information"""
-    id: int
+    id: str = Field(..., description="Entity ID (UUID)")
     entity_type: str
     name: str
     description: str = Field(..., description="Full description in Spanish")
