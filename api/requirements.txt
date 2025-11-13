@@ -1,0 +1,19 @@
+# FastAPI Backend Dependencies for Executive Dashboard
+# Python 3.10+
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+psycopg2-binary==2.9.9
+neo4j==5.16.0
+
+# CORS & Security
+python-multipart==0.0.6
+
+# Testing (optional, for local dev)
+pytest==7.4.4
+httpx==0.26.0
