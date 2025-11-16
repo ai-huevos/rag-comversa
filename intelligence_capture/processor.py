@@ -13,6 +13,11 @@ from .validation import validate_extraction_results, print_validation_summary
 from .validation_agent import ValidationAgent
 from .monitor import ExtractionMonitor
 from .config import DB_PATH, INTERVIEWS_FILE, EXTRACTION_CONFIG, load_extraction_config
+from .extraction_safeguards import (
+    ExtractionSafeguards,
+    ExtractionFailureError,
+    ExtractorConfigurationError
+)
 
 # Import ensemble reviewer if available
 try:
@@ -57,6 +62,17 @@ class IntelligenceProcessor:
 
         self.db = EnhancedIntelligenceDB(db_path)
         self.extractor = IntelligenceExtractor()
+
+        # SAFEGUARD: Verify all extractors initialized (prevent Nov 11 incident)
+        try:
+            ExtractionSafeguards.verify_extractor_initialization(
+                self.extractor.v2_extractors,
+                has_legacy_extractors=True
+            )
+            print(f"✓ Extractor verification passed ({ExtractionSafeguards.EXPECTED_TOTAL_EXTRACTORS} types)")
+        except ExtractorConfigurationError as e:
+            print(f"✗ CRITICAL: {e}")
+            raise
 
         # Read ensemble settings from config if not specified
         if enable_ensemble is None:
@@ -171,6 +187,18 @@ class IntelligenceProcessor:
         except Exception as e:
             error_msg = str(e)[:200]  # Truncate error message
             print(f"  ❌ Extraction failed: {error_msg}")
+            self.db.update_extraction_status(interview_id, "failed", error_msg)
+            return False
+
+        # SAFEGUARD: Validate extraction results (detect zero-entity failures)
+        try:
+            extraction_metrics = ExtractionSafeguards.validate_extraction_results(
+                entities, interview_id, meta
+            )
+            print(f"  ✓ Extraction validation passed: {extraction_metrics.total_entities} entities")
+        except ExtractionFailureError as e:
+            error_msg = str(e)[:200]
+            print(f"  ❌ EXTRACTION FAILURE: {error_msg}")
             self.db.update_extraction_status(interview_id, "failed", error_msg)
             return False
 
@@ -413,8 +441,16 @@ class IntelligenceProcessor:
 
         print(f"  ✓ Storage complete (errors: {len(storage_errors)})")
 
-        # Update status to complete
-        self.db.update_extraction_status(interview_id, "complete")
+        # SAFEGUARD: Update status to complete only if entities were extracted
+        # (Prevents marking failed extractions as complete, like Nov 11 incident)
+        if extraction_metrics.total_entities > 0:
+            self.db.update_extraction_status(interview_id, "complete")
+        else:
+            # This should never happen due to earlier validation, but defense in depth
+            error_msg = "Zero entities extracted - marked as failed despite passing earlier checks"
+            print(f"  ⚠️  {error_msg}")
+            self.db.update_extraction_status(interview_id, "failed", error_msg)
+            return False
 
         # Record monitoring metrics if enabled
         if self.monitor:
@@ -556,8 +592,45 @@ class IntelligenceProcessor:
             print(f"⊘ Skipped: {skip_count}")
             print(f"✗ Errors: {error_count}")
 
-        # Show database stats
+        # SAFEGUARD: Validate batch extraction results
+        # (Detect complete batch failures like Nov 11 incident)
+        print(f"\n🔍 Running batch validation...")
         stats = self.db.get_stats()
+
+        # Calculate total entities extracted
+        total_entities = sum([
+            stats.get('pain_points', 0),
+            stats.get('processes', 0),
+            stats.get('systems', 0),
+            stats.get('kpis', 0),
+            stats.get('automation_candidates', 0),
+            stats.get('inefficiencies', 0)
+        ])
+
+        # Check for complete batch failure
+        if success_count > 0 and total_entities == 0:
+            error_msg = (
+                f"⚠️  CRITICAL: Complete batch failure detected!\n"
+                f"   Processed {success_count} interviews but extracted 0 entities.\n"
+                f"   This is identical to the Nov 11, 2025 incident.\n"
+                f"   See: reports/phase2_forensic_analysis.md"
+            )
+            print(f"\n{'='*70}")
+            print(error_msg)
+            print(f"{'='*70}")
+            print(f"\n⚠️  Database NOT corrupted - safeguards prevented data loss.")
+            print(f"   All interviews marked as 'failed' and can be re-processed.")
+            print(f"   Check extraction configuration and LLM API status before retrying.")
+
+        elif success_count > 0:
+            avg_entities = total_entities / success_count
+            if avg_entities < ExtractionSafeguards.EXPECTED_MIN_ENTITIES_PER_INTERVIEW:
+                print(f"\n⚠️  Warning: Low average entity count: {avg_entities:.1f} entities/interview")
+                print(f"   Expected: >{ExtractionSafeguards.EXPECTED_AVG_ENTITIES_PER_INTERVIEW}")
+                print(f"   Review extraction quality and configuration.")
+            else:
+                print(f"✓ Batch validation passed: {avg_entities:.1f} avg entities/interview")
+
         print(f"\n📈 DATABASE STATS")
         print(f"{'='*60}")
         print(f"Interviews: {stats['interviews']}")
