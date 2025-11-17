@@ -4,10 +4,16 @@ Queries consolidated entities and relationships with Cypher
 """
 import logging
 import time
-from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
-from neo4j import AsyncGraphDatabase, AsyncDriver
+from neo4j import AsyncDriver
+
+from agent.tools.cache import ResultCache
+from agent.tools.instrumentation import (
+    InstrumentationHook,
+    call_instrumentation_hook,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +49,10 @@ class GraphSearchResponse:
     total_relationships: int
     execution_time_ms: float
     cypher_query: str
+    cache_hit: bool = False
+
+
+_GRAPH_RESULT_CACHE = ResultCache()
 
 
 class GraphSearchTool:
@@ -54,7 +64,12 @@ class GraphSearchTool:
     the most pain points?"
     """
 
-    def __init__(self, neo4j_driver: AsyncDriver):
+    def __init__(
+        self,
+        neo4j_driver: AsyncDriver,
+        result_cache: Optional[ResultCache] = None,
+        instrumentation_hook: Optional[InstrumentationHook] = None,
+    ):
         """
         Initialize graph search tool
 
@@ -62,6 +77,32 @@ class GraphSearchTool:
             neo4j_driver: Async Neo4j driver
         """
         self.driver = neo4j_driver
+        self.result_cache = result_cache or ResultCache()
+        self.instrumentation_hook = instrumentation_hook
+
+    @staticmethod
+    def _build_cache_key(
+        query: str,
+        org_id: str,
+        relationship_types: Optional[List[str]],
+        limit: int,
+    ) -> str:
+        """Construct cache key for graph search queries."""
+        payload = {
+            "query": query,
+            "org_id": org_id,
+            "relationship_types": relationship_types or [],
+            "limit": limit,
+        }
+        return ResultCache.build_key("graph_search", payload)
+
+    async def _emit_metrics(self, data: Dict[str, Any]) -> None:
+        """Emit instrumentation metrics if hook configured."""
+        await call_instrumentation_hook(
+            self.instrumentation_hook,
+            "graph_search",
+            data,
+        )
 
     async def search(
         self,
@@ -83,6 +124,29 @@ class GraphSearchTool:
             GraphSearchResponse with nodes and relationships
         """
         start_time = time.perf_counter()
+        cache_key = self._build_cache_key(query, org_id, relationship_types, limit)
+        cache_hit = False
+
+        if self.result_cache:
+            cached_response = await self.result_cache.get(cache_key)
+            if cached_response:
+                cache_hit = True
+                cached_response.cache_hit = True
+                cached_response.execution_time_ms = (
+                    time.perf_counter() - start_time
+                ) * 1000
+                await self._emit_metrics(
+                    {
+                        "org_id": org_id,
+                        "cache_hit": True,
+                        "query": query,
+                        "relationship_types": relationship_types,
+                        "limit": limit,
+                        "total_nodes": cached_response.total_nodes,
+                        "execution_time_ms": cached_response.execution_time_ms,
+                    }
+                )
+                return cached_response
 
         logger.info(
             f"Graph search: org={org_id}, query='{query[:50]}...', "
@@ -181,7 +245,7 @@ class GraphSearchTool:
             f"{len(relationships)} relationships in {execution_time_ms:.1f}ms"
         )
 
-        return GraphSearchResponse(
+        response = GraphSearchResponse(
             nodes=list(nodes_dict.values()),
             relationships=relationships,
             query=query,
@@ -191,7 +255,30 @@ class GraphSearchTool:
             total_relationships=len(relationships),
             execution_time_ms=execution_time_ms,
             cypher_query=cypher_query,
+            cache_hit=cache_hit,
         )
+
+        if self.result_cache:
+            await self.result_cache.set(
+                cache_key,
+                response,
+                metadata={"org_id": org_id},
+            )
+
+        await self._emit_metrics(
+            {
+                "org_id": org_id,
+                "cache_hit": cache_hit,
+                "query": query,
+                "relationship_types": relationship_types,
+                "limit": limit,
+                "total_nodes": len(nodes_dict),
+                "total_relationships": len(relationships),
+                "execution_time_ms": execution_time_ms,
+            }
+        )
+
+        return response
 
 
 async def graph_search(
@@ -200,6 +287,8 @@ async def graph_search(
     relationship_types: Optional[List[str]] = None,
     limit: int = 20,
     neo4j_driver: Optional[AsyncDriver] = None,
+    result_cache: Optional[ResultCache] = None,
+    instrumentation_hook: Optional[InstrumentationHook] = None,
 ) -> GraphSearchResponse:
     """
     Standalone function interface for graph search
@@ -219,5 +308,9 @@ async def graph_search(
     if neo4j_driver is None:
         raise ValueError("neo4j_driver must be provided")
 
-    tool = GraphSearchTool(neo4j_driver)
+    tool = GraphSearchTool(
+        neo4j_driver=neo4j_driver,
+        result_cache=result_cache or _GRAPH_RESULT_CACHE,
+        instrumentation_hook=instrumentation_hook,
+    )
     return await tool.search(query, org_id, relationship_types, limit)

@@ -3048,18 +3048,22 @@ Extract:
 4. Who they coordinate with (other departments/roles)
 5. External dependencies (vendors, partners they work with)
 
-Return as JSON array with this structure:
-[{{
-    "role": "specific role",
-    "team_size": number or null,
-    "reports_to": "role they report to" or null,
-    "coordinates_with": ["role1", "role2"],
-    "external_dependencies": ["vendor1", "partner1"],
-    "confidence_score": 0.0-1.0,
-    "extraction_reasoning": "why extracted"
-}}]
+Return as JSON object with this structure:
+{{
+  "team_structures": [
+    {{
+      "role": "specific role",
+      "team_size": number or null,
+      "reports_to": "role they report to" or null,
+      "coordinates_with": ["role1", "role2"],
+      "external_dependencies": ["vendor1", "partner1"],
+      "confidence_score": 0.0-1.0,
+      "extraction_reasoning": "why extracted"
+    }}
+  ]
+}}
 
-If no team structure info found, return empty array []."""
+If no team structure info found, return {{"team_structures": []}}."""
 
         try:
             response = self.client.chat.completions.create(
@@ -3070,7 +3074,8 @@ If no team structure info found, return empty array []."""
             )
             
             result = json.loads(response.choices[0].message.content)
-            team_structures = result.get("team_structures", [])
+            # Handle both direct list and wrapped object formats
+            team_structures = result if isinstance(result, list) else result.get("team_structures", [])
             
             # Add metadata
             for ts in team_structures:
@@ -3090,10 +3095,14 @@ class KnowledgeGapExtractor:
     
     # Keywords indicating knowledge gaps
     GAP_KEYWORDS = [
+        # Original strict keywords
         "no sé", "no sabemos", "no conozco", "desconozco",
         "falta capacitación", "necesitamos training", "no entiendo",
         "no está claro", "confuso", "complicado de entender",
-        "necesito aprender", "no me enseñaron", "falta conocimiento"
+        "necesito aprender", "no me enseñaron", "falta conocimiento",
+        # Broader terms added 2025-11-16 to catch more implicit gaps
+        "problema", "dificultad", "no funciona", "difícil",
+        "complicado", "no me queda claro", "me cuesta"
     ]
     
     def __init__(self, openai_api_key: Optional[str] = None):
@@ -3148,17 +3157,21 @@ Look for:
 4. Confusion about processes or systems
 5. Areas where they need help
 
-Return as JSON array:
-[{{
-    "area": "what they don't know/understand",
-    "affected_roles": ["role1", "role2"],
-    "impact": "how this affects their work",
-    "training_needed": "what training would help",
-    "confidence_score": 0.0-1.0,
-    "extraction_reasoning": "why extracted"
-}}]
+Return as JSON object with this structure:
+{{
+  "knowledge_gaps": [
+    {{
+      "area": "what they don't know/understand",
+      "affected_roles": ["role1", "role2"],
+      "impact": "how this affects their work",
+      "training_needed": "what training would help",
+      "confidence_score": 0.0-1.0,
+      "extraction_reasoning": "why extracted"
+    }}
+  ]
+}}
 
-If no knowledge gaps found, return empty array []."""
+If no knowledge gaps found, return {{"knowledge_gaps": []}}."""
 
         try:
             response = self.client.chat.completions.create(
@@ -3347,18 +3360,22 @@ Look for:
 4. Budget-related pain points
 5. Spending authority limits
 
-Return as JSON array:
-[{{
-    "area": "what the budget is for",
-    "budget_type": "operational/capital/project/etc",
-    "approval_required_above": amount in USD or null,
-    "approver": "who approves",
-    "pain_point": "any budget-related problems",
-    "confidence_score": 0.0-1.0,
-    "extraction_reasoning": "why extracted"
-}}]
+Return as JSON object with this structure:
+{{
+  "budget_constraints": [
+    {{
+      "area": "what the budget is for",
+      "budget_type": "operational/capital/project/etc",
+      "approval_required_above": amount in USD or null,
+      "approver": "who approves",
+      "pain_point": "any budget-related problems",
+      "confidence_score": 0.0-1.0,
+      "extraction_reasoning": "why extracted"
+    }}
+  ]
+}}
 
-If no budget constraints found, return empty array []."""
+If no budget constraints found, return {{"budget_constraints": []}}."""
 
         try:
             response = self.client.chat.completions.create(
@@ -3369,7 +3386,8 @@ If no budget constraints found, return empty array []."""
             )
             
             result = json.loads(response.choices[0].message.content)
-            constraints = result.get("budget_constraints", [])
+            # Handle both direct list and wrapped object formats
+            constraints = result if isinstance(result, list) else result.get("budget_constraints", [])
             
             # Add metadata
             for constraint in constraints:

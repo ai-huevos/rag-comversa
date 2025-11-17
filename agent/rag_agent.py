@@ -9,6 +9,7 @@ Requirements: R6.1-R6.7, R0.3
 """
 import os
 import logging
+from contextvars import ContextVar
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,9 +26,19 @@ from agent.tools.vector_search import vector_search
 from agent.tools.graph_search import graph_search
 from agent.tools.hybrid_search import hybrid_search
 from agent.tools.checkpoint_lookup import checkpoint_lookup
+from agent.tools.instrumentation import RetrievalInstrumentation
 from intelligence_capture.context_registry import ContextRegistry
 
 logger = logging.getLogger(__name__)
+
+_CURRENT_SESSION_ID: ContextVar[Optional[str]] = ContextVar(
+    "rag_agent_current_session_id",
+    default=None,
+)
+_TOOL_OVERRIDES: ContextVar[Dict[str, Any]] = ContextVar(
+    "rag_agent_tool_overrides",
+    default={},
+)
 
 
 @dataclass
@@ -120,6 +131,7 @@ class RAGAgent:
         # Initialize session manager and telemetry
         self.session_manager = SessionManager(db_pool)
         self.telemetry = ToolTelemetryLogger(db_pool)
+        self.instrumentation = RetrievalInstrumentation()
 
         # Load system prompt
         system_prompt = config.load_system_prompt()
@@ -138,6 +150,36 @@ class RAGAgent:
             f"fallback={config.fallback_model}"
         )
 
+    def _get_active_session_id(self) -> str:
+        """Return session_id bound to current tool invocation context."""
+        session_id = _CURRENT_SESSION_ID.get()
+        return session_id or "session-desconocida"
+
+    def _apply_overrides(self, tool_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Apply per-request overrides to tool parameters.
+
+        Args:
+            tool_name: Name of the tool (vector_search, graph_search, hybrid_search).
+            params: Dict of parameters to override.
+
+        Returns:
+            New dict with overrides applied where keys match.
+        """
+        overrides = _TOOL_OVERRIDES.get() or {}
+        merged = dict(params)
+
+        # Apply global defaults first, then tool-specific overrides
+        for scope_key in ("default", tool_name):
+            scoped = overrides.get(scope_key, {})
+            if not isinstance(scoped, dict):
+                continue
+            for key, value in scoped.items():
+                if key in merged and value is not None:
+                    merged[key] = value
+
+        return merged
+
     def _register_tools(self):
         """Register retrieval tools with Pydantic AI agent"""
         # Note: Tool registration depends on pydantic-ai version
@@ -152,40 +194,57 @@ class RAGAgent:
             import time
             start_time = time.perf_counter()
 
+            params = self._apply_overrides(
+                "vector_search",
+                {
+                    "query": query,
+                    "org_id": org_id,
+                    "context": context,
+                    "top_k": top_k,
+                },
+            )
+
             try:
                 response = await vector_search(
-                    query=query,
-                    org_id=org_id,
-                    context=context,
-                    top_k=top_k,
+                    query=params["query"],
+                    org_id=params["org_id"],
+                    context=params["context"],
+                    top_k=params["top_k"],
                     db_pool=self.db_pool,
                     openai_client=self.openai_client,
+                    instrumentation_hook=self.instrumentation.emit,
                 )
+                session_id = self._get_active_session_id()
 
                 await self.telemetry.log_tool_usage(
-                    session_id="current",  # TODO: inject session_id
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="vector_search",
-                    query=query,
-                    parameters={"context": context, "top_k": top_k},
+                    query=params["query"],
+                    parameters={"context": params["context"], "top_k": params["top_k"]},
                     success=True,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=response.total_found,
+                    cache_hit=response.cache_hit,
+                    retrieval_mode="auto",
                 )
 
                 return response
 
             except Exception as exc:
+                session_id = self._get_active_session_id()
                 await self.telemetry.log_tool_usage(
-                    session_id="current",
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="vector_search",
-                    query=query,
-                    parameters={"context": context, "top_k": top_k},
+                    query=params["query"],
+                    parameters={"context": params["context"], "top_k": params["top_k"]},
                     success=False,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=0,
                     error_message=str(exc),
+                    cache_hit=False,
+                    retrieval_mode="auto",
                 )
                 raise
 
@@ -203,39 +262,62 @@ class RAGAgent:
             import time
             start_time = time.perf_counter()
 
+            params = self._apply_overrides(
+                "graph_search",
+                {
+                    "query": query,
+                    "org_id": org_id,
+                    "relationship_types": relationship_types,
+                    "limit": limit,
+                },
+            )
+
             try:
                 response = await graph_search(
-                    query=query,
-                    org_id=org_id,
-                    relationship_types=relationship_types,
-                    limit=limit,
+                    query=params["query"],
+                    org_id=params["org_id"],
+                    relationship_types=params["relationship_types"],
+                    limit=params["limit"],
                     neo4j_driver=self.neo4j_driver,
+                    instrumentation_hook=self.instrumentation.emit,
                 )
+                session_id = self._get_active_session_id()
 
                 await self.telemetry.log_tool_usage(
-                    session_id="current",
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="graph_search",
-                    query=query,
-                    parameters={"relationship_types": relationship_types, "limit": limit},
+                    query=params["query"],
+                    parameters={
+                        "relationship_types": params["relationship_types"],
+                        "limit": params["limit"],
+                    },
                     success=True,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=response.total_nodes,
+                    cache_hit=response.cache_hit,
+                    retrieval_mode="auto",
                 )
 
                 return response
 
             except Exception as exc:
+                session_id = self._get_active_session_id()
                 await self.telemetry.log_tool_usage(
-                    session_id="current",
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="graph_search",
-                    query=query,
-                    parameters={"relationship_types": relationship_types, "limit": limit},
+                    query=params["query"],
+                    parameters={
+                        "relationship_types": params["relationship_types"],
+                        "limit": params["limit"],
+                    },
                     success=False,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=0,
                     error_message=str(exc),
+                    cache_hit=False,
+                    retrieval_mode="auto",
                 )
                 raise
 
@@ -257,56 +339,76 @@ class RAGAgent:
             import time
             start_time = time.perf_counter()
 
+            params = self._apply_overrides(
+                "hybrid_search",
+                {
+                    "query": query,
+                    "org_id": org_id,
+                    "context": context,
+                    "relationship_types": relationship_types,
+                    "top_k": top_k,
+                    "weight_vector": weight_vector,
+                    "weight_graph": weight_graph,
+                },
+            )
+
             try:
                 response = await hybrid_search(
-                    query=query,
-                    org_id=org_id,
-                    context=context,
-                    relationship_types=relationship_types,
-                    top_k=top_k,
-                    weight_vector=weight_vector,
-                    weight_graph=weight_graph,
+                    query=params["query"],
+                    org_id=params["org_id"],
+                    context=params["context"],
+                    relationship_types=params["relationship_types"],
+                    top_k=params["top_k"],
+                    weight_vector=params["weight_vector"],
+                    weight_graph=params["weight_graph"],
                     db_pool=self.db_pool,
                     neo4j_driver=self.neo4j_driver,
                     openai_client=self.openai_client,
+                    instrumentation_hook=self.instrumentation.emit,
                 )
+                session_id = self._get_active_session_id()
 
                 await self.telemetry.log_tool_usage(
-                    session_id="current",
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="hybrid_search",
-                    query=query,
+                    query=params["query"],
                     parameters={
-                        "context": context,
-                        "relationship_types": relationship_types,
-                        "top_k": top_k,
-                        "weight_vector": weight_vector,
-                        "weight_graph": weight_graph,
+                        "context": params["context"],
+                        "relationship_types": params["relationship_types"],
+                        "top_k": params["top_k"],
+                        "weight_vector": params["weight_vector"],
+                        "weight_graph": params["weight_graph"],
                     },
                     success=True,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=response.total_results,
+                    cache_hit=response.cache_hit,
+                    retrieval_mode="auto",
                 )
 
                 return response
 
             except Exception as exc:
+                session_id = self._get_active_session_id()
                 await self.telemetry.log_tool_usage(
-                    session_id="current",
-                    org_id=org_id,
+                    session_id=session_id,
+                    org_id=params["org_id"],
                     tool_name="hybrid_search",
-                    query=query,
+                    query=params["query"],
                     parameters={
-                        "context": context,
-                        "relationship_types": relationship_types,
-                        "top_k": top_k,
-                        "weight_vector": weight_vector,
-                        "weight_graph": weight_graph,
+                        "context": params["context"],
+                        "relationship_types": params["relationship_types"],
+                        "top_k": params["top_k"],
+                        "weight_vector": params["weight_vector"],
+                        "weight_graph": params["weight_graph"],
                     },
                     success=False,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=0,
                     error_message=str(exc),
+                    cache_hit=False,
+                    retrieval_mode="auto",
                 )
                 raise
 
@@ -335,6 +437,8 @@ class RAGAgent:
                     success=True,
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=response.total_found,
+                    cache_hit=False,
+                    retrieval_mode="auto",
                 )
 
                 return response
@@ -350,6 +454,8 @@ class RAGAgent:
                     execution_time_ms=(time.perf_counter() - start_time) * 1000,
                     result_count=0,
                     error_message=str(exc),
+                    cache_hit=False,
+                    retrieval_mode="auto",
                 )
                 raise
 
@@ -361,6 +467,7 @@ class RAGAgent:
         org_id: str,
         context: Optional[str] = None,
         session_id: Optional[str] = None,
+        retrieval_overrides: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Execute a query with the RAG agent
@@ -370,6 +477,7 @@ class RAGAgent:
             org_id: Organization namespace
             context: Optional business context
             session_id: Optional session ID for conversation context
+            retrieval_overrides: Optional overrides for tool parameters
 
         Returns:
             Dict with answer, sources, tool_calls, and metadata
@@ -378,6 +486,10 @@ class RAGAgent:
         session = await self.session_manager.get_or_create_session(
             session_id, org_id, context
         )
+
+        overrides_payload = retrieval_overrides or {}
+        if overrides_payload:
+            session.metadata["last_overrides"] = overrides_payload
 
         # Add user message
         await self.session_manager.add_message_and_save(
@@ -388,6 +500,9 @@ class RAGAgent:
         context_messages = session.get_context_messages(
             max_turns=self.config.max_conversation_turns
         )
+
+        session_token = _CURRENT_SESSION_ID.set(session.session_id)
+        overrides_token = _TOOL_OVERRIDES.set(overrides_payload)
 
         try:
             # Run agent with conversation context
@@ -411,6 +526,7 @@ class RAGAgent:
                 "session_id": session.session_id,
                 "tool_calls": tool_calls,
                 "model": self.config.primary_model,
+                "applied_overrides": overrides_payload,
             }
 
         except Exception as exc:
@@ -442,6 +558,7 @@ class RAGAgent:
                         "session_id": session.session_id,
                         "model": self.config.fallback_model,
                         "fallback": True,
+                        "applied_overrides": overrides_payload,
                     }
 
                 except Exception as fallback_exc:
@@ -461,7 +578,11 @@ class RAGAgent:
                 "answer": error_msg,
                 "session_id": session.session_id,
                 "error": str(exc),
+                "applied_overrides": overrides_payload,
             }
+        finally:
+            _CURRENT_SESSION_ID.reset(session_token)
+            _TOOL_OVERRIDES.reset(overrides_token)
 
     async def close(self):
         """Close connections"""

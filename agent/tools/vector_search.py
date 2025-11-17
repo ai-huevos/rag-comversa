@@ -2,14 +2,20 @@
 Vector Search Tool for pgvector semantic retrieval
 Queries PostgreSQL with pgvector for similar document chunks
 """
-import asyncio
 import logging
-from typing import List, Optional, Dict, Any
+import time
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 import asyncpg
 from openai import AsyncOpenAI
+
+from agent.tools.cache import ResultCache
+from agent.tools.instrumentation import (
+    InstrumentationHook,
+    call_instrumentation_hook,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +42,10 @@ class VectorSearchResponse:
     top_k: int
     total_found: int
     execution_time_ms: float
+    cache_hit: bool = False
+
+
+_VECTOR_RESULT_CACHE = ResultCache()
 
 
 class VectorSearchTool:
@@ -51,6 +61,8 @@ class VectorSearchTool:
         db_pool: asyncpg.Pool,
         openai_client: AsyncOpenAI,
         embedding_model: str = "text-embedding-3-small",
+        result_cache: Optional[ResultCache] = None,
+        instrumentation_hook: Optional[InstrumentationHook] = None,
     ):
         """
         Initialize vector search tool
@@ -59,10 +71,41 @@ class VectorSearchTool:
             db_pool: AsyncPG connection pool
             openai_client: OpenAI async client for embeddings
             embedding_model: Model name for embeddings
+            result_cache: Optional TTL cache for query responses
+            instrumentation_hook: Optional metrics emitter
         """
         self.db_pool = db_pool
         self.openai_client = openai_client
         self.embedding_model = embedding_model
+        self.result_cache = result_cache or ResultCache()
+        self.instrumentation_hook = instrumentation_hook
+
+    @staticmethod
+    def _build_cache_key(
+        query: str,
+        org_id: str,
+        context: Optional[str],
+        top_k: int,
+    ) -> str:
+        """Construct cache key using ResultCache utility."""
+        payload = {
+            "query": query,
+            "org_id": org_id,
+            "context": context,
+            "top_k": top_k,
+        }
+        return ResultCache.build_key("vector_search", payload)
+
+    async def _emit_metrics(
+        self,
+        data: Dict[str, Any],
+    ) -> None:
+        """Emit metrics via instrumentation hook if configured."""
+        await call_instrumentation_hook(
+            self.instrumentation_hook,
+            "vector_search",
+            data,
+        )
 
     async def search(
         self,
@@ -83,8 +126,30 @@ class VectorSearchTool:
         Returns:
             VectorSearchResponse with matching chunks
         """
-        import time
         start_time = time.perf_counter()
+        cache_key = self._build_cache_key(query, org_id, context, top_k)
+        cache_hit = False
+
+        if self.result_cache:
+            cached_response = await self.result_cache.get(cache_key)
+            if cached_response:
+                cache_hit = True
+                cached_response.cache_hit = True
+                cached_response.execution_time_ms = (
+                    time.perf_counter() - start_time
+                ) * 1000
+                await self._emit_metrics(
+                    {
+                        "org_id": org_id,
+                        "cache_hit": True,
+                        "query": query,
+                        "context": context,
+                        "top_k": top_k,
+                        "result_count": cached_response.total_found,
+                        "execution_time_ms": cached_response.execution_time_ms,
+                    }
+                )
+                return cached_response
 
         # Generate query embedding
         logger.info(f"Vector search: org={org_id}, query='{query[:50]}...', top_k={top_k}")
@@ -151,7 +216,7 @@ class VectorSearchTool:
                     page_number=row["page_number"],
                     section_title=row["section_title"],
                 )
-            )
+        )
 
         execution_time_ms = (time.perf_counter() - start_time) * 1000
 
@@ -159,7 +224,7 @@ class VectorSearchTool:
             f"Vector search completed: {len(results)} results in {execution_time_ms:.1f}ms"
         )
 
-        return VectorSearchResponse(
+        response = VectorSearchResponse(
             results=results,
             query=query,
             org_id=org_id,
@@ -167,7 +232,29 @@ class VectorSearchTool:
             top_k=top_k,
             total_found=len(results),
             execution_time_ms=execution_time_ms,
+            cache_hit=cache_hit,
         )
+
+        if self.result_cache:
+            await self.result_cache.set(
+                cache_key,
+                response,
+                metadata={"org_id": org_id, "context": context},
+            )
+
+        await self._emit_metrics(
+            {
+                "org_id": org_id,
+                "cache_hit": cache_hit,
+                "query": query,
+                "context": context,
+                "top_k": top_k,
+                "result_count": len(results),
+                "execution_time_ms": execution_time_ms,
+            }
+        )
+
+        return response
 
 
 async def vector_search(
@@ -177,6 +264,8 @@ async def vector_search(
     top_k: int = 5,
     db_pool: Optional[asyncpg.Pool] = None,
     openai_client: Optional[AsyncOpenAI] = None,
+    result_cache: Optional[ResultCache] = None,
+    instrumentation_hook: Optional[InstrumentationHook] = None,
 ) -> VectorSearchResponse:
     """
     Standalone function interface for vector search
@@ -190,6 +279,8 @@ async def vector_search(
         top_k: Number of results
         db_pool: Database pool (injected by agent)
         openai_client: OpenAI client (injected by agent)
+        result_cache: Optional cache (defaults to module-level cache)
+        instrumentation_hook: Optional metrics hook
 
     Returns:
         VectorSearchResponse
@@ -197,5 +288,10 @@ async def vector_search(
     if db_pool is None or openai_client is None:
         raise ValueError("db_pool and openai_client must be provided")
 
-    tool = VectorSearchTool(db_pool, openai_client)
+    tool = VectorSearchTool(
+        db_pool=db_pool,
+        openai_client=openai_client,
+        result_cache=result_cache or _VECTOR_RESULT_CACHE,
+        instrumentation_hook=instrumentation_hook,
+    )
     return await tool.search(query, org_id, context, top_k)

@@ -1,0 +1,162 @@
+{
+  "version": "1.0",
+  "generated_at": "2025-11-13T17:26:00Z",
+  "mode": "initial_scan",
+  "scan_level": "exhaustive",
+  "project_root": "/Users/tatooine/Documents/Development/Comversa/system0",
+  "output_folder": "docs/",
+  "current_step": "complete",
+  "completed_steps": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+  "project_classification": {
+    "structure": "multi-part",
+    "project_types": ["backend", "api", "web", "data"],
+    "detected_at_step": "1",
+    "details": {
+      "backend": {
+        "directory": "intelligence_capture/",
+        "language": "Python 3.10+",
+        "purpose": "Core extraction system (17 entity types)",
+        "indicators": ["requirements.txt", "extractor.py", "processor.py", "database.py"]
+      },
+      "api": {
+        "directory": "api/",
+        "language": "Python/FastAPI",
+        "purpose": "REST API server for dashboard",
+        "indicators": ["requirements.txt", "server.py", "routers/", "models/", "services/"]
+      },
+      "web": {
+        "directory": "dashboard/",
+        "language": "TypeScript/Next.js",
+        "purpose": "Executive dashboard UI",
+        "indicators": ["package.json", "tsconfig.json", "next.config.js", "app/", "components/"]
+      },
+      "data": {
+        "directories": ["scripts/", "intelligence_capture/migrations/"],
+        "language": "Python",
+        "purpose": "Data processing pipeline",
+        "indicators": ["scripts/migrations/", "intelligence_capture/chunking/", "intelligence_capture/embeddings/"]
+      },
+      "agent": {
+        "directory": "agent/",
+        "language": "Python/Pydantic AI",
+        "purpose": "Agentic RAG system",
+        "indicators": ["rag_agent.py", "cli.py", "tools/"]
+      }
+    }
+  },
+  "findings": {
+    "key_files_detected": {
+      "backend_indicators": ["intelligence_capture/requirements.txt", "api/requirements.txt"],
+      "web_indicators": ["dashboard/package.json", "dashboard/tsconfig.json", "dashboard/next.config.js"],
+      "config_files": [".env.example", "pytest.ini", "docker-compose.yml", "Dockerfile.api"],
+      "specs": [
+        ".kiro/specs/zero-ai/requirements.md",
+        ".kiro/specs/rag-2.0-enhancement/",
+        ".kiro/specs/knowledge-graph-consolidation/",
+        ".kiro/specs/extraction-completion/",
+        ".kiro/specs/ontology-enhancement/"
+      ]
+    },
+    "existing_documentation": [
+      "docs/README.md",
+      "docs/ARCHITECTURE.md",
+      "docs/CONSOLIDATION_SYNC_ARCHITECTURE.md",
+      "docs/RUNBOOK.md",
+      "docs/DECISIONS.md",
+      "docs/EXPERIMENTS.md",
+      "docs/CONSOLIDATION_RUNBOOK.md",
+      "docs/KNOWLEDGE_GRAPH_CONSOLIDATION.md",
+      "docs/ENSEMBLE_QUICKSTART.md",
+      "docs/ENSEMBLE_VALIDATION.md",
+      "docs/EXTRACTION_LOGGING.md",
+      "docs/QA_REVIEW_FILES.md",
+      "docs/QUALITY_ASSURANCE.md",
+      "docs/archive/2025-11/"
+    ],
+    "technology_stack": {
+      "backend": {
+        "python": "3.10+",
+        "key_libraries": ["openai>=1.0.0", "python-dotenv", "rapidfuzz>=3.0.0", "colorlog>=6.0.0"]
+      },
+      "api": {
+        "framework": "FastAPI 0.109.0",
+        "server": "Uvicorn 0.27.0",
+        "databases": ["psycopg2-binary 2.9.9", "neo4j 5.16.0"],
+        "validation": "pydantic 2.5.3"
+      },
+      "web": {
+        "framework": "Next.js 14.0.4",
+        "ui_library": "React 18.2.0",
+        "language": "TypeScript 5.3.3",
+        "styling": "Tailwindcss 3.4.0",
+        "charts": "Recharts 2.10.3"
+      },
+      "llm": {
+        "primary_model": "gpt-4o-mini",
+        "fallback_chain": ["gpt-4o", "gpt-3.5-turbo", "o1-mini", "o1-preview", "claude-3-5-sonnet"]
+      },
+      "databases": {
+        "sqlite": "WAL mode (legacy, transitioning)",
+        "postgresql": "15 with pgvector 0.8.1",
+        "neo4j": "2025.10.1"
+      }
+    },
+    "multi_part_components": [
+      {
+        "name": "Intelligence Extraction System",
+        "path": "intelligence_capture/",
+        "type": "backend",
+        "entry_point": "intelligence_capture/run.py"
+      },
+      {
+        "name": "REST API Server",
+        "path": "api/",
+        "type": "api",
+        "entry_point": "api/server.py"
+      },
+      {
+        "name": "Executive Dashboard",
+        "path": "dashboard/",
+        "type": "web",
+        "entry_point": "dashboard/app/"
+      },
+      {
+        "name": "Agentic RAG System",
+        "path": "agent/",
+        "type": "agent",
+        "entry_point": "agent/rag_agent.py"
+      }
+    ]
+  },
+  "timestamps": {
+    "started": "2025-11-13T17:26:00Z",
+    "completed": "2025-11-13T17:40:00Z",
+    "step_1_completed": "2025-11-13T17:30:00Z",
+    "step_8_completed": "2025-11-13T17:38:00Z"
+  },
+  "documentation_generated": {
+    "bmm_index": "docs/bmm-index.md",
+    "purpose": "Master AI-retrieval index with current vs target state mapping, gap analysis, and refactoring roadmap",
+    "lines": 500,
+    "sections": 18,
+    "features": [
+      "Current vs Target State Mapping",
+      "Critical Issues (RAG 2.0 Phase 1 remediation)",
+      "Systematic Refactoring Roadmap (Phases 1-4)",
+      "Cleanup & Optimization Opportunities",
+      "Quick Reference for AI Agents",
+      "Testing Strategy (current 50% → target 80%+)",
+      "Development Workflow",
+      "Security & Privacy",
+      "Lessons Learned"
+    ]
+  },
+  "codebase_metrics": {
+    "python_files": 188,
+    "typescript_files": 7,
+    "documentation_files": 400,
+    "test_files": 19,
+    "current_test_coverage": "50%",
+    "target_test_coverage": "80%+"
+  }
+}

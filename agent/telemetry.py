@@ -2,11 +2,15 @@
 Tool Telemetry and Usage Logging
 Tracks tool calls for governance analysis and cost monitoring
 """
+from __future__ import annotations
+
+import asyncio
 import logging
 import json
-from typing import Dict, Any, Optional
+from collections import defaultdict, deque
+from typing import Any, Deque, Dict, Optional, Tuple
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import asyncpg
@@ -32,6 +36,8 @@ class ToolUsageLog:
     result_count: int
     error_message: Optional[str] = None
     cost_cents: Optional[float] = None
+    cache_hit: bool = False
+    retrieval_mode: Optional[str] = None
     timestamp: datetime = None
 
     def __post_init__(self):
@@ -69,6 +75,10 @@ class ToolTelemetryLogger:
 
         self.reports_dir = reports_dir
         self.reports_dir.mkdir(parents=True, exist_ok=True)
+        self._alert_windows: Dict[Tuple[str, str], Deque[bool]] = defaultdict(lambda: deque(maxlen=50))
+        self._last_alert_at: Dict[Tuple[str, str], datetime] = {}
+        self._daily_summary: Dict[Tuple[str, str], Dict[str, Any]] = {}
+        self._summary_lock = asyncio.Lock()
 
         logger.info(f"Tool telemetry initialized: reports_dir={self.reports_dir}")
 
@@ -84,6 +94,8 @@ class ToolTelemetryLogger:
         result_count: int = 0,
         error_message: Optional[str] = None,
         cost_cents: Optional[float] = None,
+        cache_hit: bool = False,
+        retrieval_mode: Optional[str] = None,
     ) -> None:
         """
         Log a tool usage event
@@ -99,6 +111,8 @@ class ToolTelemetryLogger:
             result_count: Number of results returned
             error_message: Error message if failed
             cost_cents: Estimated cost in cents (for embeddings)
+            cache_hit: Whether cache satisfied the call
+            retrieval_mode: Requested retrieval mode (auto/vector/graph/hybrid)
         """
         usage_log = ToolUsageLog(
             session_id=session_id,
@@ -111,6 +125,8 @@ class ToolTelemetryLogger:
             result_count=result_count,
             error_message=error_message,
             cost_cents=cost_cents,
+            cache_hit=cache_hit,
+            retrieval_mode=retrieval_mode,
         )
 
         # Log to database if available
@@ -119,6 +135,8 @@ class ToolTelemetryLogger:
 
         # Log to JSON file
         await self._log_to_json(usage_log)
+        await self._update_summary(usage_log)
+        await self._check_misselection(usage_log)
 
         # Log summary to logger
         status = "SUCCESS" if success else "FAILURE"
@@ -144,6 +162,8 @@ class ToolTelemetryLogger:
                         result_count,
                         error_message,
                         cost_cents,
+                        cache_hit,
+                        retrieval_mode,
                         timestamp
                     ) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10, $11)
                     """,
@@ -157,6 +177,8 @@ class ToolTelemetryLogger:
                     usage_log.result_count,
                     usage_log.error_message,
                     usage_log.cost_cents,
+                    usage_log.cache_hit,
+                    usage_log.retrieval_mode,
                     usage_log.timestamp,
                 )
 
@@ -178,11 +200,99 @@ class ToolTelemetryLogger:
             log_dict["timestamp"] = usage_log.timestamp.isoformat()
 
             # Append as JSONL
-            with open(log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(log_dict, ensure_ascii=False) + "\n")
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, self._append_jsonl, log_file, log_dict)
 
         except Exception as exc:
             logger.warning(f"Failed to log to JSON: {exc}")
+
+    @staticmethod
+    def _append_jsonl(path: Path, record: Dict[str, Any]) -> None:
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    async def _record_alert(self, usage_log: ToolUsageLog, failure_rate: float) -> None:
+        org_dir = self.reports_dir / usage_log.org_id
+        org_dir.mkdir(parents=True, exist_ok=True)
+        alert_path = org_dir / "alerts.jsonl"
+        alert_record = {
+            "timestamp": usage_log.timestamp.isoformat(),
+            "tool_name": usage_log.tool_name,
+            "failure_rate": failure_rate,
+            "window_size": len(self._alert_windows[(usage_log.org_id, usage_log.tool_name)]),
+            "message": "Tasa de mis-selección > 15%",
+        }
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._append_jsonl, alert_path, alert_record)
+
+    async def _check_misselection(self, usage_log: ToolUsageLog) -> None:
+        key = (usage_log.org_id, usage_log.tool_name)
+        window = self._alert_windows[key]
+        window.append(usage_log.success)
+        success_count = sum(1 for val in window if val)
+        failure_rate = 1 - (success_count / len(window))
+
+        if len(window) < 10 or failure_rate <= 0.15:
+            return
+
+        last_alert = self._last_alert_at.get(key)
+        if last_alert and (usage_log.timestamp - last_alert) < timedelta(minutes=10):
+            return
+
+        await self._record_alert(usage_log, failure_rate)
+        self._last_alert_at[key] = usage_log.timestamp
+
+    async def _update_summary(self, usage_log: ToolUsageLog) -> None:
+        date_str = usage_log.timestamp.strftime("%Y-%m-%d")
+        summary_key = (usage_log.org_id, date_str)
+
+        async with self._summary_lock:
+            summary = self._daily_summary.get(summary_key)
+            if summary is None:
+                summary = {
+                    "org_id": usage_log.org_id,
+                    "date": date_str,
+                    "total_calls": 0,
+                    "successful_calls": 0,
+                    "failed_calls": 0,
+                    "total_results": 0,
+                    "total_cost_cents": 0.0,
+                    "tools": {},
+                }
+
+            summary["total_calls"] += 1
+            if usage_log.success:
+                summary["successful_calls"] += 1
+            else:
+                summary["failed_calls"] += 1
+
+            summary["total_results"] += usage_log.result_count
+            summary["total_cost_cents"] += usage_log.cost_cents or 0.0
+            summary["last_update"] = usage_log.timestamp.isoformat()
+
+            tool_stats = summary["tools"].setdefault(
+                usage_log.tool_name,
+                {"calls": 0, "failures": 0},
+            )
+            tool_stats["calls"] += 1
+            if not usage_log.success:
+                tool_stats["failures"] += 1
+
+            self._daily_summary[summary_key] = summary
+            await self._persist_summary(usage_log.org_id, date_str, summary)
+
+    async def _persist_summary(self, org_id: str, date_str: str, summary: Dict[str, Any]) -> None:
+        org_dir = self.reports_dir / org_id
+        org_dir.mkdir(parents=True, exist_ok=True)
+        summary_path = org_dir / f"{date_str}.json"
+
+        loop = asyncio.get_running_loop()
+
+        def _write():
+            with open(summary_path, "w", encoding="utf-8") as handle:
+                json.dump(summary, handle, ensure_ascii=False, indent=2)
+
+        await loop.run_in_executor(None, _write)
 
     async def get_tool_stats(
         self,

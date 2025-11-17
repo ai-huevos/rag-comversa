@@ -4,15 +4,21 @@ Uses reciprocal rank fusion to merge results from both retrieval methods
 """
 import asyncio
 import logging
-from typing import List, Optional, Dict, Any
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 import asyncpg
 from neo4j import AsyncDriver
 from openai import AsyncOpenAI
 
-from agent.tools.vector_search import VectorSearchTool, VectorSearchResult
-from agent.tools.graph_search import GraphSearchTool, GraphNode, GraphRelationship
+from agent.tools.cache import ResultCache
+from agent.tools.graph_search import GraphNode, GraphRelationship, GraphSearchTool
+from agent.tools.vector_search import VectorSearchResult, VectorSearchTool
+from agent.tools.instrumentation import (
+    InstrumentationHook,
+    call_instrumentation_hook,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +46,11 @@ class HybridSearchResponse:
     weight_graph: float
     total_results: int
     execution_time_ms: float
+    cache_hit: bool = False
+    overrides_applied: Dict[str, Any] = field(default_factory=dict)
+
+
+_HYBRID_RESULT_CACHE = ResultCache()
 
 
 class HybridSearchTool:
@@ -59,6 +70,10 @@ class HybridSearchTool:
         db_pool: asyncpg.Pool,
         neo4j_driver: AsyncDriver,
         openai_client: AsyncOpenAI,
+        result_cache: Optional[ResultCache] = None,
+        vector_cache: Optional[ResultCache] = None,
+        graph_cache: Optional[ResultCache] = None,
+        instrumentation_hook: Optional[InstrumentationHook] = None,
     ):
         """
         Initialize hybrid search tool
@@ -67,9 +82,55 @@ class HybridSearchTool:
             db_pool: PostgreSQL connection pool
             neo4j_driver: Neo4j async driver
             openai_client: OpenAI client for embeddings
+            result_cache: Cache for fused hybrid results
+            vector_cache: Cache for vector sub-tool
+            graph_cache: Cache for graph sub-tool
+            instrumentation_hook: Optional metrics hook
         """
-        self.vector_tool = VectorSearchTool(db_pool, openai_client)
-        self.graph_tool = GraphSearchTool(neo4j_driver)
+        self.result_cache = result_cache or ResultCache()
+        self.vector_cache = vector_cache or ResultCache()
+        self.graph_cache = graph_cache or ResultCache()
+        self.instrumentation_hook = instrumentation_hook
+
+        self.vector_tool = VectorSearchTool(
+            db_pool,
+            openai_client,
+            result_cache=self.vector_cache,
+        )
+        self.graph_tool = GraphSearchTool(
+            neo4j_driver,
+            result_cache=self.graph_cache,
+        )
+
+    @staticmethod
+    def _build_cache_key(
+        query: str,
+        org_id: str,
+        context: Optional[str],
+        relationship_types: Optional[List[str]],
+        top_k: int,
+        weight_vector: float,
+        weight_graph: float,
+    ) -> str:
+        """Construct cache key for hybrid fusion results."""
+        payload = {
+            "query": query,
+            "org_id": org_id,
+            "context": context,
+            "relationship_types": relationship_types or [],
+            "top_k": top_k,
+            "weight_vector": round(weight_vector, 3),
+            "weight_graph": round(weight_graph, 3),
+        }
+        return ResultCache.build_key("hybrid_search", payload)
+
+    async def _emit_metrics(self, data: Dict[str, Any]) -> None:
+        """Emit metrics for hybrid search."""
+        await call_instrumentation_hook(
+            self.instrumentation_hook,
+            "hybrid_search",
+            data,
+        )
 
     async def search(
         self,
@@ -96,8 +157,41 @@ class HybridSearchTool:
         Returns:
             HybridSearchResponse with fused results
         """
-        import time
         start_time = time.perf_counter()
+        cache_key = self._build_cache_key(
+            query,
+            org_id,
+            context,
+            relationship_types,
+            top_k,
+            weight_vector,
+            weight_graph,
+        )
+        cache_hit = False
+
+        if self.result_cache:
+            cached_response = await self.result_cache.get(cache_key)
+            if cached_response:
+                cache_hit = True
+                cached_response.cache_hit = True
+                cached_response.execution_time_ms = (
+                    time.perf_counter() - start_time
+                ) * 1000
+                await self._emit_metrics(
+                    {
+                        "org_id": org_id,
+                        "cache_hit": True,
+                        "query": query,
+                        "context": context,
+                        "relationship_types": relationship_types,
+                        "top_k": top_k,
+                        "weight_vector": weight_vector,
+                        "weight_graph": weight_graph,
+                        "result_count": cached_response.total_results,
+                        "execution_time_ms": cached_response.execution_time_ms,
+                    }
+                )
+                return cached_response
 
         logger.info(
             f"Hybrid search: org={org_id}, query='{query[:50]}...', "
@@ -109,8 +203,13 @@ class HybridSearchTool:
         graph_task = self.graph_tool.search(query, org_id, relationship_types, top_k * 2)
 
         vector_response, graph_response = await asyncio.gather(
-            vector_task, graph_task, return_exceptions=False
+            vector_task,
+            graph_task,
+            return_exceptions=False,
         )
+
+        vector_latency_ms = vector_response.execution_time_ms
+        graph_latency_ms = graph_response.execution_time_ms
 
         # Apply reciprocal rank fusion
         k = 60  # Standard RRF constant
@@ -190,7 +289,15 @@ class HybridSearchTool:
             f"in {execution_time_ms:.1f}ms"
         )
 
-        return HybridSearchResponse(
+        overrides = {
+            "context": context,
+            "relationship_types": relationship_types,
+            "top_k": top_k,
+            "weight_vector": weight_vector,
+            "weight_graph": weight_graph,
+        }
+
+        response = HybridSearchResponse(
             results=merged_results,
             vector_results=vector_response.results,
             graph_nodes=graph_response.nodes,
@@ -202,7 +309,35 @@ class HybridSearchTool:
             weight_graph=weight_graph,
             total_results=len(merged_results),
             execution_time_ms=execution_time_ms,
+            cache_hit=cache_hit,
+            overrides_applied=overrides,
         )
+
+        if self.result_cache:
+            await self.result_cache.set(
+                cache_key,
+                response,
+                metadata={"org_id": org_id},
+            )
+
+        await self._emit_metrics(
+            {
+                "org_id": org_id,
+                "cache_hit": cache_hit,
+                "query": query,
+                "context": context,
+                "relationship_types": relationship_types,
+                "top_k": top_k,
+                "weight_vector": weight_vector,
+                "weight_graph": weight_graph,
+                "result_count": len(merged_results),
+                "execution_time_ms": execution_time_ms,
+                "vector_latency_ms": vector_latency_ms,
+                "graph_latency_ms": graph_latency_ms,
+            }
+        )
+
+        return response
 
 
 async def hybrid_search(
@@ -216,6 +351,10 @@ async def hybrid_search(
     db_pool: Optional[asyncpg.Pool] = None,
     neo4j_driver: Optional[AsyncDriver] = None,
     openai_client: Optional[AsyncOpenAI] = None,
+    result_cache: Optional[ResultCache] = None,
+    vector_cache: Optional[ResultCache] = None,
+    graph_cache: Optional[ResultCache] = None,
+    instrumentation_hook: Optional[InstrumentationHook] = None,
 ) -> HybridSearchResponse:
     """
     Standalone function interface for hybrid search
@@ -240,7 +379,21 @@ async def hybrid_search(
     if db_pool is None or neo4j_driver is None or openai_client is None:
         raise ValueError("db_pool, neo4j_driver, and openai_client must be provided")
 
-    tool = HybridSearchTool(db_pool, neo4j_driver, openai_client)
+    tool = HybridSearchTool(
+        db_pool=db_pool,
+        neo4j_driver=neo4j_driver,
+        openai_client=openai_client,
+        result_cache=result_cache or _HYBRID_RESULT_CACHE,
+        vector_cache=vector_cache,
+        graph_cache=graph_cache,
+        instrumentation_hook=instrumentation_hook,
+    )
     return await tool.search(
-        query, org_id, context, relationship_types, top_k, weight_vector, weight_graph
+        query,
+        org_id,
+        context,
+        relationship_types,
+        top_k,
+        weight_vector,
+        weight_graph,
     )

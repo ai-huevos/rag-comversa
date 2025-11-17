@@ -116,17 +116,17 @@ This plan translates the RAG 2.0 requirements and design blueprint into execut
 
 ## Phase 3: Agentic RAG & API Delivery (Week 3)
 
-- [ ] 10. Implement Pydantic AI Agent Orchestrator
-  - Create `agent/rag_agent.py` built on Pydantic AI with Spanish system prompt (from `prompts/system_agent_prompt.md`), context registry lookups, and conversation memory keyed by `session_id`.
-  - Configure tool routing guidelines (vector vs graph vs hybrid) and ensure tool-call telemetry is logged for governance analysis.
-  - Add fallbacks (gpt-4o as backup) without translating Spanish queries per requirements.
-  - _Requirements: R6.1–R6.7, R0.3_
+- [x] 10. Implement Pydantic AI Agent Orchestrator ✅ **COMPLETE** (2025-11-11)
+  - ✅ Added `agent/rag_agent.py` powered by Pydantic AI with Spanish-first system prompt, context registry isolation, and GPT-4o-mini → GPT-4o fallback chain.
+  - ✅ Delivered session memory + persistence via `agent/session.py`, plus telemetry + cost tracking in `agent/telemetry.py` feeding Postgres + JSONL usage logs.
+  - ✅ Published developer assets (`agent/example.py`, `agent/README.md`) documenting initialization, tool contracts, and governance hooks.
+  - 📊 **Reference:** [`TASK_10_COMPLETE.md`](../../../TASK_10_COMPLETE.md)
+  - _Requirements: R6.1–R6.7, R0.3_ ✅
 
-- [ ] 11. Ship Retrieval Tool Adapters & Hybrid Search
-  - Implement `agent/tools/vector_search.py`, `agent/tools/graph_search.py`, and `agent/tools/hybrid_search.py` to query pgvector, Neo4j, or both in parallel, merge results (reciprocal rank fusion), and cache for 5 minutes.
-  - Include deduplication logic, overrideable weighting (default 50/50), and structured source payloads for downstream API responses.
-  - Instrument tool invocations to feed evaluation metrics and debugging dashboards.
-  - _Requirements: R6.2–R6.6, R8.1–R8.7_
+- [ ] 11. Ship Retrieval Tool Adapters & Hybrid Search (core delivered, caching pending)
+  - ✅ Implemented `agent/tools/vector_search.py`, `graph_search.py`, and `hybrid_search.py` to query pgvector + Neo4j in parallel with reciprocal-rank fusion and weighted dedupe payloads.
+  - ⚠ Remaining: add 5‑minute result cache, tool instrumentation hooks for evaluation metrics, and hybrid-level overrides surfaced to the API.
+  - _Requirements: R6.2–R6.6, R8.1–R8.7_ (vector/graph/hybrid retrieval ✅; caching + metrics 🚧)
 
 - [ ] 12. Expose FastAPI Endpoints & Health Checks
   - Build `api/server.py` with `/chat`, `/chat/stream` (SSE), `/health`, `/review/checkpoint`, and `/evaluate` endpoints; include API-key auth, 60 req/min rate limiting, and org-aware middleware.
