@@ -10,8 +10,8 @@ Usage:
 import sys
 import json
 from pathlib import Path
-from processor import IntelligenceProcessor
-from config import INTERVIEWS_FILE, DB_PATH
+from .processor import IntelligenceProcessor
+from .config import INTERVIEWS_FILE, DB_PATH
 
 
 def test_single_interview():
