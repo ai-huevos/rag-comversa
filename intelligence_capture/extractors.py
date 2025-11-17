@@ -12,89 +12,29 @@ import os
 from .config import MODEL_PROVIDER_MAP
 from .model_router import MODEL_ROUTER
 from .rate_limiter import get_rate_limiter
+from .multi_provider_client import call_llm_with_fallback as multi_provider_call
 
 
-def call_llm_with_fallback(client: OpenAI, messages: List[Dict], temperature: float = 0.1, max_retries: int = 3) -> Optional[str]:
+def call_llm_with_fallback(messages: List[Dict], temperature: float = 0.1, max_retries: int = 3) -> Optional[str]:
     """
-    Call LLM with automatic model fallback on rate limits
-    
+    Call LLM with automatic multi-provider fallback
+    Now supports: OpenAI, Anthropic, Gemini, DeepSeek, Moonshot
+
     Args:
-        client: OpenAI client
         messages: List of message dicts
         temperature: Temperature for generation
         max_retries: Max retries per model
-        
+
     Returns:
         Response content or None if all models fail
     """
-    last_error = None
-    model_sequence = MODEL_ROUTER.build_sequence()
-    
-    for model in model_sequence:
-        provider = MODEL_PROVIDER_MAP.get(model, {}).get("provider", "openai")
-        if provider != "openai":
-            print(f"  ⚠️  Provider '{provider}' for model '{model}' not implemented yet, skipping.")
-            continue
-
-        for attempt in range(max_retries):
-            try:
-                print(f"  Attempting with model: {model} (attempt {attempt + 1}/{max_retries})")
-
-                limiter = get_rate_limiter(max_calls_per_minute=50, key=f"{provider}:{model}")
-                limiter.wait_if_needed()
-                
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=temperature,
-                    response_format={"type": "json_object"}
-                )
-                
-                print(f"  ✓ Success with {model}")
-                return response.choices[0].message.content
-                
-            except RateLimitError as e:
-                last_error = e
-                error_msg = str(e)
-                
-                # Check if it's a temporary rate limit (wait and retry same model)
-                if "Please try again in" in error_msg and "s." in error_msg:
-                    # Extract wait time if it's short (< 60 seconds)
-                    try:
-                        wait_match = re.search(r'try again in (\d+)s', error_msg)
-                        if wait_match:
-                            wait_seconds = int(wait_match.group(1))
-                            if wait_seconds <= 60:
-                                print(f"  ⏳ Rate limit hit, waiting {wait_seconds}s before retry...")
-                                time.sleep(wait_seconds + 1)
-                                continue
-                    except:
-                        pass
-                
-                # If it's a longer wait or different rate limit, try next model
-                print(f"  ⚠️  Rate limit on {model}: {error_msg[:100]}...")
-                print(f"  → Switching to next model in fallback chain")
-                break  # Move to next model
-                
-            except Exception as e:
-                last_error = e
-                print(f"  ⚠️  Error with {model}: {str(e)[:100]}...")
-                
-                # For non-rate-limit errors, retry same model
-                if attempt < max_retries - 1:
-                    wait_time = 2 ** attempt  # Exponential backoff
-                    print(f"  ⏳ Waiting {wait_time}s before retry...")
-                    time.sleep(wait_time)
-                else:
-                    print(f"  → Max retries reached for {model}, trying next model")
-                    break
-    
-    # All models failed
-    print(f"  ❌ All models in fallback chain failed")
-    if last_error:
-        print(f"  Last error: {str(last_error)[:200]}")
-    
-    return None
+    return multi_provider_call(
+        messages=messages,
+        temperature=temperature,
+        max_tokens=4000,
+        response_format={"type": "json_object"},
+        max_retries=max_retries
+    )
 
 
 class CommunicationChannelExtractor:
@@ -346,7 +286,7 @@ If no communication channels are found, return {{"channels": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for communication channel extraction")
@@ -666,7 +606,7 @@ If no systems are found, return {{"systems": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for system extraction")
@@ -1058,7 +998,7 @@ If no decision points are found, return {{"decisions": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for decision point extraction")
@@ -1535,7 +1475,7 @@ If no data flows are found, return {{"data_flows": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for data flow extraction")
@@ -1944,7 +1884,7 @@ If no temporal patterns are found, return {{"temporal_patterns": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for temporal pattern extraction")
@@ -2325,7 +2265,7 @@ If no failure modes are found, return {{"failure_modes": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for failure mode extraction")
@@ -2611,7 +2551,7 @@ If no pain points found, return {{"pain_points": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for pain point extraction")
@@ -2955,7 +2895,7 @@ If no automation candidates are found, return {{"automation_candidates": []}}.
                 {"role": "user", "content": prompt}
             ]
             
-            response_content = call_llm_with_fallback(self.client, messages, temperature=0.1)
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
             
             if not response_content:
                 print("Warning: All LLM models failed for automation candidate extraction")
@@ -3031,9 +2971,6 @@ class TeamStructureExtractor:
     
     def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
         """Extract team structure using LLM"""
-        if not self.client:
-            return []
-        
         prompt = f"""Extract team structure information from this interview.
 
 Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
@@ -3066,14 +3003,14 @@ Return as JSON object with this structure:
 If no team structure info found, return {{"team_structures": []}}."""
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            
-            result = json.loads(response.choices[0].message.content)
+            messages = [{"role": "user", "content": prompt}]
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
+
+            if not response_content:
+                print("Warning: All LLM models failed for team structure extraction")
+                return []
+
+            result = json.loads(response_content)
             # Handle both direct list and wrapped object formats
             team_structures = result if isinstance(result, list) else result.get("team_structures", [])
             
@@ -3140,9 +3077,6 @@ class KnowledgeGapExtractor:
     
     def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
         """Extract knowledge gaps using LLM"""
-        if not self.client:
-            return []
-        
         prompt = f"""Extract knowledge gaps and training needs from this interview.
 
 Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
@@ -3174,14 +3108,14 @@ Return as JSON object with this structure:
 If no knowledge gaps found, return {{"knowledge_gaps": []}}."""
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            
-            result = json.loads(response.choices[0].message.content)
+            messages = [{"role": "user", "content": prompt}]
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
+
+            if not response_content:
+                print("Warning: All LLM models failed for knowledge gap extraction")
+                return []
+
+            result = json.loads(response_content)
             gaps = result.get("knowledge_gaps", [])
             
             # Add metadata
@@ -3244,9 +3178,6 @@ class SuccessPatternExtractor:
     
     def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
         """Extract success patterns using LLM"""
-        if not self.client:
-            return []
-        
         prompt = f"""Extract success patterns and best practices from this interview.
 
 Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
@@ -3261,27 +3192,31 @@ Look for:
 4. Positive outcomes
 5. Things they're proud of
 
-Return as JSON array:
-[{{
-    "pattern": "what works well",
-    "role": "who does this",
-    "benefit": "why it works/what benefit it provides",
-    "replicable_to": ["where else this could be applied"],
-    "confidence_score": 0.0-1.0,
-    "extraction_reasoning": "why extracted"
-}}]
+Return as JSON object with this structure:
+{{
+  "success_patterns": [
+    {{
+      "pattern": "what works well",
+      "role": "who does this",
+      "benefit": "why it works/what benefit it provides",
+      "replicable_to": ["where else this could be applied"],
+      "confidence_score": 0.0-1.0,
+      "extraction_reasoning": "why extracted"
+    }}
+  ]
+}}
 
-If no success patterns found, return empty array []."""
+If no success patterns found, return {{"success_patterns": []}}."""
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            
-            result = json.loads(response.choices[0].message.content)
+            messages = [{"role": "user", "content": prompt}]
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
+
+            if not response_content:
+                print("Warning: All LLM models failed for success pattern extraction")
+                return []
+
+            result = json.loads(response_content)
             patterns = result.get("success_patterns", [])
             
             # Add metadata
@@ -3343,9 +3278,6 @@ class BudgetConstraintExtractor:
     
     def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
         """Extract budget constraints using LLM"""
-        if not self.client:
-            return []
-        
         prompt = f"""Extract budget constraints and approval thresholds from this interview.
 
 Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
@@ -3378,14 +3310,14 @@ Return as JSON object with this structure:
 If no budget constraints found, return {{"budget_constraints": []}}."""
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            
-            result = json.loads(response.choices[0].message.content)
+            messages = [{"role": "user", "content": prompt}]
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
+
+            if not response_content:
+                print("Warning: All LLM models failed for budget constraint extraction")
+                return []
+
+            result = json.loads(response_content)
             # Handle both direct list and wrapped object formats
             constraints = result if isinstance(result, list) else result.get("budget_constraints", [])
             
@@ -3447,9 +3379,6 @@ class ExternalDependencyExtractor:
     
     def _llm_extraction(self, text: str, meta: Dict) -> List[Dict]:
         """Extract external dependencies using LLM"""
-        if not self.client:
-            return []
-        
         prompt = f"""Extract external dependencies (vendors, partners, contractors) from this interview.
 
 Interview with: {meta.get('role', 'Unknown')} at {meta.get('company', 'Unknown')}
@@ -3466,29 +3395,33 @@ Look for:
 6. SLAs or service agreements
 7. Payment processes
 
-Return as JSON array:
-[{{
-    "vendor": "vendor/partner name",
-    "service": "what they provide",
-    "frequency": "how often used (Daily/Weekly/Monthly/etc)",
-    "coordinator": "who manages this relationship",
-    "sla": "service level agreement if mentioned",
-    "payment_process": "how payments are handled",
-    "confidence_score": 0.0-1.0,
-    "extraction_reasoning": "why extracted"
-}}]
+Return as JSON object with this structure:
+{{
+  "external_dependencies": [
+    {{
+      "vendor": "vendor/partner name",
+      "service": "what they provide",
+      "frequency": "how often used (Daily/Weekly/Monthly/etc)",
+      "coordinator": "who manages this relationship",
+      "sla": "service level agreement if mentioned",
+      "payment_process": "how payments are handled",
+      "confidence_score": 0.0-1.0,
+      "extraction_reasoning": "why extracted"
+    }}
+  ]
+}}
 
-If no external dependencies found, return empty array []."""
+If no external dependencies found, return {{"external_dependencies": []}}."""
 
         try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                response_format={"type": "json_object"}
-            )
-            
-            result = json.loads(response.choices[0].message.content)
+            messages = [{"role": "user", "content": prompt}]
+            response_content = call_llm_with_fallback(messages, temperature=0.1)
+
+            if not response_content:
+                print("Warning: All LLM models failed for external dependency extraction")
+                return []
+
+            result = json.loads(response_content)
             deps = result.get("external_dependencies", [])
             
             # Add metadata

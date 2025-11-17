@@ -1,0 +1,25 @@
+{
+  "node_styling": {
+    "Entity": {
+      "color": "{color}",
+      "size": "{viz_size * 35}",
+      "label": "{name}"
+    }
+  },
+  "relationship_styling": {
+    "CONTAINS": {"color": "#64748B", "width": 2, "style": "solid"},
+    "BELONGS_TO": {"color": "#64748B", "width": 2, "style": "solid"},
+    "OWNS": {"color": "#059669", "width": 1.5, "style": "solid"},
+    "EXECUTES": {"color": "#059669", "width": 1.5, "style": "solid"},
+    "USES": {"color": "#059669", "width": 1.5, "style": "solid"},
+    "MEASURED_BY": {"color": "#7C3AED", "width": 1, "style": "dashed"},
+    "TRACKS": {"color": "#7C3AED", "width": 1, "style": "dashed"},
+    "CAUSES": {"color": "#DC2626", "width": 1.5, "style": "dotted"},
+    "HAS_PAIN": {"color": "#DC2626", "width": 1.5, "style": "dotted"},
+    "SOLVES": {"color": "#14B8A6", "width": 2, "style": "solid"},
+    "IMPROVES": {"color": "#14B8A6", "width": 2, "style": "solid"},
+    "COMMUNICATES_VIA": {"color": "#F59E0B", "width": 1, "style": "dashed"},
+    "COORDINATES_WITH": {"color": "#F59E0B", "width": 1, "style": "dashed"},
+    "DEPENDS_ON": {"color": "#6366F1", "width": 1, "style": "dashed"}
+  }
+}

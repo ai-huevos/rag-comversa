@@ -174,6 +174,15 @@ class KnowledgeGraphBuilder:
                     e.name_normalized = toLower(node.name),
                     e += node.properties,
                     e.updated_at = datetime()
+                WITH e, coalesce(node.properties.viz_label, "") AS viz_label
+                REMOVE e:OrganizationalLayer:StrategyLayer:MeasurementLayer:OperationalLayer:ResourceLayer:IssueLayer:SolutionLayer
+                FOREACH (_ IN CASE WHEN viz_label = 'OrganizationalLayer' THEN [1] ELSE [] END | SET e:OrganizationalLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'StrategyLayer' THEN [1] ELSE [] END | SET e:StrategyLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'MeasurementLayer' THEN [1] ELSE [] END | SET e:MeasurementLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'OperationalLayer' THEN [1] ELSE [] END | SET e:OperationalLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'ResourceLayer' THEN [1] ELSE [] END | SET e:ResourceLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'IssueLayer' THEN [1] ELSE [] END | SET e:IssueLayer)
+                FOREACH (_ IN CASE WHEN viz_label = 'SolutionLayer' THEN [1] ELSE [] END | SET e:SolutionLayer)
                 RETURN COUNT(e) AS merged
                 """,
                 nodes=nodes,
@@ -239,6 +248,26 @@ class KnowledgeGraphBuilder:
                 lambda tx: tx.run("RETURN 1 AS ok").single()
             )
         return {"neo4j_ok": bool(summary["ok"])}
+
+    def execute_query(
+        self,
+        query: str,
+        parameters: Optional[Dict[str, Any]] = None,
+        *,
+        write: bool = False,
+    ) -> List[Dict[str, Any]]:
+        """Execute an arbitrary Cypher query and return the records as dicts."""
+
+        params = parameters or {}
+
+        def _run(tx):
+            result = tx.run(query, params)
+            return [record.data() for record in result]
+
+        with self._driver.session(database=self._config.database) as session:
+            if write:
+                return session.execute_write(_run)
+            return session.execute_read(_run)
 
 
 __all__ = [

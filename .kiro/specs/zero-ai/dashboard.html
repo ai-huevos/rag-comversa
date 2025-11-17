@@ -1,0 +1,559 @@
+<html><head><base href="https://example.com/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metrics Tree Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+      .card { @apply rounded-lg border bg-white shadow-sm; }
+      .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+      .badge-destructive { @apply bg-red-100 text-red-800; }
+      .badge-warning { @apply bg-yellow-100 text-yellow-800; }
+      .badge-success { @apply bg-green-100 text-green-800; }
+      .badge-secondary { @apply bg-gray-100 text-gray-800; }
+      .btn { @apply px-4 py-2 rounded-md font-medium transition-colors; }
+      .btn-outline { @apply border border-gray-300 hover:bg-gray-50; }
+      
+      .metrics-tree-container {
+        height: 400px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        position: relative;
+      }
+      
+      .sheet-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 50;
+      }
+      
+      .sheet-content {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 400px;
+        background: white;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+        z-index: 51;
+        overflow-y: auto;
+        animation: slideIn 0.2s ease-out;
+      }
+      
+      @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+      
+      .tab-list {
+        @apply inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1;
+      }
+      
+      .tab-trigger {
+        @apply px-3 py-1.5 text-sm font-medium rounded cursor-pointer transition-colors;
+      }
+      
+      .tab-trigger.active {
+        @apply bg-white shadow-sm;
+      }
+      
+      .progress-bar {
+        height: 12px;
+        background: #f3f4f6;
+        border-radius: 9999px;
+        overflow: hidden;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+      }
+    </style>
+    </head>
+    <body class="bg-gray-50">
+    
+    <div class="p-8 space-y-10 max-w-7xl mx-auto">
+    
+      <!-- Hero Question -->
+      <div class="space-y-2 text-center">
+        <h1 class="text-3xl font-bold text-gray-900">Are we on track to hit $2M ARR?</h1>
+        <p class="text-gray-600 text-lg">
+          We are <span class="font-semibold text-red-600">AT RISK</span> due to issues in
+          <span class="font-semibold"> Win Rate</span> and
+          <span class="font-semibold"> Payment Success</span>.
+        </p>
+      </div>
+    
+      <hr class="border-gray-200">
+    
+      <!-- ARR Health -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900">Overall ARR Health</h2>
+    
+        <div class="grid grid-cols-12 gap-4">
+          
+          <!-- North Star ARR -->
+          <div class="col-span-6 card">
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">North-Star ARR</h3>
+                <span class="badge badge-destructive">AT RISK</span>
+              </div>
+              <div class="space-y-3">
+                <div class="text-3xl font-bold text-gray-900">$834,200</div>
+                <div class="text-gray-600 flex items-center text-sm">
+                  <svg class="w-4 h-4 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                  </svg>
+                  +$42,000 vs baseline
+                </div>
+    
+                <div class="progress-bar">
+                  <div class="progress-fill bg-red-500" style="width: 42%"></div>
+                </div>
+                <p class="text-xs text-gray-500">Progress vs $2M: 42%</p>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Forecast -->
+          <div class="col-span-3 card">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Forecast</h3>
+              <div class="space-y-2">
+                <div class="text-sm">3-Month: <span class="font-semibold text-gray-900">$142,000</span></div>
+                <div class="text-sm">12-Month: <span class="font-semibold text-gray-900">$611,000</span></div>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Expansion vs Churn -->
+          <div class="col-span-3 card">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Expansion vs Churn</h3>
+              <div class="space-y-2">
+                <div class="text-sm">Expansion: <span class="font-semibold text-green-600">$31,500</span></div>
+                <div class="text-sm">ARR at Risk: <span class="font-semibold text-red-600">$22,900</span></div>
+              </div>
+            </div>
+          </div>
+    
+        </div>
+      </section>
+    
+      <!-- Metrics Tree -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900">Metrics Tree</h2>
+    
+        <div id="metricsTree" class="metrics-tree-container"></div>
+    
+        <div class="text-sm text-gray-600 flex gap-6 pt-2">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 bg-green-500 rounded"></span> On Track
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 bg-yellow-400 rounded"></span> At Risk
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 bg-red-500 rounded"></span> Off Track
+          </div>
+        </div>
+    
+        <div class="w-60 pt-4">
+          <label class="text-sm font-medium text-gray-700">Inspect KPI</label>
+          <select id="kpiSelect" class="mt-1 w-full border border-gray-300 rounded-md p-2 bg-white">
+            <option value="win-rate">Win Rate</option>
+            <option value="qualified-meetings">Qualified Meetings</option>
+            <option value="payment-success">Payment Success</option>
+          </select>
+        </div>
+      </section>
+    
+      <!-- Drivers, Focus, Experiments -->
+      <section class="space-y-6">
+        <h2 class="text-xl font-semibold text-gray-900">Drivers & Focus for This Period</h2>
+    
+        <div class="grid grid-cols-3 gap-4">
+    
+          <!-- What changed -->
+          <div class="card">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">What changed this period</h3>
+              <div class="space-y-3">
+                <div class="text-2xl font-bold text-gray-900">+$42,000 ARR</div>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 text-green-600 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Meetings +$19,000
+                  </div>
+                  <div class="flex items-center gap-2 text-red-600 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                    </svg>
+                    Payment Success -$11,000
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Focus nodes -->
+          <div class="card">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Where we need to focus</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-semibold text-gray-900">1. Win Rate</span>
+                    <span class="badge badge-destructive">At Risk</span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">
+                    Conversion from meetings to approvals is slipping.
+                  </p>
+                  <button class="btn btn-outline text-sm">View levers</button>
+                </div>
+    
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-semibold text-gray-900">2. Payment Success</span>
+                    <span class="badge badge-destructive">Off Track</span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">
+                    Spike in failed payment attempts from small merchants.
+                  </p>
+                  <button class="btn btn-outline text-sm">View levers</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+          <!-- Experiments -->
+          <div class="card">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Experiments We're Running</h3>
+              <div class="space-y-3">
+                <div>
+                  <div class="font-semibold text-gray-900">Improve Win Rate</div>
+                  <p class="text-xs text-gray-600">Status: Active</p>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">Reduce Declines</div>
+                  <p class="text-xs text-gray-600">Status: Paused</p>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+        </div>
+      </section>
+    
+      <!-- Weekly Review -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900">Weekly Review</h2>
+    
+        <div class="card">
+          <div class="p-1 bg-gray-100 rounded-lg inline-flex">
+            <button class="tab-trigger active px-4 py-2" onclick="switchTab(0, this)">What happened?</button>
+            <button class="tab-trigger px-4 py-2" onclick="switchTab(1, this)">Why did it happen?</button>
+            <button class="tab-trigger px-4 py-2" onclick="switchTab(2, this)">What next?</button>
+          </div>
+    
+          <div id="tabContent0" class="p-6 space-y-2">
+            <div class="text-lg font-bold text-gray-900">ARR: $834,200</div>
+            <div class="text-gray-600">Δ vs last window: +$12,100</div>
+          </div>
+    
+          <div id="tabContent1" class="p-6 space-y-2 hidden">
+            <div class="flex items-center gap-2 text-green-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+              Meetings +$19,000
+            </div>
+            <div class="flex items-center gap-2 text-red-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+              </svg>
+              Payment Success -$11,000
+            </div>
+          </div>
+    
+          <div id="tabContent2" class="p-6 space-y-4 hidden">
+            <div>
+              <div class="font-semibold text-gray-900 mb-2">Win Rate</div>
+              <textarea class="w-full border border-gray-300 rounded p-2 text-sm" rows="3" placeholder="Action items..."></textarea>
+            </div>
+            <div>
+              <div class="font-semibold text-gray-900 mb-2">Payment Success</div>
+              <textarea class="w-full border border-gray-300 rounded p-2 text-sm" rows="3" placeholder="Action items..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+    </div>
+    
+    <!-- Sheet Overlay (hidden by default) -->
+    <div id="sheetOverlay" class="sheet-overlay hidden" onclick="closeSheet()"></div>
+    
+    <!-- Sheet Content -->
+    <div id="sheetContent" class="sheet-content hidden">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900" id="sheetTitle">Win Rate</h2>
+            <p class="text-gray-600" id="sheetOwner">Owner: Maria S.</p>
+          </div>
+          <button onclick="closeSheet()" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+    
+        <div class="space-y-6">
+          <!-- KPI Stats -->
+          <div class="grid grid-cols-4 gap-2">
+            <div class="card p-3 text-center">
+              <div class="text-xs text-gray-600">Current</div>
+              <div class="text-xl font-bold text-gray-900" id="currentValue">32%</div>
+            </div>
+            <div class="card p-3 text-center">
+              <div class="text-xs text-gray-600">Target</div>
+              <div class="text-xl font-bold text-gray-900" id="targetValue">40%</div>
+            </div>
+            <div class="card p-3 text-center">
+              <div class="text-xs text-gray-600">Δ vs Target</div>
+              <div class="text-xl font-bold text-red-600" id="deltaValue">-8%</div>
+            </div>
+            <div class="card p-3 text-center flex items-center justify-center">
+              <span class="badge badge-destructive" id="statusBadge">At Risk</span>
+            </div>
+          </div>
+    
+          <!-- Sparkline -->
+          <div class="card">
+            <div id="sparkline" style="height: 120px;"></div>
+          </div>
+    
+          <div class="text-xs text-gray-500">
+            Data sources: <span id="dataSources">HubSpot, Product, Stripe</span>
+          </div>
+    
+          <!-- Predictive Indicators -->
+          <div class="space-y-3">
+            <h3 class="text-sm font-semibold text-gray-900">Predictive indicators</h3>
+    
+            <div class="space-y-3" id="indicators">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="font-semibold text-gray-900">Leads Velocity</div>
+                  <div class="text-xs text-gray-600">CRM</div>
+                </div>
+                <span class="badge badge-warning">At Risk</span>
+              </div>
+    
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="font-semibold text-gray-900">Success Rate</div>
+                  <div class="text-xs text-gray-600">Billing</div>
+                </div>
+                <span class="badge badge-success">On Track</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+    // KPI data
+    const kpiData = {
+      'win-rate': {
+        title: 'Win Rate',
+        owner: 'Maria S.',
+        current: '32%',
+        target: '40%',
+        delta: '-8%',
+        status: 'At Risk',
+        sources: 'HubSpot, Product, Stripe',
+        sparkline: [32, 34, 31, 29, 32, 33, 32],
+        indicators: [
+          { name: 'Leads Velocity', source: 'CRM', status: 'At Risk' },
+          { name: 'Success Rate', source: 'Billing', status: 'On Track' }
+        ]
+      },
+      'qualified-meetings': {
+        title: 'Qualified Meetings',
+        owner: 'John D.',
+        current: '145',
+        target: '120',
+        delta: '+25',
+        status: 'On Track',
+        sources: 'Calendar, HubSpot',
+        sparkline: [120, 125, 132, 138, 142, 145, 145],
+        indicators: [
+          { name: 'Booking Rate', source: 'Calendar', status: 'On Track' },
+          { name: 'Show Rate', source: 'Meetings', status: 'On Track' }
+        ]
+      },
+      'payment-success': {
+        title: 'Payment Success',
+        owner: 'Sarah K.',
+        current: '87%',
+        target: '95%',
+        delta: '-8%',
+        status: 'Off Track',
+        sources: 'Stripe, Billing',
+        sparkline: [94, 92, 90, 88, 87, 86, 87],
+        indicators: [
+          { name: 'Decline Rate', source: 'Stripe', status: 'Off Track' },
+          { name: 'Retry Success', source: 'Billing', status: 'At Risk' }
+        ]
+      }
+    };
+    
+    // Metrics Tree
+    function createMetricsTree() {
+      const data = [{
+        type: 'sankey',
+        orientation: 'h',
+        node: {
+          pad: 15,
+          thickness: 20,
+          line: { color: 'white', width: 0.5 },
+          label: ['Leads', 'Qualified Meetings', 'Win Rate', 'Payment Success', 'ARR Growth', 'ARR Target'],
+          color: ['#60a5fa', '#34d399', '#fbbf24', '#ef4444', '#8b5cf6', '#6366f1'],
+          x: [0.1, 0.3, 0.5, 0.5, 0.7, 0.9],
+          y: [0.5, 0.5, 0.3, 0.7, 0.5, 0.5]
+        },
+        link: {
+          source: [0, 1, 1, 2, 3, 4],
+          target: [1, 2, 3, 4, 4, 5],
+          value: [200, 145, 145, 46, 126, 834],
+          color: ['rgba(96,165,250,0.3)', 'rgba(52,211,153,0.3)', 'rgba(251,191,36,0.3)', 
+                  'rgba(139,92,246,0.3)', 'rgba(139,92,246,0.3)', 'rgba(99,102,241,0.3)']
+        }
+      }];
+    
+      const layout = {
+        font: { size: 12, family: 'Inter, system-ui, sans-serif' },
+        margin: { l: 20, r: 20, t: 20, b: 20 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+      };
+    
+      const config = {
+        displayModeBar: false,
+        responsive: true
+      };
+    
+      Plotly.newPlot('metricsTree', data, layout, config);
+    }
+    
+    // Sparkline
+    function createSparkline(data) {
+      const trace = {
+        x: data.map((_, i) => i),
+        y: data,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#3b82f6', width: 2 },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(59,130,246,0.1)'
+      };
+    
+      const layout = {
+        margin: { l: 30, r: 10, t: 10, b: 30 },
+        xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+        yaxis: { showgrid: true, gridcolor: '#f3f4f6', zeroline: false },
+        paper_bgcolor: 'white',
+        plot_bgcolor: 'white'
+      };
+    
+      const config = {
+        displayModeBar: false,
+        responsive: true
+      };
+    
+      Plotly.newPlot('sparkline', [trace], layout, config);
+    }
+    
+    // Tab switching
+    function switchTab(index, button) {
+      // Hide all tabs
+      for (let i = 0; i < 3; i++) {
+        document.getElementById('tabContent' + i).classList.add('hidden');
+      }
+      // Show selected tab
+      document.getElementById('tabContent' + index).classList.remove('hidden');
+      
+      // Update active state
+      document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+      button.classList.add('active');
+    }
+    
+    // Sheet management
+    function openSheet(kpiKey) {
+      const kpi = kpiData[kpiKey];
+      
+      document.getElementById('sheetTitle').textContent = kpi.title;
+      document.getElementById('sheetOwner').textContent = 'Owner: ' + kpi.owner;
+      document.getElementById('currentValue').textContent = kpi.current;
+      document.getElementById('targetValue').textContent = kpi.target;
+      document.getElementById('deltaValue').textContent = kpi.delta;
+      document.getElementById('statusBadge').textContent = kpi.status;
+      document.getElementById('dataSources').textContent = kpi.sources;
+      
+      // Update badge color
+      const badge = document.getElementById('statusBadge');
+      badge.className = 'badge ' + 
+        (kpi.status === 'On Track' ? 'badge-success' : 
+         kpi.status === 'At Risk' ? 'badge-warning' : 'badge-destructive');
+      
+      // Update delta color
+      const delta = document.getElementById('deltaValue');
+      delta.className = 'text-xl font-bold ' + 
+        (kpi.delta.startsWith('+') ? 'text-green-600' : 'text-red-600');
+      
+      // Update indicators
+      const indicatorsHTML = kpi.indicators.map(ind => `
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="font-semibold text-gray-900">${ind.name}</div>
+            <div class="text-xs text-gray-600">${ind.source}</div>
+          </div>
+          <span class="badge ${
+            ind.status === 'On Track' ? 'badge-success' : 
+            ind.status === 'At Risk' ? 'badge-warning' : 'badge-destructive'
+          }">${ind.status}</span>
+        </div>
+      `).join('');
+      document.getElementById('indicators').innerHTML = indicatorsHTML;
+      
+      // Show sheet
+      document.getElementById('sheetOverlay').classList.remove('hidden');
+      document.getElementById('sheetContent').classList.remove('hidden');
+      
+      // Create sparkline
+      setTimeout(() => createSparkline(kpi.sparkline), 100);
+    }
+    
+    function closeSheet() {
+      document.getElementById('sheetOverlay').classList.add('hidden');
+      document.getElementById('sheetContent').classList.add('hidden');
+    }
+    
+    // Event listeners
+    document.getElementById('kpiSelect').addEventListener('change', function(e) {
+      openSheet(e.target.value);
+    });
+    
+    // Initialize
+    createMetricsTree();
+    </script>
+    
+    </body></html>

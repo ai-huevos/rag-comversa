@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import json
 import psycopg2
 from graph.knowledge_graph_builder import KnowledgeGraphBuilder, GraphEntity, GraphRelationship
+from intelligence_capture.visualization_config import add_visualization_properties
 from scripts import infer_entity_relationships as relationship_inference
 
 
@@ -42,6 +43,19 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def normalize_entity_properties(properties: dict, entity_type: str) -> dict:
+    """Ensure common aliases + visualization metadata for downstream queries."""
+    org_alias = properties.get("organization") or properties.get("company") or properties.get("holding_name") or properties.get("org_id")
+    if org_alias:
+        properties["organization"] = org_alias
+        properties["organization_normalized"] = str(org_alias).strip().lower()
+
+    # Guarantee visualization metadata is attached before syncing
+    properties.setdefault("entity_type", entity_type)
+    add_visualization_properties(properties)
+    return properties
+
+
 def load_consolidated_entities(pg_cursor):
     pg_cursor.execute("""
         SELECT
@@ -55,11 +69,12 @@ def load_consolidated_entities(pg_cursor):
     for row in rows:
         sqlite_id, entity_type, name, org_id, source_count, confidence, payload_json = row
         if isinstance(payload_json, dict):
-            properties = payload_json
+            properties = dict(payload_json)
         else:
             properties = json.loads(payload_json) if payload_json else {}
         properties["source_count"] = source_count
         properties["consensus_confidence"] = confidence
+        properties = normalize_entity_properties(properties, entity_type)
         entities.append(
             GraphEntity(
                 external_id=f"sqlite_{entity_type}_{sqlite_id}",

@@ -1,0 +1,104 @@
+/* Recommended Neo4j Browser stylesheet for the visualization layers */
+
+node.OrganizationalLayer {
+  color: #2563EB;
+  border-color: #1E3A8A;
+  text-color-internal: #FFFFFF;
+  diameter: 50px;
+  caption: "{name}";
+}
+
+node.StrategyLayer {
+  color: #9333EA;
+  border-color: #6B21A8;
+  text-color-internal: #FFFFFF;
+  diameter: 45px;
+  caption: "{name}";
+}
+
+node.MeasurementLayer {
+  color: #7C3AED;
+  border-color: #5B21B6;
+  text-color-internal: #FFFFFF;
+  diameter: 40px;
+  caption: "{name}";
+}
+
+node.OperationalLayer {
+  color: #16A34A;
+  border-color: #15803D;
+  text-color-internal: #FFFFFF;
+  diameter: 55px;
+  caption: "{name}";
+}
+
+node.ResourceLayer {
+  color: #EA580C;
+  border-color: #C2410C;
+  text-color-internal: #FFFFFF;
+  diameter: 40px;
+  caption: "{name}";
+}
+
+node.IssueLayer {
+  color: #DC2626;
+  border-color: #991B1B;
+  text-color-internal: #FFFFFF;
+  diameter: 50px;
+  caption: "{name}";
+}
+
+node.SolutionLayer {
+  color: #14B8A6;
+  border-color: #0D9488;
+  text-color-internal: #FFFFFF;
+  diameter: 50px;
+  caption: "{name}";
+}
+
+relationship {
+  shaft-width: 2px;
+  color: #94A3B8;
+}
+
+relationship.CONTAINS,
+relationship.BELONGS_TO {
+  color: #64748B;
+  shaft-width: 2px;
+}
+
+relationship.OWNS,
+relationship.EXECUTES,
+relationship.USES {
+  color: #059669;
+  shaft-width: 1.5px;
+}
+
+relationship.MEASURED_BY,
+relationship.TRACKS {
+  color: #7C3AED;
+  shaft-width: 1px;
+  line-style: dashed;
+}
+
+relationship.CAUSES,
+relationship.HAS_PAIN,
+relationship.EXPERIENCES {
+  color: #DC2626;
+  shaft-width: 1.5px;
+  line-style: dotted;
+}
+
+relationship.SOLVES,
+relationship.IMPROVES,
+relationship.AUTOMATES {
+  color: #14B8A6;
+  shaft-width: 2px;
+}
+
+relationship.COMMUNICATES_VIA,
+relationship.COORDINATES_WITH {
+  color: #F59E0B;
+  shaft-width: 1px;
+  line-style: dashed;
+}

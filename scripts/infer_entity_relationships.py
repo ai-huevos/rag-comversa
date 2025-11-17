@@ -400,6 +400,126 @@ def infer_relationships(
     return relationships, stats
 
 
+# ---------------------------------------------------------------------------
+# Graph-level inference helpers (run directly in Neo4j)
+
+
+def _run_write_query(builder: KnowledgeGraphBuilder, query: str) -> int:
+    result = builder.execute_query(query, write=True)
+    if not result:
+        return 0
+    return result[0].get("created", 0) or 0
+
+
+def infer_organizational_structure(builder: KnowledgeGraphBuilder) -> int:
+    """Infer CONTAINS/BELONGS_TO relationships across the org hierarchy."""
+
+    query = """
+    MATCH (parent:Entity)
+    MATCH (child:Entity)
+    WHERE parent.org_id = child.org_id
+      AND (
+        (parent.entity_type = 'holding' AND child.entity_type = 'company' AND
+            toLower(coalesce(child.holding, child.holding_name, child.parent_company, child.organization)) = parent.name_normalized)
+        OR (parent.entity_type = 'company' AND child.entity_type = 'business_unit' AND
+            toLower(coalesce(child.company, child.company_name, child.parent_company, child.organization)) = parent.name_normalized)
+        OR (parent.entity_type = 'business_unit' AND child.entity_type IN ['area', 'team_structure'] AND
+            toLower(coalesce(child.business_unit, child.parent_business_unit, child.department, child.area)) = parent.name_normalized)
+        OR (parent.entity_type = 'area' AND child.entity_type IN ['team_structure', 'role'] AND
+            toLower(coalesce(child.area, child.department, child.team_parent)) = parent.name_normalized)
+      )
+      AND NOT EXISTS((parent)-[:CONTAINS]->(child))
+    WITH parent, child
+    CREATE (parent)-[:CONTAINS {inferred: true, confidence: 0.9, org_id: parent.org_id}]->(child)
+    MERGE (child)-[belongs:BELONGS_TO]->(parent)
+    ON CREATE SET belongs.inferred = true, belongs.confidence = 0.85, belongs.org_id = parent.org_id
+    RETURN count(*) AS created
+    """
+    return _run_write_query(builder, query)
+
+
+def infer_team_ownership(builder: KnowledgeGraphBuilder) -> int:
+    """Infer OWNS relationships between teams and processes."""
+
+    query = """
+    MATCH (team:Entity {entity_type: 'team_structure'})
+    MATCH (process:Entity {entity_type: 'process'})
+    WHERE team.org_id = process.org_id
+      AND (
+        toLower(coalesce(process.owner_team, process.owner, process.team, process.team_name, process.responsible_team)) = team.name_normalized
+        OR toLower(coalesce(process.department, process.area)) = team.name_normalized
+        OR (process.description IS NOT NULL AND process.description <> '' AND process.description CONTAINS team.name)
+      )
+      AND NOT EXISTS((team)-[:OWNS]->(process))
+    CREATE (team)-[:OWNS {inferred: true, confidence: 0.8, org_id: team.org_id}]->(process)
+    RETURN count(*) AS created
+    """
+    return _run_write_query(builder, query)
+
+
+def infer_process_measurements(builder: KnowledgeGraphBuilder) -> int:
+    """Connect processes to KPIs that track them via MEASURED_BY."""
+
+    query = """
+    MATCH (process:Entity {entity_type: 'process'})
+    MATCH (kpi:Entity {entity_type: 'kpi'})
+    WHERE process.org_id = kpi.org_id
+      AND (
+        toLower(coalesce(kpi.measured_process, kpi.process, kpi.process_name)) = process.name_normalized
+        OR (kpi.related_processes IS NOT NULL AND kpi.related_processes CONTAINS process.name)
+        OR kpi.measured_process_id = process.external_id
+      )
+      AND NOT EXISTS((process)-[:MEASURED_BY]->(kpi))
+    CREATE (process)-[:MEASURED_BY {inferred: true, confidence: 0.85, org_id: process.org_id}]->(kpi)
+    RETURN count(*) AS created
+    """
+    return _run_write_query(builder, query)
+
+
+def infer_automation_solutions(builder: KnowledgeGraphBuilder) -> int:
+    """Link automation candidates to the pain points they solve."""
+
+    query = """
+    MATCH (automation:Entity {entity_type: 'automation_candidate'})
+    MATCH (pain:Entity {entity_type: 'pain_point'})
+    WHERE automation.org_id = pain.org_id
+      AND (
+        automation.pain_point_id = pain.external_id
+        OR automation.pain_point_reference = pain.external_id
+        OR toLower(coalesce(automation.pain_point, automation.pain_point_name)) = pain.name_normalized
+        OR (automation.description IS NOT NULL AND pain.description IS NOT NULL AND pain.description <> ''
+            AND automation.description CONTAINS pain.description)
+      )
+      AND NOT EXISTS((automation)-[:SOLVES]->(pain))
+    CREATE (automation)-[:SOLVES {inferred: true, confidence: 0.75, org_id: automation.org_id}]->(pain)
+    RETURN count(*) AS created
+    """
+    return _run_write_query(builder, query)
+
+
+def run_visualization_relationship_inference(
+    builder: KnowledgeGraphBuilder,
+    *,
+    verbose: bool = True,
+) -> Dict[str, int]:
+    """Run the guided Neo4j queries that reinforce the visualization schema."""
+
+    inference_counts = {
+        "CONTAINS": infer_organizational_structure(builder),
+        "OWNS": infer_team_ownership(builder),
+        "MEASURED_BY": infer_process_measurements(builder),
+        "SOLVES": infer_automation_solutions(builder),
+    }
+
+    if verbose:
+        created_total = sum(inference_counts.values())
+        print(f"   ↳ Visualization-aware inferences created: {created_total}")
+        for rel_type, count in inference_counts.items():
+            if count:
+                print(f"      • {rel_type:<12} {count}")
+    return inference_counts
+
+
 def print_summary(records: Sequence[EntityRecord], relationships: Sequence[GraphRelationship], stats: Dict[str, Counter]) -> None:
     print("=" * 72)
     print("ENTITY RELATIONSHIP INFERENCE")
@@ -484,6 +604,7 @@ def run_inference(
         "relationships": len(relationships),
         "merged": 0,
         "stats": stats,
+        "graph_relationships": {},
     }
 
     if not relationships:
@@ -497,15 +618,20 @@ def run_inference(
         return summary
 
     internal_builder = builder or KnowledgeGraphBuilder.from_config()
+    viz_counts: Dict[str, int] = {}
     try:
         merged = internal_builder.merge_relationships(relationships)
+        viz_counts = run_visualization_relationship_inference(internal_builder, verbose=verbose)
     finally:
         if builder is None:
             internal_builder.close()
 
     summary["merged"] = merged
+    summary["graph_relationships"] = viz_counts
     if verbose:
         print(f"✅ Neo4j merge complete → {merged} relationships created/updated.")
+        created_total = sum(viz_counts.values())
+        print(f"✅ Visualization inference complete → {created_total} relationships created/updated.")
     return summary
 
 

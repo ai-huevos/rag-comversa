@@ -22,6 +22,7 @@ from intelligence_capture.relationship_discoverer import RelationshipDiscoverer
 from intelligence_capture.metrics import ConsolidationMetrics
 from intelligence_capture.logger import get_logger
 from intelligence_capture.consolidation_sync import ConsolidationSync
+from intelligence_capture.visualization_config import add_visualization_properties
 
 # Initialize logger
 logger = get_logger(__name__)
@@ -316,6 +317,9 @@ class KnowledgeConsolidationAgent:
             interview_id,
             similarity_score
         )
+
+        # Ensure visualization metadata is present for downstream sync
+        merged = add_visualization_properties(merged)
         
         # Calculate consensus confidence
         confidence = self.calculate_consensus_confidence(merged)
@@ -398,6 +402,9 @@ class KnowledgeConsolidationAgent:
         entity["first_mentioned_date"] = datetime.now().isoformat()
         entity["last_mentioned_date"] = datetime.now().isoformat()
         entity["consolidated_at"] = None
+
+        # Attach visualization defaults for Neo4j styling
+        add_visualization_properties(entity)
         
         return entity
     
