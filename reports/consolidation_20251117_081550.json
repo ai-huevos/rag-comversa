@@ -1,0 +1,143 @@
+{
+  "timestamp": "2025-11-17T08:15:50.949432",
+  "database": "/Users/tatooine/Documents/Development/Comversa/system0/data/full_intelligence.db",
+  "interviews_total": 44,
+  "interviews_processed": 44,
+  "interviews_failed": 0,
+  "duration_seconds": 0.5212008953094482,
+  "entities_before": 2606,
+  "entities_after": 2606,
+  "entities_removed": 0,
+  "reduction_percentage": 0.0,
+  "relationships_discovered": 64,
+  "patterns_identified": 9,
+  "agent_statistics": {
+    "entities_processed": 2441,
+    "duplicates_found": 0,
+    "entities_merged": 0,
+    "contradictions_detected": 0,
+    "relationships_discovered": 0,
+    "processing_time": 0.0012440681457519531
+  },
+  "entity_counts_before": {
+    "pain_points": 256,
+    "processes": 218,
+    "systems": 165,
+    "kpis": 150,
+    "automation_candidates": 310,
+    "inefficiencies": 138,
+    "communication_channels": 247,
+    "decision_points": 154,
+    "data_flows": 165,
+    "temporal_patterns": 249,
+    "failure_modes": 165,
+    "team_structures": 48,
+    "knowledge_gaps": 103,
+    "success_patterns": 178,
+    "budget_constraints": 19,
+    "external_dependencies": 41
+  },
+  "entity_counts_after": {
+    "pain_points": 256,
+    "processes": 218,
+    "systems": 165,
+    "kpis": 150,
+    "automation_candidates": 310,
+    "inefficiencies": 138,
+    "communication_channels": 247,
+    "decision_points": 154,
+    "data_flows": 165,
+    "temporal_patterns": 249,
+    "failure_modes": 165,
+    "team_structures": 48,
+    "knowledge_gaps": 103,
+    "success_patterns": 178,
+    "budget_constraints": 19,
+    "external_dependencies": 41
+  },
+  "patterns": [
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 2,
+      "pattern_frequency": 1.0909090909090908,
+      "source_count": 48,
+      "high_priority": true,
+      "description": "Problematic system: Excel"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 33,
+      "pattern_frequency": 0.5454545454545454,
+      "source_count": 24,
+      "high_priority": true,
+      "description": "Problematic system: SAP"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 11,
+      "pattern_frequency": 0.3181818181818182,
+      "source_count": 14,
+      "high_priority": true,
+      "description": "Problematic system: Opera"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 4,
+      "pattern_frequency": 0.2727272727272727,
+      "source_count": 12,
+      "high_priority": false,
+      "description": "Problematic system: WhatsApp"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 34,
+      "pattern_frequency": 0.22727272727272727,
+      "source_count": 10,
+      "high_priority": false,
+      "description": "Problematic system: Opera PMS"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 1,
+      "pattern_frequency": 0.18181818181818182,
+      "source_count": 8,
+      "high_priority": false,
+      "description": "Problematic system: MaintainX"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 9,
+      "pattern_frequency": 0.18181818181818182,
+      "source_count": 8,
+      "high_priority": false,
+      "description": "Problematic system: Simphony"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 12,
+      "pattern_frequency": 0.18181818181818182,
+      "source_count": 8,
+      "high_priority": false,
+      "description": "Problematic system: Satcom"
+    },
+    {
+      "pattern_type": "problematic_system",
+      "entity_type": "systems",
+      "entity_id": 10,
+      "pattern_frequency": 0.13636363636363635,
+      "source_count": 6,
+      "high_priority": false,
+      "description": "Problematic system: Micros"
+    }
+  ],
+  "backup_path": "/Users/tatooine/Documents/Development/Comversa/system0/data/backups/full_intelligence_pre_consolidation_20251117_081548.db",
+  "validation_passed": true
+}
